@@ -1,0 +1,21 @@
+/* Fade-in animation for 'No records found' */
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .no-records {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4d4f; /* You can change this to any color you prefer */
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+    margin-top: 20px;
+  }
+  
