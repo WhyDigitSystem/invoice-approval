@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import { notification } from 'antd';
-import { Button, Select, DatePicker, Space } from 'antd';
+import { Button, Select, DatePicker, Space, Spin,Progress, Slider, Typography, Row, Col } from 'antd';
 import { getAPAgeing,getAllAPParties } from '../services/api';
 import { getUserBranch } from '../services/api'; // Import getUserBranch function
 import CommonTable from './CommonTable';
@@ -10,7 +10,10 @@ import dayjs from 'dayjs';
 import { MenuItem, CircularProgress } from '@mui/material';
 import "./ApAgeing.css";
 import NoDataAvailable from '../utils/NoDataAvailable';
+import { AiFillBackward } from "react-icons/ai";
+import rewindbutton from '.././rewindbutton.png';
 
+import Spinner3 from '.././Spinner3.gif';
 import moment from 'moment';
 import { format } from 'date-fns';
 
@@ -38,14 +41,34 @@ export const APAgeing = () => {
   const [subledgerNames,setSubledgerNames] =  useState('');
   
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [branchName, setBranchName] = useState([]); // Initialize as empty array
   const [branchNames, setBranchNames] = useState([]); // Initialize as empty array
   const { RangePicker } = DatePicker; // Destructure RangePicker
 
-  
-  
+  const [stepsCount, setStepsCount] = useState(5);  // Dynamic steps count
+  const [stepsGap, setStepsGap] = useState(7);  // Dynamic gap between progress bars
+  const [percent, setPercent] = useState(0); 
+  const [dataLoaded, setDataLoaded] = useState(false); 
 
+  
+  // Simulate data loading
+  useEffect(() => {
+    if (loading && percent < 100) {
+      const interval = setInterval(() => {
+        setPercent((prevPercent) => {
+          const nextPercent = prevPercent + 5;  // Increment the progress by 5%
+          if (nextPercent >= 100) {
+            clearInterval(interval);  // Stop the interval when progress reaches 100%
+            setLoading(false);  // Data is fully loaded
+            
+          }
+          return nextPercent;
+        });
+      }, 500); // Update progress every 500ms
+      return () => clearInterval(interval); // Cleanup the interval on component unmount
+    }
+  }, [percent, loading]);
   
   // Fetch branch names on component mount
   useEffect(() => {
@@ -120,6 +143,9 @@ export const APAgeing = () => {
     setSlab1(e.target.value);  // Update the state when user types
   };
 
+  const handleImageClick = () => {
+    window.history.back(); // Takes the user to the previous page
+  };
 
   const handleDateChange = (event) => {
     const newDate = event.target.value; 
@@ -157,12 +183,17 @@ export const APAgeing = () => {
       });
   };
 
+
+
+
+  
   return (
     <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px', borderRadius: '10px' }}>
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-        <b><p style={{align:'left', marginLeft:'-1000px'}}>AP Ageing</p></b> <br/>
+        <b><p style={{align:'left', marginLeft:'-1000px'}}>AP Ageing <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
+        
           <Space style={{ marginBottom: '20px' }}>
             
             {/* Branch Name Dropdown */}
@@ -394,6 +425,7 @@ export const APAgeing = () => {
         type="primary"
         icon={<SearchIcon />}
         onClick={fetchData}
+        loading={loading}
       >
         Search
       </Button>
@@ -418,15 +450,37 @@ export const APAgeing = () => {
         </div>
       </div>
 
-      {/* Display Table */}
-      <div className="mt-4" style={{ marginTop: '30px', color: "blue" }}>
-    {/* Conditionally Render the Table or the 'No Records Found' Message */}
-    {data.length > 0 ? (
-      <CommonTable data={data} columns={reportColumns} loading={loading} />
-    ) : (
-      <NoDataAvailable message="No records to display" />
-    )}
-  </div>
+    {/* Loading Spinner */}
+    {loading ? (
+      //    <div className="loading-spinner" style={{ textAlign: 'center', width: '100%' }}>
+      //    <Progress size="large" />
+      //  </div>
+    <Col>
+          {/* <Progress
+            type="circle"
+            percent={percent}
+            trailColor="rgba(0, 0, 0, 0.06)"
+            strokeWidth={20}
+            steps={stepsCount} // Dynamic steps count
+            format={(percent) => `${percent}%`} // Optional: custom format
+            style={{ marginTop: stepsGap }} // Adjusting gap with dynamic margin
+          /> */}
+          {/* <SquareSpinner /> */}
+          <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/>
+        </Col>
+      ) :(
+        <div className="mt-4" style={{ marginTop: '30px', color: "blue" }}>
+          {/* Conditionally Render the Table or the 'No Records Found' Message */}
+          {data.length > 0 ? (
+            <CommonTable data={data} columns={reportColumns} loading={loading} />
+          ) : (
+            <NoDataAvailable message="No records to display" />
+          )}
+        </div>
+      )}
+      
+      {/* No Data Message */}
+      
     </div>
   );
 };

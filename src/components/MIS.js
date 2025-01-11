@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import { notification } from 'antd';
-import { Button, Select, DatePicker, Space } from 'antd';
+import { Button, Select, DatePicker, Space,Col } from 'antd';
 import { getMIS } from '../services/api';
 import { getUserBranch } from '../services/api'; // Import getUserBranch function
 import CommonTable from './CommonTable';
+import rewindbutton from '.././rewindbutton.png';
+import Spinner3 from '.././Spinner3.gif';
+import NoDataAvailable from '../utils/NoDataAvailable';
 
 const { Option } = Select;
 
@@ -16,12 +19,14 @@ export const MIS = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [branchNames, setBranchNames] = useState([]); // Initialize as empty array
   const { RangePicker } = DatePicker; // Destructure RangePicker
 
 
-  
+  const handleImageClick = () => {
+    window.history.back(); // Takes the user to the previous page
+  };
 
   // Handle date range change
   const handleDateRangeChange = (dates) => {
@@ -90,7 +95,7 @@ export const MIS = () => {
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-        <b><p style={{align:'left', marginLeft:'-1000px'}}>MIS</p></b> <br/>
+        <b><p style={{align:'left', marginLeft:'-1000px'}}>MIS <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
           <Space style={{ marginBottom: '20px' }}>
             
             {/* Branch Name Dropdown */}
@@ -182,12 +187,39 @@ export const MIS = () => {
         </div>
       </div>
 
-      {/* Display Table */}
-      <div className="mt-4" style={{ marginTop: '30px' , color:"blue" }}>
-        <CommonTable data={data} columns={reportColumns} loading={loading} />
-      </div>
+     {/* Loading Spinner */}
+    {loading ? (
+      //    <div className="loading-spinner" style={{ textAlign: 'center', width: '100%' }}>
+      //    <Progress size="large" />
+      //  </div>
+    <Col>
+          {/* <Progress
+            type="circle"
+            percent={percent}
+            trailColor="rgba(0, 0, 0, 0.06)"
+            strokeWidth={20}
+            steps={stepsCount} // Dynamic steps count
+            format={(percent) => `${percent}%`} // Optional: custom format
+            style={{ marginTop: stepsGap }} // Adjusting gap with dynamic margin
+          /> */}
+          {/* <SquareSpinner /> */}
+          <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/>
+        </Col>
+      ) :(
+        <div className="mt-4" style={{ marginTop: '30px', color: "blue" }}>
+          {/* Conditionally Render the Table or the 'No Records Found' Message */}
+          {data.length > 0 ? (
+            <CommonTable data={data} columns={reportColumns} loading={loading} />
+          ) : (
+            <NoDataAvailable message="No records to display" />
+          )}
+        </div>
+      )}
+      
+      {/* No Data Message */}
+      
     </div>
-  );
+    );
 };
 
 export default MIS;

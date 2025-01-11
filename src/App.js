@@ -11,9 +11,11 @@ import Overview from "./components/Overview";
 
 import { Screen } from "./components/Screen";
 import { UserCreation } from "./components/UserCreation";
-// import PartyMasterUpdate from "./components/PartyMasterUpdate";
+import PartyMasterUpdate from "./components/PartyMasterUpdate";
 import APAgeing from "./components/APAgeing";
 import Reports from "./components/Reports";
+import AddExpense from "./components/AddExpense";
+import CNPreApproval from "./components/CNPreApproval";
 
 function App() {
   return (
@@ -32,8 +34,11 @@ function App() {
           <Route path="userCreation" element={<UserCreation />} />
           <Route path="approved2list" element={<Approved2List />} />
           <Route path="MIS" element={<MIS />} />
-          {/* <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} /> */}
+          <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
           <Route path="APAgeing" element={<APAgeing />} />
+          <Route path="AddExpense" element={<AddExpense/>}/>
+          <Route path="CNPreApproval" element={<CNPreApproval/>} />
+          
         </Route>
       </Routes>
     </Router>

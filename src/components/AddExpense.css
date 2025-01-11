@@ -1,0 +1,35 @@
+.container {
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .label-expense {
+    font-weight: bold;
+  }
+  
+  .input-data {
+    margin-bottom: 20px;
+  }
+  
+  .input-data input {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .submit-btn {
+    margin-top: 20px;
+  }
+  
+  input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  

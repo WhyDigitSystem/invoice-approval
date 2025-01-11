@@ -10,8 +10,8 @@ import "./Reports.css";
 
 // Mock Data for Reports
 const clientReportData = [
-  { name: "Ap - ageing", code: "EL-1 (OB) XXX FY25" },
-  { name: "MIS", code: "EL-2 (SL) XXX FY25" },
+  { name: "AP - Ageing", code: ""},
+  { name: "MIS", code: ""},
 ];
 
 const reportDetails = {
@@ -68,7 +68,7 @@ const Reports = () => {
   const handleCardClick = (item) => {
     // Map card names to their respective routes
     const routes = {
-      "Ap - ageing": "/APAgeing",
+      "AP - Ageing": "/APAgeing",
       MIS: "/MIS",
     };
 
@@ -191,13 +191,14 @@ const Reports = () => {
       {/* Header */}
 
       {/* Cards */}
+      <br/><br/>
       <div className="ag-format-container">
         <div className="ag-courses_box">
           {clientReportData.map((item, index) => (
             <div
               key={index}
               className="ag-courses_item"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer" , height:"80px" , width:"80px"}}
             >
               <div
                 className="ag-courses-item_link"
@@ -209,23 +210,7 @@ const Reports = () => {
                   <span className="ag-courses-item_date">
                     {item.code}
                     &nbsp;
-                    <img
-                      src={
-                        "https://cdn-icons-png.flaticon.com/128/4208/4208397.png"
-                      }
-                      width={27}
-                      height={27}
-                      alt="Download Icon"
-                      style={{
-                        marginLeft: "8px",
-                        filter: "brightness(0) invert(1)",
-                        marginBottom: "8px",
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadIconClick(e, item);
-                      }}
-                    />
+                  
                   </span>
                 </div>
               </div>
