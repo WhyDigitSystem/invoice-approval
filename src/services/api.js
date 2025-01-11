@@ -438,3 +438,35 @@ export const getAllCreditParties = async () => {
     throw error;
   }
 };
+
+
+
+export const getInvoices = async (userName,branchCode) => {
+  try {
+    const response = await axios.get(
+     `${API_URL}/api/InvoiceApproval/getInvoices?userName=${userName}&branchCode=${branchCode}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.invDetails
+    ) {
+      return response.data.paramObjectsMap.invDetails.map(
+        (item) => ({
+          docid : item.docid,
+          docdt : item.docdt ? new Date(item.docdt).toLocaleDateString("en-GB"):"",
+          partyName : item.partyName,
+          partyCode : item.partyCode,
+          vchno : item.vchno,
+          vchdt : item.docdt ? new Date(item.vchdt).toLocaleDateString("en-GB"):"",
+          totinvamtLc : item.totinvamtLc ? new Intl.NumberFormat('en-IN').format(item.totinvamtLc) : "0"
+          
+        })
+      );
+    } else {
+      throw new Error("MIS Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching MIS data:", error);
+    throw error;
+  }
+};
