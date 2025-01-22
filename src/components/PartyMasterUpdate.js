@@ -271,6 +271,9 @@ const PartyMasterUpdate = () => {
             description: 'The party information has been successfully updated.',
             duration: 3, // Time in seconds for the toast to stay visible
           });
+
+          startConfetti();
+          handleClear(); // Clear fo
             
         } else {
             alert("Failed to save user.");
@@ -289,9 +292,9 @@ const PartyMasterUpdate = () => {
 
 const handleButtonClick = (e) => {
   // Call both functions when the button is clicked
-  startConfetti();
+  
   handleSubmit(e);
-  handleClear(); // Clear fo
+  
   // window.location.reload()// Delay 1 second between emails
 
 };

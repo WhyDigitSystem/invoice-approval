@@ -19,7 +19,7 @@ const CNPreApproval = () => {
 
   const buttonRef = useRef(null); 
 
-  const [pbranchname, setPbranchName] = useState('');
+  const [branchname, setBranchName] = useState('');
   const [status, setStatus] = useState('idle');  
   const textRef = useRef(null);
   const iconRef = useRef(null);
@@ -28,7 +28,7 @@ const CNPreApproval = () => {
   const [docid, setDocid] = useState([]); 
   const [selectedProfoma, setSelectedProfoma] = useState('');
   const [profoms, setProfoms] = useState([]);
-
+  const [crRemarks,setCrRemarks] = useState([]);
   // Fire confetti when action is done
   const fireConfetti = (particleRatio, opts) => {
     confetti(
@@ -128,16 +128,17 @@ const CNPreApproval = () => {
   };
 
   const [formData, setFormData] = useState({
+    branchName:'',
     partyName: '',
     partyCode: '',
-    docid: '',
-    docdt: '',
-    vchno: '',
-    vchdt: '',
-    totinvamtLc: '',
+    profoma: '',
+    vchNo: '',
+    vchDt: '',
+    invAmt: '',
     ptype: '',
-    remarks: '',
+    reason: '',
     createdBy,
+    crRemarks :'',
   });
 
   // Handle input change
@@ -147,6 +148,18 @@ const CNPreApproval = () => {
       ...formData,
       [name]: value
     });
+  };
+
+  const handleBranchChange = (value) => {
+    setBranchName(value);  // Update branch name state
+  };
+  
+  const handlePtypeChange = (value) => {
+    setPtype(value);  // Update ptype state
+  };
+  
+  const handleCrRemarksChange = (value) => {
+    setCrRemarks(value);  // Update crRemarks state
   };
 
   // Fetch branch names
@@ -166,7 +179,7 @@ const CNPreApproval = () => {
   // Fetch data when branch name changes
   const fetchData = () => {
     setLoading(true);
-    getInvoices(createdBy, pbranchname)
+    getInvoices(createdBy, branchname)
       .then((response) => {
         console.log(response);  // Log to verify data structure
         setProfoms(response);
@@ -182,54 +195,88 @@ const CNPreApproval = () => {
   };
 
   useEffect(() => {
-    if (pbranchname) {
+    if (branchname) {
       fetchData();
     }
-  }, [createdBy, pbranchname]);
+  }, [createdBy, branchname]);
 
   // Handle Profoma selection change
   const handleProfomaChange = (value) => {
     setSelectedProfoma(value);
-    const selectedProfoma = profoms.find((inv) => inv.docid === value);
+    const selectedProfoma = profoms.find((inv) => inv.profoma === value);
 
     if (selectedProfoma) {
       setFormData({
-        ...formData,
+        ...formData, 
         partyCode: selectedProfoma.partyCode || '',
         partyName: selectedProfoma.partyName || '',
-        docdt: selectedProfoma.docdt || '',
-        vchno: selectedProfoma.vchno || '',
-        vchdt: selectedProfoma.vchdt||'',
-        ptype: selectedProfoma.ptype||'',
-        totinvamtLc: selectedProfoma.totinvamtLc||'',
-        remarks: selectedProfoma.remarks || '',
+        profoma: selectedProfoma.profoma || '',
+        vchNo: selectedProfoma.vchNo || '',
+        vchDt: selectedProfoma.vchDt||'',
+        invAmt: selectedProfoma.invAmt||'',
+        crAmt: selectedProfoma.invAmt||'',
       });
     }
   };
 
+  const formatDate = (date) => {
+    // Split the date in DD/MM/YYYY format
+    const dateParts = date.split("/");
+  
+    // Check if the date is valid (i.e., has 3 parts)
+    if (dateParts.length !== 3) {
+      console.error("Invalid date format:", date); // Log if the format is invalid
+      return ''; // Return an empty string if the format is invalid
+    }
+  
+    const day = dateParts[0];
+    const month = dateParts[1];
+    const year = dateParts[2];
+  
+    // Ensure day and month are two digits, add leading zero if necessary
+    const formattedDay = day.padStart(2, "0");
+    const formattedMonth = month.padStart(2, "0");
+  
+    // Return the date in YYYY-MM-DD format
+    return `${year}-${formattedMonth}-${formattedDay}`;
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.partyCode || !formData.docid || !formData.ptype || !formData.remarks) {
+    if (!formData.partyCode  ||!formData.profoma || !formData.reason || !formData.crAmt || !ptype|| !crRemarks) {
       alert("Please fill in all required fields.");
       return;
     }
 
+     // Format the vchDt field
+     
+     const formattedVchDt = formatDate(formData.vchDt);
+     
+
+  if (!formattedVchDt) {
+    alert("Please enter a valid date.");
+    return;
+  }
+
     const payload = {
+     branchName: branchname,
       partyCode: formData.partyCode,
       partyName: formData.partyName,
-      docid: formData.docid,
-      docdt: formData.docdt,
-      vchno: formData.vchno,
-      vchdt: formData.vchdt,
-      ptype: formData.ptype,
-      totinvamtLc : formData.totinvamtLc,
-      remarks: formData.remarks,
+      profoma: formData.profoma,
+      vchNo: formData.vchNo,
+      vchDt: formattedVchDt,
+      ptype: ptype,
+      invAmt : formData.invAmt,
+      crAmt : formData.crAmt,
+      reason: formData.reason,
       createdBy: localStorage.getItem("userName"),
+      crRemarks: crRemarks,
     };
 
     try {
-      const response = await axios.put(`${API_URL}/api/party/updateCreateParty`, payload);
+      const response = await axios.put(`${API_URL}/api/crpreapp/updateCRPreApp`, payload);
 
       if (response.status === 200 || response.status === 201) {
         notification.success({
@@ -237,6 +284,12 @@ const CNPreApproval = () => {
           description: 'The party information has been successfully updated.',
           duration: 3,
         });
+        startConfetti();
+    handleClear(); 
+        setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+
       } else {
         notification.error({
           message: 'Error',
@@ -250,26 +303,27 @@ const CNPreApproval = () => {
     }
   };
 
+
   const handleButtonClick = (e) => {
-    startConfetti();
+    
     handleSubmit(e);
-    handleClear(); 
+    
   };
 
   const handleClear = () => {
     setFormData({
+      branchName: "",
       partyCode: "",
       partyName: "",
-      docid: "",
-      docdt: "",
-      vchno: "",
-      vchdt: "",
-      totinvamtLc: "",
-      remarks: "",
+      profoma: "",
+      vchNo: "",
+      vchDt: "",
+      invAmt: "",
+      crAmt: "",
+      reason: "",
+      crRemarks:""
     });
-    setTimeout(() => {
-      window.location.reload();
-    }, 2000);
+  
   };
 
   return (
@@ -292,15 +346,15 @@ const CNPreApproval = () => {
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
       <label
         htmlFor="branch-select"
-        style={{ marginBottom: '8px',marginLeft: '-32px'  }}
+        style={{ marginBottom: '8px',marginLeft: '-92px'  }}
         className="label-customer"
       >
-        Branch Name
+        Branch Name <span style={{ color: 'red' }}>*</span> 
       </label>
       <Select
         id="branch-select"
-        value={pbranchname}
-        onChange={(value) => setPbranchName(value)}
+        value={branchname}
+        onChange={handleBranchChange}  // Correct handler
         style={{ marginBottom: '8px',marginLeft: '32px'  }}
         placeholder="Select Branch"
         
@@ -322,16 +376,16 @@ const CNPreApproval = () => {
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
       <label
         htmlFor="profoma-select"
-        style={{ marginBottom: '8px', marginLeft: '-40px' }}
+        style={{ marginBottom: '8px', marginLeft: '-230px' }}
         className="label-customer"
       >
-        Profoma
+        Profoma <span style={{ color: 'red' }}>*</span> 
       </label>
       <Select
         id="profoma-select"
         value={selectedProfoma}
         onChange={handleProfomaChange}
-        style={{ marginBottom: '8px', marginLeft: '40px' }}
+        style={{ marginBottom: '8px', marginLeft: '-20px' }}
         showSearch
         filterOption={(input, option) =>
           option.children.toLowerCase().includes(input.toLowerCase())
@@ -342,8 +396,8 @@ const CNPreApproval = () => {
         <Option value="">Select Profoma</Option>
         {profoms && profoms.length > 0 ? (
           profoms.map((inv) => (
-            <Option key={inv.docid} value={inv.docid}>
-              {inv.docid}
+            <Option key={inv.profoma} value={inv.profoma}>
+              {inv.profoma}
             </Option>
           ))
         ) : (
@@ -352,22 +406,59 @@ const CNPreApproval = () => {
       </Select>
     </div>
 
+    </div>
+    <div
+    style={{
+      display: 'flex',
+      flexDirection: 'row', // Changed to 'row' to display items side by side
+      justifyContent: 'space-between', // Add some space between the two
+      width: '80%' // Ensure the width is full for both elements
+    }}
+  >
+
     <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
-                <label htmlFor="type-select" style={{ marginBottom: '8px', marginLeft: '-30px' }}
+                <label htmlFor="type-select" style={{ marginBottom: '8px', marginLeft: '-70px' }}
         className="label-customer">
-                  Reversal
+                  Reversal <span style={{ color: 'red' }}>*</span> 
                 </label>
                 <Select
                   id="type-select"
                   value={ptype}
-                  onChange={(value) => setPtype(value)}
+                  onChange={handlePtypeChange}  // Correct handler
                   placeholder="Select Type"
-                  style={{ marginBottom: '8px', marginLeft: '40px' }}
+                  style={{ marginBottom: '8px', marginLeft: '30px' ,width:"230px"}}
         
                 >
                   <Option value="">Select Type</Option>
-                  <Option value="Full Reversal">Full</Option>
-                  <Option value="Pan India">Partial</Option>
+                  <Option value="Full">Full</Option>
+                  <Option value="Partial">Partial</Option>
+                </Select>
+              </div>
+
+
+              
+          <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+                <label htmlFor="crremarks-select" style={{ marginBottom: '8px', marginLeft: '-240px' }}
+        className="label-customer">
+                 Credit Remarks <span style={{ color: 'red' }}>*</span> 
+                </label>
+                <Select
+                  id="crremarks-select"
+                  value={crRemarks}
+                  onChange={handleCrRemarksChange}  // Correct handler
+                  style={{ marginBottom: '8px', marginLeft: '-80px' }}
+                  placeholder="Select Remarks"
+                >
+                  <Option value="Rate Mismatch - AIR">Rate Mismatch - AIR</Option>
+                  <Option value="Rate Mismatch - SEA">Rate Mismatch - SEA</Option>
+                  <Option value="THC - AIR">THC - AIR</Option>
+                  <Option value="THC - SEA">THC - SEA</Option>
+                  <Option value="Short Payment - AIR">Short Payment - AIR</Option>
+                  <Option value="Short Payment - SEA">Short Payment - SEA</Option>
+                  <Option value="Exchange Rate Issue">Exchange Rate Issue</Option>
+                  <Option value="Loading & Unloading">Loading & Unloading</Option>
+                  <Option value="Miscellaneous">Miscellaneous</Option>
+                  <Option value="Purchase Order">Purchase Order</Option>
                 </Select>
               </div>
   </div>
@@ -405,8 +496,8 @@ const CNPreApproval = () => {
           <div className="input-data">
             <input
               type="text"
-              name="vchno"
-              value={formData.vchno}
+              name="vchNo"
+              value={formData.vchNo}
               onChange={handleChange}
               required
               readOnly
@@ -420,8 +511,8 @@ const CNPreApproval = () => {
           <div className="input-data">
             <input
               type="text"
-              name="vchdt"
-              value={formData.vchdt}
+              name="vchDt"
+              value={formData.vchDt}
               onChange={handleChange}
               required
               readOnly
@@ -434,9 +525,9 @@ const CNPreApproval = () => {
     
           <div className="input-data">
             <input
-              type="text"
-              name="totinvamtLc"
-              value={formData.totinvamtLc}
+              type="number"
+              name="invAmt"
+              value={formData.invAmt}
               onChange={handleChange}
               required
               readOnly
@@ -446,22 +537,24 @@ const CNPreApproval = () => {
             style={{ width: "200px",marginBottom: '8px', marginLeft: '-72px' }}
             >Invoice Amt (INR)</label>
           </div>
+          </div>
 
-          
+        <div className="form-row">  
           <div className="input-data">
             <input
-              type="text"
-              name="totinvamtLc"
-              value={formData.totinvamtLc}
+              type="number"
+              name="crAmt"
+              value={formData.crAmt}
               onChange={handleChange}
               required
-              readOnly
-              style={{ width: "200px",marginBottom: '8px', marginLeft: '-72px' }}
+              style={{ width: "200px",marginBottom: '8px', marginLeft: '2px' }}
             />
             <label
-            style={{ width: "200px",marginBottom: '8px', marginLeft: '-72px' }}
-            >Reversal Amt (INR)</label>
+            style={{ width: "200px",marginBottom: '8px', marginLeft: '2px' }}
+            >Credit Note Amt (INR)<span style={{ color: 'red' }}>*</span> </label> 
           </div>
+
+          
         </div>
 
         
@@ -471,13 +564,13 @@ const CNPreApproval = () => {
           <div className="input-data">
             <input
               type="text"
-              name="remarks"
-              value={formData.remarks}
+              name="reason"
+              value={formData.reason}
               onChange={handleChange}
               required
               style={{ width: "700px" }}
             />
-            <label>Remarks</label>
+            <label>Reason <span style={{ color: 'red' }}>*</span> </label>
           </div>
         </div>
 

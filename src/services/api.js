@@ -67,6 +67,98 @@ export const getListingData = async () => {
   }
 };
 
+
+
+export const getCRListingData = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/crpreapp/getCRPendingDetails?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          profoma: item.profoma,
+          vchNo: item.vchNo,
+          reason: item.reason,
+          invAmt: item.invAmt,
+          vchDt: item.vchDt,
+          crRemarks: item.crRemarks,
+          partyCode: item.partyCode,
+          partyName: item.partyName,
+          pType: item.pType,
+          branchName: item.branchName,
+          id: item.gst_precreditId,
+          crAmt: item.crAmt,
+          dDays: item.dDays,
+          osbcd: item.osbcd,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0",
+          controllingOffice: item.controllingOffice,
+          salesPersonName: item.salesPersonName,
+          category: item.category,
+          totDue: item.totDue ? new Intl.NumberFormat('en-IN').format(item.totDue) : "0"
+          
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
+export const getCRDetailsApprove1 = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/crpreapp/getCRDetailsApprove1?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.approvedApprovalDetails1
+    ) {
+      return response.data.paramObjectsMap.approvedApprovalDetails1.map(
+        (item) => ({
+          profoma: item.profoma,
+          vchNo: item.vchNo,
+          reason: item.reason,
+          invAmt: item.invAmt,
+          vchDt: item.vchDt,
+          crRemarks: item.crRemarks,
+          partyCode: item.partyCode,
+          partyName: item.partyName,
+          pType: item.pType,
+          branchName: item.branchName,
+          gst_precreditId: item.gst_precreditId,
+          crAmt: item.crAmt,
+          dDays: item.dDays,
+          osbcd: item.osbcd,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0",
+          controllingOffice: item.controllingOffice,
+          salesPersonName: item.salesPersonName,
+          category: item.category,
+          totDue: item.totDue ? new Intl.NumberFormat('en-IN').format(item.totDue) : "0"
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
+
 export const getInvDetailsApprove1 = async () => {
   try {
     const response = await axios.get(
@@ -82,13 +174,13 @@ export const getInvDetailsApprove1 = async () => {
         (item) => ({
           expenceId: item.docId,
           name: item.partyName,
-          amount: item.totalInvAmtLc,
+          amount: item.totalInvAmtLc ? new Intl.NumberFormat('en-IN').format(item.totalInvAmtLc) : "0",
           currency: "INR", // Assuming it's always INR; adjust if needed.
           docId: item.docId,
           docDate: item.docDate,
           creditDays: item.creditDays,
-          creditLimit: item.creditLimit,
-          outStanding: item.outStanding,
+          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0",
+          outStanding: item.outStanding ? new Intl.NumberFormat('en-IN').format(item.outStanding) : "0",
           id: item.gstInvoiceHdrId,
           approved1on: item.approve1on,
           approved2on: item.approve2on,
@@ -99,7 +191,7 @@ export const getInvDetailsApprove1 = async () => {
           unApproveAmt: item.unApproveAmt,
           category: item.category,
           controllingOffice: item.controllingOffice,
-          osBeyond: item.osBeyond,
+          osBeyond: item.osBeyond ? new Intl.NumberFormat('en-IN').format(item.osBeyond) : "0",
           excessCredit: item.excessCredit,
           salespersonName: item.salespersonName    ,
           branchCode: item.branchCode        
@@ -135,21 +227,21 @@ export const getInvDetailsApprove2 = async () => {
           docId: item.docId,
           docDate: item.docDate,
           creditDays: item.creditDays,
-          creditLimit: item.creditLimit,
-          outStanding: item.outStanding,
+          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0", 
+          outStanding: item.outStanding ? new Intl.NumberFormat('en-IN').format(item.outStanding) : "0",
           id: item.gstInvoiceHdrId,
           approved1on: item.approve1on,
           approved2on: item.approve2on,
           approved3on: item.approve3on,
           eligiSlab: item.eligiSlab,
-          totalInvAmtLc: item.totalInvAmtLc,
+          totalInvAmtLc: item.totalInvAmtLc ? new Intl.NumberFormat('en-IN').format(item.totalInvAmtLc) : "0",
           slabRemarks: item.slabRemarks,
           exceedDays: item.exceedDays,
           unApproveAmt: item.unApproveAmt,
           category: item.category,
           controllingOffice: item.controllingOffice,
           osBeyond: item.osBeyond,
-          excessCredit: item.excessCredit,
+          excessCredit: item.excessCredit ? new Intl.NumberFormat('en-IN').format(item.excessCredit) : "0",
           salespersonName: item.salespersonName      
         })
       );
@@ -452,13 +544,12 @@ export const getInvoices = async (userName,branchCode) => {
     ) {
       return response.data.paramObjectsMap.invDetails.map(
         (item) => ({
-          docid : item.docid,
-          docdt : item.docdt ? new Date(item.docdt).toLocaleDateString("en-GB"):"",
+          profoma : item.docid,
           partyName : item.partyName,
           partyCode : item.partyCode,
-          vchno : item.vchno,
-          vchdt : item.docdt ? new Date(item.vchdt).toLocaleDateString("en-GB"):"",
-          totinvamtLc : item.totinvamtLc ? new Intl.NumberFormat('en-IN').format(item.totinvamtLc) : "0"
+          vchNo : item.vchno,
+          vchDt : item.docdt ? new Date(item.vchdt).toLocaleDateString("en-GB"):"",
+          invAmt : item.totinvamtLc 
           
         })
       );

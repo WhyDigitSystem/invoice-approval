@@ -39,6 +39,8 @@ const Sidebar = () => {
     { text: "Screen", icon: <ScreenShareIcon />, path: "/screen" },
     { text: "Listing", icon: <ListAltIcon />, path: "/listing" },
     { text: "Approved List", icon: <VerifiedIcon />, path: "/ApprovedList" },
+    { text: "CN Listing", icon: <ListAltIcon />, path: "/CRlisting" },
+    { text: "CN Approved List", icon: <VerifiedIcon />, path: "/CRApprovedList" },
     { text: "Approved2 List", icon: <VerifiedIcon />, path: "/Approved2List" },
     { text: "MIS", icon: <VerifiedIcon />, path: "/MIS" },
     { text: "Reports", icon: <BarChartIcon />, path: "/reports" },

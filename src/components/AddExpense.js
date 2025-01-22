@@ -1,51 +1,111 @@
-import React, { useEffect, useState , useRef  } from 'react';
-import { getAllCreditParties } from '../services/api';
-import { notification, Select, Spin } from 'antd'; // Import Select and Spin from Ant Design
-import { MenuItem, CircularProgress } from '@mui/material';
+import React, { useEffect, useState, useRef } from 'react';
+import { getAllCreditParties, getInvoices, getUserBranch } from '../services/api';
+import { notification, Select, Spin  } from 'antd'; // Impor
+import { DeleteOutlined,PlusOutlined,PlusCircleOutlined   } from '@ant-design/icons';
+// t Select and Spin from Ant Design
 import axios from "axios";
 import confetti from 'canvas-confetti'; 
 import gsap from 'gsap';
 import "./PartyMasterUpdate.css";
+import "./AddExpense.css";
 
 
-
-
+const { Option } = Select;
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
 const AddExpense = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [partyNames, setPartyNames] = useState([]);
-  const [selectedPartyName, setSelectedPartyName] = useState(''); // Default value is empty string
-  const createdBy=localStorage.getItem("userName");
-
+  const [selectedPartyName, setSelectedPartyName] = useState('');
+  const createdBy = localStorage.getItem("userName");
+  const [ptype,setPtype] = useState('');
 
   const buttonRef = useRef(null); 
 
-  
-  const [status, setStatus] = useState('idle');  // 'idle', 'loading', 'success'
+  const [branchname, setBranchName] = useState('');
+  const [status, setStatus] = useState('idle');  
   const textRef = useRef(null);
   const iconRef = useRef(null);
+  const [branchNames, setBranchNames] = useState([]); 
+  const [proforma, setProforma] = useState([]); 
+  const [docid, setDocid] = useState([]); 
+  const [selectedProfoma, setSelectedProfoma] = useState('');
+  const [profoms, setProfoms] = useState([]);
+  const [crRemarks,setCrRemarks] = useState([]);
+
+  const [expenses, setExpenses] = useState([]);
+    const [expenseName, setExpenseName] = useState('');
+    const [expenseAmount, setExpenseAmount] = useState('');
+    const [expenseCategory, setExpenseCategory] = useState('');
+    const [expenseDate, setExpenseDate] = useState('');
+    const [filterCategory, setFilterCategory] = useState('All');
+
+    const [empName,setEmpName] = localStorage.getItem("nickName");
+
+    const [userName,setUserName] = localStorage.getItem("userName");
+    const [attachments, setAttachments] = useState({});
+    const [previews, setPreviews] = useState({}); 
+    const [uploadedFiles, setUploadedFiles] = useState({});
+    
+    // For Branch and Profoma select (as per your example)
+    
+  
+    // Handle form submission to add expense
+    const handleAddExpense = (e) => {
+      e.preventDefault();
+  
+      if (!expenseName || !expenseAmount || !expenseCategory || !expenseDate) {
+        alert('Please fill all fields');
+        return;
+      }
+  
+      const newExpense = {
+        id: Date.now(),
+        name: expenseName,
+        amount: parseFloat(expenseAmount),
+        category: expenseCategory,
+        date: expenseDate,
+      };
+  
+      setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+  
+      // Reset form fields
+      setExpenseName('');
+      setExpenseAmount('');
+      setExpenseCategory('');
+      setExpenseDate('');
+    };
+  
+    // Handle deleting an expense
+    const handleDeleteExpense = (id) => {
+      setExpenses((prevExpenses) => prevExpenses.filter(expense => expense.id !== id));
+    };
+  
+    // Handle category filter change
+    // const handleFilterChange = (e) => {
+    //   setFilterCategory(e.target.value);
+    // };
   
 
-  const origin = useRef({
-    x: 0.5,
-    y: 0.5,
-  });
-
-  useEffect(() => {
-    // Capture the initial button center coordinates once the component is mounted
-    const rect = buttonRef.current.getBoundingClientRect();
-    const center = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
+    const handleFileChange = (e, expenseId) => {
+      const file = e.target.files[0]; // Get the selected file
+      if (file) {
+        setUploadedFiles((prev) => ({
+          ...prev,
+          [expenseId]: file, // Save the file object for the expense ID
+        }));
+        console.log(`File selected for expense ${expenseId}:`, file);
+      }
     };
-    origin.current = {
-      x: center.x / window.innerWidth,
-      y: center.y / window.innerHeight,
-    };
-  }, []);
-
+    // Filter expenses based on category
+    const filteredExpenses = filterCategory === 'All' 
+      ? expenses 
+      : expenses.filter(expense => expense.category === filterCategory);
+  
+    // Calculate total amount
+    const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0).toFixed(2);
+  // Fire confetti when action is done
   const fireConfetti = (particleRatio, opts) => {
     confetti(
       Object.assign({}, opts, {
@@ -82,14 +142,12 @@ const AddExpense = () => {
       fireConfetti(0.25, {
         spread: 26,
         startVelocity: 10,
-        origin: origin.current,
         colors: ['#757AE9', '#28224B', '#EBF4FF'],
       });
 
       fireConfetti(0.2, {
         spread: 60,
         startVelocity: 20,
-        origin: origin.current,
         colors: ['#757AE9', '#28224B', '#EBF4FF'],
       });
 
@@ -97,7 +155,6 @@ const AddExpense = () => {
         spread: 100,
         startVelocity: 15,
         decay: 0.91,
-        origin: origin.current,
         colors: ['#757AE9', '#28224B', '#EBF4FF'],
       });
 
@@ -105,14 +162,12 @@ const AddExpense = () => {
         spread: 120,
         startVelocity: 10,
         decay: 0.92,
-        origin: origin.current,
         colors: ['#757AE9', '#28224B', '#EBF4FF'],
       });
 
       fireConfetti(0.1, {
         spread: 120,
         startVelocity: 20,
-        origin: origin.current,
         colors: ['#757AE9', '#28224B', '#EBF4FF'],
       });
 
@@ -147,20 +202,18 @@ const AddExpense = () => {
       setStatus('idle');
     }, 2000);
   };
- 
-   
- 
+
   const [formData, setFormData] = useState({
-    partyName: '',
-    partyCode: '',
-    creditLimit: '',
-    creditDays: '',
-    ncreditLimit: '',
-    ncreditDays: '',
-    category: '',
-    salesPersonName:'',
-    controllingOffice:'',
-    createdBy
+    
+    expenses:'',
+    attachments:'',
+    expenseName:'',
+    expenseAmount:'',
+    expenseCategory:'',
+    expenseDate:'',
+    empCode:'',
+    empName:'',
+    createdBy:''
   });
 
   // Handle input change
@@ -172,323 +225,445 @@ const AddExpense = () => {
     });
   };
 
-  // Fetch party names from the API
-  useEffect(() => {
-    getAllCreditParties()
-      .then((response) => {
-        setData(response);
-        setPartyNames(response); // Assuming the response structure
-        setLoading(false);
-      })
-      .catch((error) => {
-        notification.error({
-          message: 'Data Fetch Error',
-          description: 'Failed to fetch data for the listing.',
-        });
-        setLoading(false);
-      });
-  }, []);
-
-  // Handle party name change in the dropdown
-  const handlePartyNameChange = (value) => {
-    setSelectedPartyName(value); // Set the selected party name
-
-    // Find the party details based on the selected party name
-    const selectedParty = partyNames.find((party) => party.partyName === value);
-
-    // If the selected party is found, update the form fields automatically
-    if (selectedParty) {
-      setFormData({
-        ...formData,
-        partyCode: selectedParty.partyCode || '',
-        creditLimit: selectedParty.creditLimit || '',
-        creditDays: selectedParty.creditDays || '',
-        category: selectedParty.category || '',
-        salesPersonName: selectedParty.salesPersonName || '',
-        controllingOffice: selectedParty.controllingOffice,
-        partyName: selectedParty.partyName,
-        createdBy: localStorage.getItem("userName")
-      });
+  const formatDate = (date) => {
+    // Split the date in DD/MM/YYYY format
+    const dateParts = date.split("/");
+  
+    // Check if the date is valid (i.e., has 3 parts)
+    if (dateParts.length !== 3) {
+      console.error("Invalid date format:", date); // Log if the format is invalid
+      return ''; // Return an empty string if the format is invalid
     }
+  
+    const day = dateParts[0];
+    const month = dateParts[1];
+    const year = dateParts[2];
+  
+    // Ensure day and month are two digits, add leading zero if necessary
+    const formattedDay = day.padStart(2, "0");
+    const formattedMonth = month.padStart(2, "0");
+  
+    // Return the date in YYYY-MM-DD format
+    return `${year}-${formattedMonth}-${formattedDay}`;
   };
+  
+  // Handle file input change (attachment)
+  // const handleFileChange = (e, expenseId) => {
+  //   const file = e.target.files[0]; // Get the selected file
+  //   console.log("Selected file:", file); // Log the file to check if it's selected
+  //   console.log("Expense ID:", expenseId); // Log the expense ID to confirm the correct expense
+  //   if (file) {
+  //     setAttachments((prevState) => ({
+  //       ...prevState,
+  //       [expenseId]: file, // Save the file for this specific expense
+  //     }));
+  //   }
+  // };
+  
 
-  const handleClear = () => {
-    setFormData({
-      partyName: "",
-      partyCode: "",
-      category: "",
-      controllingOffice: "",
-      salesPersonName: "",
-      creditDays: "",
-      creditLimit: "",
-      ncreditDays: "",
-      ncreditLimit: ""
-    });
+//   const handleFileChange = (e, expenseId) => {
+//     const file = e.target.files[0]; // Get the file selected by the user
+//     if (file) {
+//       const fileBlob = new Blob([file], { type: file.type }); // Create Blob from the file
+//       setAttachments((prevState) => ({
+//         ...prevState,
+//         [expenseId]: fileBlob, // Save the Blob for the specific expense ID
+//       }));
+//     }
+// };
 
-    setTimeout(() => {
-      window.location.reload(); // Reload the page
-    }, 2000); //
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
-
-    // Check if required fields are filled in
-    if (
-        !formData.partyCode ||
-        !formData.category 
-    ) {
-        alert("Please fill in all required fields.");
-        return;
-    }
-
-    // Prepare the payload for the POST request
-    const payload = {
-        partyCode: formData.partyCode,
-        partyName: formData.partyName,
-        category: formData.category,
-        creditLimit: formData.creditLimit,
-        creditDays: formData.creditDays,
-        ncreditLimit: formData.ncreditLimit,
-        ncreditDays: formData.ncreditDays,
-        createdBy: localStorage.getItem("userName"),
-        salesPerson: formData.salesPersonName
-    };
-
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  
+  //   // Create a new FormData object
+  //   const formData = new FormData();
+  
+  //   // Add the JSON data (expenses) as a JSON string
+  //   formData.append(
+  //     'expenses',
+  //     JSON.stringify(
+  //       expenses.map((expense) => {
+  //         const expensePayload = {
+  //           category: expense.category,
+  //           name: expense.name,
+  //           amount: expense.amount,
+  //           date: expense.date,
+  //           empCode: localStorage.getItem("userName"),
+  //           empName: localStorage.getItem("nickName"),
+  //           createdBy:localStorage.getItem("userName")
+  //         };
+  
+  //         // Add the attachment (file) if it exists
+  //         // if (attachments[expense.id]) {
+  //         //   formData.append(`attachment_${expense.id}`, attachments[expense.id]);
+  //         // }
+  //          // Add the attachment (Blob) if it exists
+  //          if (attachments[expense.id]) {
+  //           formData.append(`attachment_${expense.id}`, attachments[expense.id]);
+  //         }
+  
+  //         return expensePayload;
+  //       })
+  //     )
+  //   );
+  
+  //   // Manually log formData contents
+  //   for (let [key, value] of formData.entries()) {
+  //     console.log(key, value);
+  //   }
+  
+  //   try {
+  //     const response = await axios.put(`${API_URL}/api/expense/createEmpExpense`, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     });
+  
+  //     if (response.status === 200 || response.status === 201) {
+  //       notification.success({
+  //         message: 'Success',
+  //         description: 'The party information has been successfully updated.',
+  //         duration: 3,
+  //       });
+  //       startConfetti();
+  //       handleClear();
+  
+  //       setTimeout(() => {
+  //         window.location.reload();
+  //       }, 2000);
+  //     } else {
+  //       notification.error({
+  //         message: 'Error',
+  //         description: 'Failed to update the party information.',
+  //         duration: 3,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //     alert("An error occurred while saving.");
+  //   }
+  // };
+  
+  const handleSubmit = async () => {
     try {
-        // Make the POST request using axios
-        const response = await axios.put(`${API_URL}/api/party/updateCreateParty`, payload);
+      // Prepare master data and payload
+      const masterData = {
+        createdBy: localStorage.getItem("userName"),
+        empCode: localStorage.getItem("userName"),
+        empName: localStorage.getItem("nickName"),
+      };
 
-        // Check if the response is successful
-        if (response.status === 200 || response.status === 201) {
-            
+      const employeeExpensesAttachmentDTO = expenses.map((expense) => ({
+        category: expense.category,
+        expense: expense.name,
+        amount: expense.amount,
+        expDate: expense.date,
+      }));
 
-            // Show success toast message
-        notification.success({
-            message: 'Success',
-            description: 'The party information has been successfully updated.',
-            duration: 3, // Time in seconds for the toast to stay visible
-          });
-            
-        } else {
-            alert("Failed to save user.");
-            notification.error({
-                message: 'Error',
-                description: 'Failed to update the party information.',
-                duration: 3, // Time in seconds for the toast to stay visible
-              });
-        }
-    } catch (error) {
-        // Handle error during the request
-        console.error("Error saving user:", error);
-        alert("An error occurred while saving.");
-    }
-};
+      const fullPayload = {
+        ...masterData,
+        employeeExpensesAttachmentDTO,
+      };
 
-const handleButtonClick = (e) => {
-  // Call both functions when the button is clicked
-  startConfetti();
-  handleSubmit(e);
-  handleClear(); // Clear fo
-  // window.location.reload()// Delay 1 second between emails
+      // Submit the expenses to create them
+      const response = await axios.put(
+        `${API_URL}/api/expense/createEmpExpense`,
+        fullPayload
+      );
 
-};
+      if (
+        response.status === 200 ||
+        response.status === 201 &&
+        response.data.statusFlag === "Ok"
+      ) {
+        console.log("Expenses created successfully!");
 
+        const expenseAttachments =
+          response.data.paramObjectsMap.expenseVO.employeeExpensesAttachmentVO;
 
-  return (
-    <div className="container">
-      <div className="text">Pre Credit Note Approval</div>
-      <br />
-      <form onSubmit={handleSubmit}>
+        // // Ensure imageFiles is defined before proceeding
+        // if (!imageFiles) {
+        //   console.error("imageFiles object is not provided or is empty.");
+        //   return;
+        // }
+
+        // Iterate over the attachments and upload corresponding images
         
-        <div className="form-row">
-          {/* <div className="underline"></div> */}
-          <label className="label-customer" style={{ marginLeft: '22px', marginBottom: '-70px'
-           }}>
-    Tax Invoice No
-  </label>
-          </div>
+        for (const attachment of expenseAttachments) {
+          const expenseId = attachment.id; // Extract the ID
+          const imageFile = attachments[expenseId]; // Get the file for this expense ID
+          const file = uploadedFiles; 
+console.log("filelog",file);
+
+          if (!uploadedFiles) {
+            console.error("No file found for expense:", expenseId);
+            alert("Please upload a file before submitting.");
+            return;
+          }
           
-          <div className="form-row">
-        
-        <div className="input-data">
-        
-          <Select
-            showSearch // Enable search functionality
-            value={selectedPartyName || ''} // Set fallback value if selectedPartyName is null or undefined
-            onChange={handlePartyNameChange}
-            placeholder="Select a Party"
-            style={{ width: '110%' }} // Ensure the dropdown is wide enough
-            loading={loading}
-            notFoundContent={loading ? <Spin size="small" /> : 'No data available'}
-          > 
-            {partyNames.length > 0 ? (
-              partyNames.map((party) => (
-                <MenuItem key={party.mg_partyhdrid} value={party.partyName}>
-                  {party.partyName}
-                </MenuItem>
-              ))
-            ) : (
-              <Select.Option disabled>No party names available</Select.Option>
-            )}
-          </Select>
-          
-          
-           
-          </div>
 
-    
-          <div className="input-data">
-          <input
-              type="text"
-              name="partyCode"
-              value={formData.partyCode}
-              onChange={handleChange}
-              required
-              readOnly
-              style={{width:"250px"}}
-            />
-            {/* <div className="underline"></div> */}
-            <label>Party</label> 
-          </div>
-          
-          <div className="input-data">
-          <input
-              type="text"
-              name="partyCode"
-              value={formData.partyCode}
-              onChange={handleChange}
-              required
-              readOnly
-              style={{width:"100px"}}
-            />
-            {/* <div className="underline"></div> */}
-            <label>Code</label> 
-          </div>
-          
-          </div>
-
-        
-        {/* Other form fields */}
-
-        
-          
-          <div className="form-row">
-          <div className="input-data">
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              readOnly
-              style={{width:"200px"}}
-            />
-            {/* <div className="underline"></div> */}
-            <label>Invoice No</label>
-          </div>
-          </div>
-
-          <div className="form-row">
-          <div className="input-data">
-            <input
-              type="text"
-              name="category"
-              value={formData.salesPersonName}
-              onChange={handleChange}
-              required
-              readOnly
-              style={{width:"200px"}}
-            />
-            {/* <div className="underline"></div> */}
-            <label>Invoice Date</label>
-          </div> 
-        </div>
-
-        <div className="form-row">
-        <div className="input-data">
-            <input
-              type="text"
-              name="controllingOffice"
-              value={formData.controllingOffice}
-              onChange={handleChange}
-              required
-              readOnly
-              style={{width:"100px"}}
-            />
-            {/* <div className="underline"></div> */}
-            <label>Control Office</label>
-          </div>
-        </div>  
-        
-        {/* <br/> */}
-        
-
-        <div className="form-row">
-         
-          <div className="input-data">
-            <input
-              type="text"
-              name="remarks"
-              value={formData.ncreditDays}
-              onChange={handleChange}
-              required
-              style={{width:"700px"}}
-              
-              
-            />
-            {/* <div className="underline"></div> */}
-            <label>Remarks</label>
-          </div>
-        
-        </div>
-
-{/* 
-        <button 
-        ref={buttonRef}
-        onClick={startConfetti}
-        className={status} 
-        // id="button-conf"
-      >
-        <div id="icon" ref={iconRef} className="fa-solid fa-play"></div>
-        <span id="text" ref={textRef}></span>
-      </button> */}
-
-        <div className="form-row submit-btn">
-          <div className="input-data">
-            <div className="inner"></div>
-            <input type="submit" value="Submit" onClick={handleButtonClick} ref={buttonRef}></input> 
-          </div>
-        </div> 
-
-      
-        {/* <button data-confetti="10" class="button" onClick={handleSubmit}>Confirm</button> */}
-
-        
-
-
-        {/* <button class="button">
-    <div class="icon">
-        <div class="cannon"></div>
-        <div class="confetti">
-            <svg viewBox="0 0 18 16">
-                <polyline points="1 10 4 7 4 5 6 1" />
-                <path d="M4,13 C5.33333333,9 7,7 9,7 C11,7 12.3340042,6 13.0020125,4" />
-                <path d="M6,15 C7.83362334,13.6666667 9.83362334,12.6666667 12,12 C14.1663767,11.3333333 15.8330433,9.66666667 17,7" />
-            </svg>
-            <i></i><i></i><i></i><i></i><i></i><i></i>
-            <div class="emitter"></div>
-            <button data-confetti="10">big</button>
-        </div>
-    </div>
-    <span>Confirm</span>
-</button> */}
-
-
+          if (uploadedFiles) {
+            const formData = new FormData();
+  formData.append("files", uploadedFiles); // Append the file object
+  formData.append("expenseId", expenseId); // Append the expense ID
  
 
 
+            try {
+              const uploadResponse = await axios.put(
+                `${API_URL}/api/expense/uploadimage`,
+                formData
+              );
+
+              if (uploadResponse.status === 200) {
+                console.log(`Image uploaded successfully for ID: ${expenseId}`);
+              } else {
+                console.log(`Failed to upload image for ID: ${expenseId}`);
+              }
+            } catch (error) {
+              console.error(
+                `Error uploading image for expense ID: ${expenseId}`,
+                error
+              );
+            }
+          } else {
+            console.log(`No image found for expense ID: ${expenseId}`);
+          }
+        }
+      } else {
+        console.log("Failed to create expenses.");
+      }
+    } catch (error) {
+      console.error("Error submitting expenses:", error);
+    }
+  };
+  
+
+
+
+  const handleButtonClick = (e) => {
+    
+    handleSubmit(e);
+    
+  };
+
+  const handleCategoryChange = (value) => {
+    setExpenseCategory(value);
+  };
+
+  // Clear all form fields
+  const handleClear = () => {
+    setExpenses([]);
+    setAttachments({});
+    setExpenseName('');
+    setExpenseAmount('');
+    setExpenseCategory('');
+    setExpenseDate('');
+  };
+  
+
+  return (
+    <div className="container">
+      <div className="text">Expense Claim Form</div>
+      <br />
+      <form onSubmit={handleAddExpense}>
+      
+    
+
+      <div
+    style={{
+      display: 'flex',
+      flexDirection: 'row', // Changed to 'row' to display items side by side
+      justifyContent: 'space-between', // Add some space between the two
+      width: '80%' // Ensure the width is full for both elements
+    }}
+  >
+ 
+
+ 
+    </div>
+    <div
+    style={{
+      display: 'flex',
+      flexDirection: 'row', // Changed to 'row' to display items side by side
+      justifyContent: 'space-between', // Add some space between the two
+      width: '80%' // Ensure the width is full for both elements
+    }}
+  >
+
+    
+  </div>
+
+          <div className="form-row">
+
+          <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+          <label
+        htmlFor="type-select"
+        style={{ marginBottom: '8px', marginLeft: '-30px', marginTop:"-20px" }}
+        className="label-customer"
+      >
+        Category <span style={{ color: 'red' }}>*</span>
+      </label>
+      <Select
+        value={expenseCategory}
+        onChange={handleCategoryChange}
+        style={{ marginBottom: '8px', marginLeft: '30px', width: "160px" }}
+      >
+        <Select.Option value="" disabled>Select Category</Select.Option>
+        <Select.Option value="Food">Food</Select.Option>
+        <Select.Option value="Transport">Transport</Select.Option>
+        <Select.Option value="Entertainment">Entertainment</Select.Option>
+        <Select.Option value="Other">Other</Select.Option>
+      </Select>
+    </div>
+
+              
+
+          <div className="input-data">
+            <input
+              type="text"
+              value={expenseName}
+          onChange={(e) => setExpenseName(e.target.value)}
+              required
+              style={{ width: "150px" }}
+            />
+            <label
+            style={{ marginBottom: '8px', marginLeft: '-10px', marginTop:"-20px" }}
+            >Particulars</label>
+          </div>
+
+          <div className="input-data">
+            <input
+            type="date"
+              value={expenseDate}
+              onChange={(e) => setExpenseDate(e.target.value)}
+              required 
+              style={{ marginBottom: '8px', marginLeft: '-12px',width:"170px" ,width: "150px"}}
+            />
+            <label
+            style={{ marginBottom: '8px', marginLeft: '-12px' }}
+            >Date</label>
+          </div>
+       
+          
+          <div className="input-data">
+            <input
+              type="number"
+              value={expenseAmount}
+          onChange={(e) => setExpenseAmount(e.target.value)}
+              required
+              style={{ width: "120px",marginBottom: '8px', marginLeft: '2px' }}
+            />
+            <label
+            style={{ width: "200px",marginBottom: '8px', marginLeft: '2px' }}
+            >Expense Amt<span style={{ color: 'red' }}>*</span> </label> 
+          </div>
+
+          
+          
+             
+        <button
+          type="submit"
+          onClick={handleAddExpense}
+          ref={buttonRef}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'black',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            marginTop: '-22px',
+            marginLeft: '-22px'
+          }}
+        >
+          {/* <PlusOutlined style={{ fontSize: '24px', marginRight: '12px' }} /> */}
+
+          <PlusCircleOutlined style={{ fontSize: '24px', marginRight: '12px' }} />
+          
+        </button>
+        </div>
+
+        
+        
+
+
+        <div className="form-row submit-btn" style={{width:"400px" , marginLeft:"10px",height: "10px" }}>
+          <div className="input-data" >
+            <div className="inner"></div>
+            <input type="submit" value="Submit" 
+            style={{ padding: "8px 15px", height: "30px", fontSize: "14px" }}
+            onClick={handleButtonClick} ref={buttonRef}>
+               
+              </input> 
+          </div>
+        </div>
+       
+
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      {/* Expense Table */}
+      <div className="expense-table">
+      <table style={{ width: '100%', tableLayout: 'fixed' }}>
+          <thead>
+            <tr>
+            <th style={{ width: '100px' }}>Action</th> {/* Fixed width for Action */}
+              <th>Category</th>
+              <th>Particulars</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Upload file</th>
+              <th>File Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredExpenses.length > 0 ? (
+              filteredExpenses.map((expense) => (
+                <tr key={expense.id}>
+                  <td>
+                    <button
+                onClick={() => handleDeleteExpense(expense.id)}
+                className="delete-btn"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ff4d4f',
+                  cursor: 'pointer',
+                  height: "50px"
+                }}
+              >
+                <DeleteOutlined style={{ fontSize: '24px' }}/> {/* Delete icon */}
+              </button>
+                  </td>
+                  <td>{expense.category}</td>
+                  <td>{expense.name}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{expense.date}</td> {/* Prevent date folding */}
+                  <td>{expense.amount.toFixed(2)}</td>
+                  <td>
+              <input
+                type="file"
+                onChange={(e) => handleFileChange(e, expense.id)}
+              />
+            </td>
+            <td>
+              
+            </td>
+                  
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center' }}>No expenses found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        {/* Total Amount */}
+        <div className="total-amount">
+          <strong>Total:</strong> {totalAmount}
+        </div>
+      </div>
+    </div>
       </form>
     </div>
   );
