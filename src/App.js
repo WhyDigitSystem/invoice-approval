@@ -18,6 +18,8 @@ import AddExpense from "./components/AddExpense";
 import CNPreApproval from "./components/CNPreApproval";
 import CRListingPage from "./components/CRListingPage";
 import CRApprovedList from "./components/CRApprovedList";
+import ExpenseList from "./components/ExpenseList";
+import ViewExpense from "./components/ViewExpense";
 
 function App() {
   return (
@@ -42,6 +44,9 @@ function App() {
           <Route path="CNPreApproval" element={<CNPreApproval/>} />
           <Route path="CRlisting" element={<CRListingPage />} />
           <Route path="CRApprovedList" element={<CRApprovedList />}/>
+          <Route path="ExpenseList"  element={<ExpenseList />}/>
+          <Route path="ViewExpense" element={<ViewExpense/>}/>
+  
           
         </Route>
       </Routes>

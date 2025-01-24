@@ -120,6 +120,13 @@ const CommonTable = ({ columns, data }) => {
           {/* Pagination Controls */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button
+              onClick={() => handlePageChange(0)} // Jump to the first page
+              disabled={pagination.pageIndex === 0}
+              sx={{ marginRight: 2 }}
+            >
+              First
+            </Button>
+            <Button
               onClick={() => handlePageChange(pagination.pageIndex - 1)}
               disabled={pagination.pageIndex === 0}
               sx={{ marginRight: 2 }}
@@ -134,8 +141,16 @@ const CommonTable = ({ columns, data }) => {
             <Button
               onClick={() => handlePageChange(pagination.pageIndex + 1)}
               disabled={pagination.pageIndex === table.getPageCount() - 1}
+              sx={{ marginLeft: 2 }}
             >
               Next
+            </Button>
+            <Button
+              onClick={() => handlePageChange(table.getPageCount() - 1)} // Jump to the last page
+              disabled={pagination.pageIndex === table.getPageCount() - 1}
+              sx={{ marginLeft: 2 }}
+            >
+              Last
             </Button>
           </Box>
 
@@ -143,7 +158,6 @@ const CommonTable = ({ columns, data }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="body1">Rows per page:</Typography>
             <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
-              
               <Select
                 value={pagination.pageSize}
                 onChange={(e) => handlePageSizeChange(e.target.value)}

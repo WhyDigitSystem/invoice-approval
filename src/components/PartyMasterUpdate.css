@@ -453,3 +453,9 @@ button.success {
   from { width:120px; }
   50% { width:205px; }
   to { width:170px; }  }
+
+  .clickable-link {
+    color: blue;
+    cursor: pointer;
+    text-decoration: none; /* Optionally remove underline */
+  }

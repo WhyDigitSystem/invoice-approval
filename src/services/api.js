@@ -561,3 +561,33 @@ export const getInvoices = async (userName,branchCode) => {
     throw error;
   }
 };
+
+
+export const getAllExpense = async () => {
+  try {
+    const response = await axios.get(
+     `${API_URL}/api/expense/getAllExpense`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.employeeExpensesVO
+    ) {
+      return response.data.paramObjectsMap.employeeExpensesVO.map(
+        (item) => ({
+          createdBy : item.createdBy,
+          empCode : item.empCode,
+          partyCode : item.partyCode,
+          empName : item.empName,
+          totamt : item.totamt ,
+          id:item.id
+          
+        })
+      );
+    } else {
+      throw new Error("Expense Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Expense data:", error);
+    throw error;
+  }
+};
