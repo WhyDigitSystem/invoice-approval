@@ -7,8 +7,11 @@ import { useNavigate } from "react-router-dom";
 import logoonly from "../logoonly.png";
 import Loader from "../utils/Loader";
 import { encryptPassword } from "../utils/passEnc";
-import "./logintest1.css";
-import "./style.css";
+import Gallery from "./Gallery";
+// import "./logintest1.css";
+import UWLNL from "../UWLNL.jpg";
+// import "./style.css";
+import "./LoginPage.css"; // 
 
 const { Text } = Typography;
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
@@ -114,6 +117,15 @@ const LoginPage = () => {
         setSuccess(
           response.data.paramObjectsMap?.message || "Successfully logged in"
         );
+
+        const userData = response.data.paramObjectsMap?.userVO;
+        const screens = response.data.paramObjectsMap?.userVO.roleVO[0].responsibilityVO[0].screensVO;
+  
+        // Store user data and screens in localStorage
+        localStorage.setItem("userData", JSON.stringify(userData));
+        localStorage.setItem("screens", JSON.stringify(screens));  // Store screen list
+  
+        localStorage.setItem("authToken", userData?.token);
 
         const token = response.data.paramObjectsMap?.userVO?.token;
         localStorage.setItem("authToken", token);
@@ -258,239 +270,169 @@ const LoginPage = () => {
   };
 
   return (
-    <>
-      {/* <body>
-      <ul>
-
-      <li>U</li>
-      <li>N</li>
-      <li>I</li>
-      <li>W</li>
-      <li>O</li>
-      <li>R</li>
-      <li>L</li>
-      <li>D</li>
-    </ul>
-    </body> */}
-
-      {/* <FireworksAnimation/> */}
-
+  
+<div className="container" style={{marginTop:"1px"}}>
+       
+    <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "85vh",
+      marginTop:"-20px",
+      // fontFamily: "Arial, sans-serif",
+      background: "#fff", // Ensure background is light
+      gap:"30px"
+      // background:"#cd995f"
+    }}
+  >
+    {(error || success) && (
       <div
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "95vh",
-          // fontFamily: "Arial, sans-serif",
-          background: "#fff", // Ensure background is light
-          // background:"#cd995f"
+          position: "absolute",
+          top: 30,
+          width: "100%",
+          maxWidth: "400px",
         }}
       >
-        {(error || success) && (
-          <div
-            style={{
-              position: "absolute",
-              top: 30,
-              width: "100%",
-              maxWidth: "400px",
-            }}
-          >
-            {error && <Alert message={error} type="error" showIcon />}
-            {success && <Alert message={success} type="success" showIcon />}
-          </div>
-        )}
-
-        {/* <div> */}
-        {/* <img class="fog__img i1" src="https://i.postimg.cc/6624SnRw/fog-bl.png" width="50"  height="50" alt=""/> */}
-        {/* <img class="fog__img i2"  src="https://i.postimg.cc/6624SnRw/fog-bl.png" width="50"  height="50"alt=""/> */}
-        {/* <img class="fog__img i3" src="https://i.postimg.cc/6624SnRw/fog-bl.png" width="50"  height="50" alt=""/> */}
-        {/* <img class="fog__img i4"   src="https://i.postimg.cc/6624SnRw/fog-bl.png"  width="50"  height="50"alt=""/> */}
-        {/* </div> */}
-
-        {/* <div className="circular-text" style={{font : "Arial"}}>
-    <div className="animated-arc">
-        <p className="arc-text" style={{ "--i": 1 }}>
-          "- Yesterday, all my troubles seemed so far away, But now it looks as ..""
-        </p>
+        {error && <Alert message={error} type="error" showIcon />}
+        {success && <Alert message={success} type="success" showIcon />}
       </div>
-      <div className="animated-arc">
-        <p className="arc-text" style={{ "--i": 2 }}>
-          &gt; though they're here to stay, Oh I
-        </p>
+    )}
+
+   
+
+    <div >
+      {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
+
+      {/* <img src={butterfly}></img> */}
+
+      {/* <br/> */}
+
+      {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
+        <img src={UWLNL} width="450" style={{marginTop:"90px"}}></img>
+<br/>
+        {/* Uniworld <br /> <br/>
+        Logistics <br /> */}
+        <br />
+        {/* <Gallery /> */}
+
+      {/* </h1> */}
+    </div>
+        
+
+  
+      {/* <br/> */}
+      {/* <p >Expense Claim List</p> */}
+
+
+
+      <div className="ticketList" style={{marginTop:"50px"}}> 
+           <div class="card">
+       <div class="face face1" style={{background:"#2f3271"}}>
+         <div class="content" >
+         <p style={{color:"white"}}>Welcome To UGS Portal</p>
+         </div>
+       </div>
+       <div class="face face2">
+         <div class="content">
+           <p>
+
+            <Space direction="vertical" style={{ width: "100%", padding: "1px" }}>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            textAlign: "center",
+                            marginBottom: "12px",
+                            color: cardStyle.color,
+                          }}
+                        >
+                          Enter Username
+                        </Text>
+                        <Input
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Username"
+                          style={{
+                            padding: "4px",
+                            fontSize: 16,
+                            borderRadius: 8,
+                            ...inputStyle,
+                            marginBottom: "15px",
+                          }}
+                        />
+            
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            textAlign: "center",
+                            marginBottom: "15px",
+                            color: cardStyle.color,
+                          }}
+                        >
+                          Enter 6-Digit Passcode
+                        </Text>
+                        <Space size="middle" style={{ justifyContent: "center" }}>
+                          {passcode.map((digit, index) => (
+                            <Input
+                              key={index}
+                              id={`otp-${index}`}
+                              value={digit}
+                              maxLength={1}
+                              onChange={(e) => handleChange(e.target.value, index)}
+                              onKeyDown={(e) => handleKeyDown(e, index)}
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                textAlign: "center",
+                                fontSize: "14px",
+                                borderRadius: "8px",
+                                ...inputStyle,
+                              }}
+                            />
+                          ))}
+                        </Space>
+            
+                        {/* <Button
+                        type="primary"
+                        size="large"
+                        block
+                        loading={loading}
+                        onClick={handleSubmit}
+                        style={{
+                          backgroundColor: "#4c6ef5",
+                          borderColor: "#4c6ef5",
+                          marginTop: "20px",
+                          borderRadius: "8px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Login
+                      </Button> */}
+            
+                        {/* Dark Mode Toggle */}
+                        {/* <Button
+                          type="text"
+                          icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
+                          onClick={toggleTheme}
+                          size="small"
+                          style={{ marginLeft: "10px" }}
+                        >
+                          {theme === "light" ? "Dark Mode" : "Light Mode"}
+                        </Button> */}
+                      </Space>
+           </p>
+           
+         </div>
+       </div>
+    </div>
+          
       </div>
-      <div className="animated-arc">
-        <p className="arc-text" style={{ "--i": 3 }}>
-          &gt; believe in yesterday
-        </p>
-      </div>
-</div> */}
-
-        <div className="img">
-          {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
-
-          {/* <img src={butterfly}></img> */}
-
-          {/* <br/> */}
-
-          <h2 style={{ ...baseStyle, ...elegantShadowStyle }}>
-            <img src={logoonly} width="150"></img>
-            Uniworld <br />
-            Logistics <br />
-            <br />
-            {/* <span>Happy</span> <br/>
-  <span>New Year 2025</span> */}
-          </h2>
-        </div>
-
-        {/* <div class="hero-students">
-  <div>
-  <h1>
-    <span data-text="Hi">Hi</span><br/>
-    <span data-text="Welcome!">Welcome!</span>
-  </h1>
     
-  </div>
-</div> */}
-
-        <Card
-          title={
-            <Text
-              strong
-              style={{
-                // fontSize: 20,
-                // textAlign: "center",
-                color: cardStyle.color,
-              }}
-            >
-              {/* <h1>Uniworld<br/><span style={{background:"white"}}>Welcome!!!</span></h1>         */}
-              {/* <h1>Welcome To<br/><span style={{background:"white"}}>UGS</span></h1>         */}
-              {/* style={{ ...baseStyle, ...elegantShadowStyle }}>Welcome To <br/> UGS */}
-              {/* Welcome!!!  */}
-
-              <h3
-                style={{
-                  ...retroshadowStyle,
-
-                  // margin: 'auto',
-                  // fontsize: '50px',
-                  // textShadow: `
-                  // 0px 3px 0px #ffdd40,
-                  // 0px 14px 10px rgba(0, 0, 0, 0.15),
-                  // 0px 24px 2px rgba(0, 0, 0, 0.1),
-                  // 0px 24px 30px rgba(0, 0, 0, 0.1)`
-                }}
-              >
-                {" "}
-              </h3>
-
-              <div className="square">
-                <p className="square__text">
-                  {/* <span class="square__text__gradient"> */}
-                  Welcome To UGS Portal
-                  {/* </span> */}
-                </p>
-              </div>
-            </Text>
-          }
-          style={{
-            borderRadius: 12,
-            padding: "1px",
-            width: "100%",
-            maxWidth: 300,
-            maxHeight: 320,
-            backgroundColor: cardStyle.backgroundColor,
-            borderColor: cardStyle.borderColor,
-            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          {/* <img src={logo} alt="Logo" className="logo" /> */}
-          <Space direction="vertical" style={{ width: "100%", padding: "1px" }}>
-            <Text
-              style={{
-                fontSize: 16,
-                textAlign: "center",
-                marginBottom: "12px",
-                color: cardStyle.color,
-              }}
-            >
-              Enter Username
-            </Text>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              style={{
-                padding: "4px",
-                fontSize: 16,
-                borderRadius: 8,
-                ...inputStyle,
-                marginBottom: "15px",
-              }}
-            />
-
-            <Text
-              style={{
-                fontSize: 16,
-                textAlign: "center",
-                marginBottom: "15px",
-                color: cardStyle.color,
-              }}
-            >
-              Enter 6-Digit Passcode
-            </Text>
-            <Space size="middle" style={{ justifyContent: "center" }}>
-              {passcode.map((digit, index) => (
-                <Input
-                  key={index}
-                  id={`otp-${index}`}
-                  value={digit}
-                  maxLength={1}
-                  onChange={(e) => handleChange(e.target.value, index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    borderRadius: "8px",
-                    ...inputStyle,
-                  }}
-                />
-              ))}
-            </Space>
-
-            {/* <Button
-            type="primary"
-            size="large"
-            block
-            loading={loading}
-            onClick={handleSubmit}
-            style={{
-              backgroundColor: "#4c6ef5",
-              borderColor: "#4c6ef5",
-              marginTop: "20px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-            }}
-          >
-            Login
-          </Button> */}
-
-            {/* Dark Mode Toggle */}
-            <Button
-              type="text"
-              icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
-              onClick={toggleTheme}
-              size="small"
-              style={{ marginLeft: "10px" }}
-            >
-              {theme === "light" ? "Dark Mode" : "Light Mode"}
-            </Button>
-          </Space>
-          {loading && <Loader />}
-        </Card>
       </div>
-    </>
+      </div>
+      
+        
   );
 };
 

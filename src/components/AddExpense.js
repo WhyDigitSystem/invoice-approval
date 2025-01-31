@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getAllCreditParties, getInvoices, getUserBranch } from '../services/api';
 import { notification, Select, Spin  } from 'antd'; // Impor
 import { DeleteOutlined,PlusOutlined,PlusCircleOutlined   } from '@ant-design/icons';
-// t Select and Spin from Ant Design
 import axios from "axios";
 import confetti from 'canvas-confetti'; 
 import gsap from 'gsap';
 import "./PartyMasterUpdate.css";
 import "./AddExpense.css";
 import Nobills from "../Nobills.jpg"
+import rewindbutton from '.././rewindbutton.png';
 
 
 const { Option } = Select;
@@ -24,7 +24,9 @@ const AddExpense = () => {
 
   const buttonRef = useRef(null); 
 
-  const [branchname, setBranchName] = useState('');
+  const [branchName, setBranchName] = useState('');
+  const [fbranchName, setFBranchName] = useState('');
+  const [tbranchName, setTBranchName] = useState('');
   const [status, setStatus] = useState('idle');  
   const textRef = useRef(null);
   const iconRef = useRef(null);
@@ -50,39 +52,12 @@ const AddExpense = () => {
     const [uploadedFiles, setUploadedFiles] = useState({});
     const defaultImagePath = "src/Nobills.jpg"; 
     const [filePreviews,setFilePreviews] =  useState({});
-    // For Branch and Profoma select (as per your example)
-    
-  
-    // // Handle form submission to add expense
-    // const handleAddExpense = (e) => {
-    //   e.preventDefault();
-  
-    //   if (!expenseName || !expenseAmount || !expenseCategory || !expenseDate) {
-    //     alert('Please fill all fields');
-    //     return;
-    //   }
-  
-    //   const newExpense = {
-    //     id: Date.now(),
-    //     name: expenseName,
-    //     amount: parseFloat(expenseAmount),
-    //     category: expenseCategory,
-    //     date: expenseDate,
-    //   };
-  
-    //   setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-  
-    //   // Reset form fields
-    //   setExpenseName('');
-    //   setExpenseAmount('');
-    //   setExpenseCategory('');
-    //   setExpenseDate('');
-    // };
+
   
     const handleAddExpense = (e) => {
       e.preventDefault();
     
-      if (!expenseName || !expenseAmount || !expenseCategory || !expenseDate) {
+      if (!fbranchName || !tbranchName ) {
         alert('Please fill all fields');
         return;
       }
@@ -122,113 +97,18 @@ const AddExpense = () => {
       setExpenses((prevExpenses) => prevExpenses.filter(expense => expense.id !== id));
     };
   
-    // Handle category filter change
-    // const handleFilterChange = (e) => {
-    //   setFilterCategory(e.target.value);
-    // };
-  
-
-    // const handleFileChange = (e, expenseId) => {
-    //   const file = e.target.files[0]; // Get the selected file
-    //   console.log("File selected for expenseId:", expenseId, file);
-    //   if (file) {
-    //     setUploadedFiles((prevState) => ({
-    //       ...prevState,
-    //        file, // Store the file for the specific expense ID
-    //     }));
-    //     console.log("uploadedFiles",uploadedFiles);
-    //   }
-    // };
-
-    // const handleFileChange = (e, expenseId) => {
-    //   const files = e.target.files; // Get the selected files
-    //   console.log("Files selected for expenseId:", expenseId, files);
-    
-    //   if (files.length > 0) {
-    //     setUploadedFiles((prevState) => {
-    //       // If no files are present for this expenseId, initialize it as an empty array
-    //       const existingFiles = prevState[expenseId] || [];
-          
-    //       // Append the new files to the existing files array for the expenseId
-    //       return {
-    //         ...prevState,
-    //         [expenseId]: [...existingFiles, ...Array.from(files)],
-    //       };
-    //     });
-    
-    //     console.log("uploadedFiles", uploadedFiles);
-    //   }
-    // };
-
-
-    // const handleFileChange = (e, expenseId) => {
-    //   const files = e.target.files; // Get the selected files
-    //   console.log("Files selected for expenseId:", expenseId, files);
-    
-    //   if (files.length > 0) {
-    //     setUploadedFiles((prevState) => {
-    //       // If no files are present for this expenseId, initialize it as an empty array
-    //       const existingFiles = prevState[expenseId] || [];
-    
-    //       // Append the new files to the existing files array for the expenseId
-    //       const newState = {
-    //         ...prevState,
-    //         [expenseId]: [...existingFiles, ...Array.from(files)],
-    //       };
-    
-    //       console.log("Updated uploadedFiles state:", newState);  // Debug: check state after update
-    
-    //       return newState;
-    //     });
-    //   }
-    // };
-    
-
-
-
-
-    
-
-// Example of setting the state initially (can be done once when the page loads)
-
-
-
-// Ensure all rows have either uploaded files or the default imag
-
-// Helper function to prepare image payload (making sure default image is included when no file is uploaded)
-// const prepareImagePayload = () => {
-//   return expenses.map((expense) => {
-//     // Check if files exist in state for the current expense
-//     const files = filePreviews[expense.id] && filePreviews[expense.id].length > 0
-//       ? filePreviews[expense.id]  // If files exist in the state, use them
-//       : [new File([defaultImagePath], 'Nobills.jpg', { type: 'image/jpeg' })]; // If no files uploaded, use default image
-
-//     return {
-//       expenseId: expense.id,
-//       files,
-//     };
-//   });
-// };
-
-// Helper function to prepare image payload (making sure default image is included when no file is uploaded)
-// const handleFileChange = (e, expenseId) => {
-//   const files = e.target.files;
-//   console.log("Files selected for expenseId:", expenseId, files);
-
-//   if (files.length > 0) {
-//     setUploadedFiles((prevState) => {
-//       const existingFiles = prevState[expenseId] || [];
-//       const newFiles = [...existingFiles, ...Array.from(files)];
-
-//       console.log("Updated files for expenseId:", expenseId, newFiles);  // Debugging here
-
-//       return {
-//         ...prevState,
-//         [expenseId]: newFiles,
-//       };
-//     });
-//   }
-// };
+    useEffect(() => {
+        getUserBranch()
+          .then((response) => {
+            setBranchNames(response); // Assuming the API returns a list of branch objects
+          })
+          .catch((error) => {
+            notification.error({
+              message: "Failed to fetch Branches",
+              description: "Error occurred while fetching branch names.",
+            });
+          });
+      }, []);
 
 const handleFileChange = (e, expenseId) => {
   const files = e.target.files; // Get the selected files
@@ -284,6 +164,8 @@ useEffect(() => {
   
     // Calculate total amount
     const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0).toFixed(2);
+
+
   // Fire confetti when action is done
   const fireConfetti = (particleRatio, opts) => {
     confetti(
@@ -428,273 +310,64 @@ useEffect(() => {
     return `${year}-${formattedMonth}-${formattedDay}`;
   };
   
-  // Handle file input change (attachment)
-  // const handleFileChange = (e, expenseId) => {
-  //   const file = e.target.files[0]; // Get the selected file
-  //   console.log("Selected file:", file); // Log the file to check if it's selected
-  //   console.log("Expense ID:", expenseId); // Log the expense ID to confirm the correct expense
-  //   if (file) {
-  //     setAttachments((prevState) => ({
-  //       ...prevState,
-  //       [expenseId]: file, // Save the file for this specific expense
-  //     }));
-  //   }
-  // };
-  
 
-//   const handleFileChange = (e, expenseId) => {
-//     const file = e.target.files[0]; // Get the file selected by the user
-//     if (file) {
-//       const fileBlob = new Blob([file], { type: file.type }); // Create Blob from the file
-//       setAttachments((prevState) => ({
-//         ...prevState,
-//         [expenseId]: fileBlob, // Save the Blob for the specific expense ID
-//       }));
-//     }
-// };
+  const handleCelebrate = () => {
+    // Trigger confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  
-  //   // Create a new FormData object
-  //   const formData = new FormData();
-  
-  //   // Add the JSON data (expenses) as a JSON string
-  //   formData.append(
-  //     'expenses',
-  //     JSON.stringify(
-  //       expenses.map((expense) => {
-  //         const expensePayload = {
-  //           category: expense.category,
-  //           name: expense.name,
-  //           amount: expense.amount,
-  //           date: expense.date,
-  //           empCode: localStorage.getItem("userName"),
-  //           empName: localStorage.getItem("nickName"),
-  //           createdBy:localStorage.getItem("userName")
-  //         };
-  
-  //         // Add the attachment (file) if it exists
-  //         // if (attachments[expense.id]) {
-  //         //   formData.append(`attachment_${expense.id}`, attachments[expense.id]);
-  //         // }
-  //          // Add the attachment (Blob) if it exists
-  //          if (attachments[expense.id]) {
-  //           formData.append(`attachment_${expense.id}`, attachments[expense.id]);
-  //         }
-  
-  //         return expensePayload;
-  //       })
-  //     )
-  //   );
-  
-  //   // Manually log formData contents
-  //   for (let [key, value] of formData.entries()) {
-  //     console.log(key, value);
-  //   }
-  
-  //   try {
-  //     const response = await axios.put(`${API_URL}/api/expense/createEmpExpense`, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-  
-  //     if (response.status === 200 || response.status === 201) {
-  //       notification.success({
-  //         message: 'Success',
-  //         description: 'The party information has been successfully updated.',
-  //         duration: 3,
-  //       });
-  //       startConfetti();
-  //       handleClear();
-  
-  //       setTimeout(() => {
-  //         window.location.reload();
-  //       }, 2000);
-  //     } else {
-  //       notification.error({
-  //         message: 'Error',
-  //         description: 'Failed to update the party information.',
-  //         duration: 3,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving data:", error);
-  //     alert("An error occurred while saving.");
-  //   }
-  // };
-  
-//   const handleSubmit = async () => {
-//     try {
-//       // Prepare master data and payload
-//       const masterData = {
-//         createdBy: localStorage.getItem("userName"),
-//         empCode: localStorage.getItem("userName"),
-//         empName: localStorage.getItem("nickName"),
-//       };
-
-//       const employeeExpensesAttachmentDTO = expenses.map((expense) => ({
-//         category: expense.category,
-//         expense: expense.name,
-//         amount: expense.amount,
-//         expDate: expense.date,
-//       }));
-
-//       const fullPayload = {
-//         ...masterData,
-//         employeeExpensesAttachmentDTO,
-//       };
-
-//       // Submit the expenses to create them
-//       const response = await axios.put(
-//         `${API_URL}/api/expense/createEmpExpense`,
-//         fullPayload
-//       );
-
-//       if (
-//         response.status === 200 ||
-//         response.status === 201 &&
-//         response.data.statusFlag === "Ok"
-//       ) {
-//         console.log("Expenses created successfully!");
-
-//         const expenseVOid =
-//           response.data.paramObjectsMap.expenseVO.id;
-
-//         const expenseAttachments =
-//           response.data.paramObjectsMap.expenseVO.employeeExpensesAttachmentVO;
-
-//         // // Ensure imageFiles is defined before proceeding
-//         // if (!imageFiles) {
-//         //   console.error("imageFiles object is not provided or is empty.");
-//         //   return;
-//         // }
-
-//         // Iterate over the attachments and upload corresponding images
-        
-//         // Assuming 'uploadedFiles' holds the file object for each expenseId
-// for (const attachment of expenseAttachments) {
-//   const expenseId = attachment.id; // Extract the ID of the expense
-//   const file = uploadedFiles[0]; // Get the file associated with the expenseId
-
-// console.log("uploadedFiles",file);
+    // Button animation
+    const button = document.getElementById("celebrateBtn");
+    if (button) {
+      button.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        button.style.transform = "scale(1)";
+      }, 100);
+    }
+  };
 
 
-  
-//   // Check if file exists for the given expenseId
-  
-//     // const fileToUpload = uploadedFiles[expenseId];
+
+const handleSubmit = async (event) => {
+
+  if (event) {
+    event.preventDefault();
+  }
+
+  if (totalAmount <= 0) {
     
-//     // // Construct the payload for each expenseId
-//     // const imagePayload = {
-//     //   expenseId: expenseVOid,
-//     //   files: uploadedFiles.file, // Send the file directly
-//     // };
-//     // console.log("imagePayload",imagePayload);
-
-  
-  
-      
-//       // Check if uploadedFiles contains a file corresponding to the expenseId
-//       const fileToUpload = uploadedFiles[expenseId]; // Assuming uploadedFiles is an object mapping expenseId to files
-
-//       // If a file is found for this expenseId, append it to the FormData
-      
-//          const imagePayload = {
-//             expenseId: expenseVOid,
-//             files: uploadedFiles.file, // Send the file directly
-//           };
-//         console.log(`No image found for expense ID: ${expenseId}`);
-      
-    
-
-
-
-// // Optionally, modify the filename before appending to FormData
-// // const updatedFileName = `expense_${expenseId}_${file.name}`;
-
-// // // Create a new FormData object
-// // const formData = new FormData();
-
-// // // Append the file to FormData with the updated filename
-// // formData.append("files", uploadedFiles ); // The third argument sets the file's name in the FormData
-// // console.log("imagepayload", imagepayload ); 
-// // // Append the expenseId for reference
-// // formData.append("expenseId", expenseId);
-
-// // console.log("Expense ID:", expenseId);
-// // console.log("Uploaded Files Keys:", Object.keys(uploadedFiles));
-
-
-
-
-
-// console.log("formData",formData);        
-
-//           if (uploadedFiles ) {
-            
-//   // formData.append("files", uploadedFiles); // Append the file object
-//   // formData.append("expenseId", expenseId); // Append the expense ID
-//   // console.log("formData",formData);
-//   // console.log("file type", file instanceof File); 
-  
-  
-  
-
-//             try {
-//               const uploadResponse = await axios.put(
-//                 `${API_URL}/api/expense/uploadimage`,
-//                 imagePayload,{
-//                   headers: {
-//                     "Content-Type": "multipart/form-data",
-//                   },
-//                 }
-              
-//               );
-            
-
-//               if (uploadResponse.status === 200) {
-//                 console.log(`Image uploaded successfully for ID: ${expenseId}`);
-//               } else {
-//                 console.log(`Failed to upload image for ID: ${expenseId}`);
-//               }
-//             } catch (error) {
-//               console.error(
-//                 `Error uploading image for expense ID: ${expenseId}`,
-//                 error
-//               );
-//             }
-//           } else {
-//             console.log(`No image found for expense ID: ${expenseId}`);
-//           }
-//         }
-//       } else {
-//         console.log("Failed to create expenses.");
-//       }
-//     } catch (error) {
-//       console.error("Error submitting expenses:", error);
-//     }
-//   };
-
-
-
-const handleSubmit = async () => {
+    notification.error({
+      message: "Validation Error",
+      description: "Total amount should be greater than zero.",
+    });
+    // Optionally stop further execution
+    return; 
+  }
+  else{
   try {
+
     // Prepare master data and payload
     const masterData = {
+      visitFrom: fbranchName,
+      visitTo: tbranchName,
       createdBy: localStorage.getItem("userName"),
       empCode: localStorage.getItem("userName"),
       empName: localStorage.getItem("nickName"),
     };
 
     const employeeExpensesAttachmentDTO = expenses.map((expense) => ({
+      
+      
       category: expense.category,
       expense: expense.name,
       amount: expense.amount,
-      expDate: expense.date,
+      expDate: expense.date,      
     }));
 
+    
     const fullPayload = {
       ...masterData,
       employeeExpensesAttachmentDTO,
@@ -718,22 +391,12 @@ const handleSubmit = async () => {
 
       
 
-      // // Ensure imageFiles is defined before proceeding
-      // if (!imageFiles) {
-      //   console.error("imageFiles object is not provided or is empty.");
-      //   return;
-      // }
-
       const expenseAttachments = response.data.paramObjectsMap.expenseVO.employeeExpensesAttachmentVO;
 
         const formData = new FormData();
         
  
-        // const imagePayload = {
-        //   expenseId: expenseVOid,
-        //   files: uploadedFiles, // Send the file directly
-        // };
-        
+ 
       
         const imagePayload = prepareImagePayload();
         console.log("imagePayload",imagePayload);
@@ -766,6 +429,8 @@ const handleSubmit = async () => {
 
           if (uploadResponse.status === 200) {
             console.log("Images uploaded successfully for the respective expense IDs.");
+            handleCelebrate();
+            handleClear();
           } else {
             console.log("Failed to upload images.");
           }
@@ -779,6 +444,7 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error("Error submitting expenses:", error);
   }
+}
 };
 
 
@@ -787,6 +453,10 @@ const handleSubmit = async () => {
     
     handleSubmit(e);
     
+  };
+
+  const handleImageClick = () => {
+    window.history.back(); // Takes the user to the previous page
   };
 
   const handleCategoryChange = (value) => {
@@ -801,14 +471,19 @@ const handleSubmit = async () => {
     setExpenseAmount('');
     setExpenseCategory('');
     setExpenseDate('');
+    setFBranchName('');
+    setTBranchName('');
   };
   
 
   return (
     <div className="container">
-      <div className="text">Expense Claim Form</div>
-      <br />
-      <form onSubmit={handleAddExpense}>
+      <div className="text" style={{textAlign:"center", width: "100%"}}>Expense Claim Form
+
+      <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"30px",cursor: 'pointer'  }} onClick={handleImageClick}/>
+      </div>
+      
+      <form onSubmit={handleSubmit}>
       
     
 
@@ -838,6 +513,8 @@ const handleSubmit = async () => {
 
           <div className="form-row">
 
+
+
           <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
           <label
         htmlFor="type-select"
@@ -866,12 +543,12 @@ const handleSubmit = async () => {
               type="text"
               value={expenseName}
           onChange={(e) => setExpenseName(e.target.value)}
-              required
+              // required
               style={{ width: "150px" }}
             />
             <label
             style={{ marginBottom: '8px', marginLeft: '-10px', marginTop:"-20px" }}
-            >Particulars</label>
+            >Particulars <span style={{ color: 'red' }}>*</span></label>
           </div>
 
           <div className="input-data">
@@ -879,7 +556,7 @@ const handleSubmit = async () => {
             type="date"
               value={expenseDate}
               onChange={(e) => setExpenseDate(e.target.value)}
-              required 
+              // required 
               style={{ marginBottom: '8px', marginLeft: '-12px',width:"170px" ,width: "150px"}}
             />
             <label
@@ -893,7 +570,7 @@ const handleSubmit = async () => {
               type="number"
               value={expenseAmount}
           onChange={(e) => setExpenseAmount(e.target.value)}
-              required
+              // required
               style={{ width: "120px",marginBottom: '8px', marginLeft: '2px' }}
             />
             <label
@@ -901,9 +578,6 @@ const handleSubmit = async () => {
             >Expense Amt<span style={{ color: 'red' }}>*</span> </label> 
           </div>
 
-          
-          
-             
         <button
           type="submit"
           onClick={handleAddExpense}
@@ -926,23 +600,78 @@ const handleSubmit = async () => {
         </button>
         </div>
 
+
+        <div className="form-row">
+          
+          <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+                  <label className="label-customer" htmlFor="branch-select" style={{ marginBottom: '8px', marginLeft: '-22px'  }}>
+                    From Place <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <Select
+                    id="branch-select"
+                    value={fbranchName}
+                    onChange={(value) => setFBranchName(value)}
+                    placeholder="Select Branch"
+                    required
+              style={{ width: "200px",marginBottom: '8px', marginLeft: '32px' }}
+                  >
+                    <Option value="">Select Branch</Option>
+                    {branchNames && branchNames.length > 0 ? (
+                      branchNames.map((branch) => (
+                        <Option key={branch.branchCode} value={branch.branchName}>
+                          {branch.branchName}
+                        </Option>
+                      ))
+                    ) : (
+                      <Option value="">No branches available</Option>
+                    )}
+                  </Select>
+                </div>
+          
+                <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+                  <label className="label-customer" htmlFor="branch-select" style={{ marginBottom: '8px' }}>
+                    To Place <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <Select
+                    id="branch-select"
+                    value={tbranchName}
+                    onChange={(value) => setTBranchName(value)}
+                    placeholder="Select Branch"
+                    required
+              style={{ width: "200px",marginBottom: '8px', marginLeft: '58px' }}
+                  >
+                    <Option value="">Select Branch</Option>
+      {branchNames && branchNames.length > 0 ? (
+        branchNames
+          .filter((branch) => branch.branchName !== fbranchName) // Exclude the selected From Place
+          .map((branch) => (
+            <Option key={branch.branchCode} value={branch.branchName}>
+              {branch.branchName}
+            </Option>
+          ))
+      ) : (
+        <Option value="">No branches available</Option>
+      )}
+    </Select>
+                </div>
+
         
         
 
 
-        <div className="form-row submit-btn" style={{width:"400px" , marginLeft:"10px",height: "10px" }}>
+        <div className="form-row submit-btn" style={{width:"800px" , marginLeft:"60px",height: "8px" }}>
           <div className="input-data" >
             <div className="inner"></div>
             <input type="submit" value="Submit" 
-            style={{ padding: "8px 15px", height: "30px", fontSize: "14px" }}
+            style={{ padding: "8px 15px", height: "20px", fontSize: "12px" }}
             onClick={handleButtonClick} ref={buttonRef}>
                
               </input> 
           </div>
         </div>
-       
+        </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '60%' }}>
       {/* Expense Table */}
       <div className="expense-table">
       <table style={{ width: '100%', tableLayout: 'fixed' }}>
@@ -995,7 +724,7 @@ const handleSubmit = async () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center' }}>No expenses found</td>
+                <td colSpan="7" style={{ textAlign: 'center' }}>No expenses found</td>
               </tr>
             )}
           </tbody>

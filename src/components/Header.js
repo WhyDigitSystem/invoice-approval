@@ -9,16 +9,20 @@ import {
   ListItemText,
   Popover,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
+import { notification, Select, Spin  } from 'antd'; // Impor
+import axios from "axios";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResetPasswordPopup from "../utils/ResetPassword";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const username = localStorage.getItem("userName");
 
   const hiddenPaths = ["/login", "/register","/authenticate"]; // Add other paths as needed
 
@@ -28,8 +32,32 @@ const Header = () => {
   }
 
   // Handle Logout
-  const handleLogout = () => {
+  const handleLogout = async() => {
     // Add your logout logic here (e.g., clearing authentication tokens)
+    try {
+      // Make the POST request using axios
+      const response = await axios.post(`${API_URL}/api/auth/logout?userName=${localStorage.getItem(
+        "userName"
+      )}`);
+
+      // Check if the response is successful
+      if (response.status === 200 || response.status === 201) {
+          
+
+          // Show success toast message
+      notification.success({
+          message: 'Success',
+          description: 'Successfully Logged Out.',
+          duration: 3, // Time in seconds for the toast to stay visible
+        });
+
+    
+          
+      } 
+  } catch (error) {
+      // Handle error during the request
+      console.error("Error saving user:", error);
+  }
     localStorage.clear(); // Example: Clear local storage
     navigate("/login"); // Redirect to login page
   };
@@ -52,7 +80,7 @@ const Header = () => {
       position="fixed"
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: "#1B2631", // Custom AppBar color
+        backgroundColor: "#1B2631", // Custom AppBar color/
       }}
     >
       <Toolbar>

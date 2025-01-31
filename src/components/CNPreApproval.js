@@ -19,7 +19,7 @@ const CNPreApproval = () => {
 
   const buttonRef = useRef(null); 
 
-  const [branchname, setBranchName] = useState('');
+  const [branchName, setBranchName] = useState('');
   const [status, setStatus] = useState('idle');  
   const textRef = useRef(null);
   const iconRef = useRef(null);
@@ -143,20 +143,44 @@ const CNPreApproval = () => {
 
   // Handle input change
   const handleChange = (e) => {
+    if (!e.target) {
+      console.error("Event target is undefined:", e);
+      return;
+    }
+  
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
+  
+    setFormData((prevData) => {
+      let updatedData = { ...prevData, [name]: value };
+  
+      if (name === "ptype" && value === "Full") {
+        updatedData.crAmt = prevData.invAmt || "";
+      }
+  
+      return updatedData;
     });
   };
+  
+    
 
   const handleBranchChange = (value) => {
     setBranchName(value);  // Update branch name state
   };
   
   const handlePtypeChange = (value) => {
-    setPtype(value);  // Update ptype state
+    setPtype(value); // Update the ptype state
+  
+    setFormData((prevData) => {
+      let updatedData = { ...prevData };
+  
+      if (value === "Full") {
+        updatedData.crAmt = prevData.invAmt || ""; // Set crAmt to invAmt if Full is selected
+      }
+  
+      return updatedData;
+    });
   };
+  
   
   const handleCrRemarksChange = (value) => {
     setCrRemarks(value);  // Update crRemarks state
@@ -179,7 +203,8 @@ const CNPreApproval = () => {
   // Fetch data when branch name changes
   const fetchData = () => {
     setLoading(true);
-    getInvoices(createdBy, branchname)
+    console.log("branchName",branchName,createdBy);
+    getInvoices(createdBy, branchName)
       .then((response) => {
         console.log(response);  // Log to verify data structure
         setProfoms(response);
@@ -195,10 +220,11 @@ const CNPreApproval = () => {
   };
 
   useEffect(() => {
-    if (branchname) {
+    if (branchName) {
       fetchData();
+      // console.log("branchname",branchname,createdBy);
     }
-  }, [createdBy, branchname]);
+  }, [createdBy, branchName]);
 
   // Handle Profoma selection change
   const handleProfomaChange = (value) => {
@@ -261,7 +287,7 @@ const CNPreApproval = () => {
   }
 
     const payload = {
-     branchName: branchname,
+     branchName: branchName,
       partyCode: formData.partyCode,
       partyName: formData.partyName,
       profoma: formData.profoma,
@@ -342,6 +368,7 @@ const CNPreApproval = () => {
       width: '80%' // Ensure the width is full for both elements
     }}
   >
+    
     {/* Branch Name Select */}
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
       <label
@@ -353,8 +380,9 @@ const CNPreApproval = () => {
       </label>
       <Select
         id="branch-select"
-        value={branchname}
-        onChange={handleBranchChange}  // Correct handler
+        value={branchName}
+        // onChange={handleBranchChange}  // Correct handler
+        onChange={(value) => setBranchName(value)}
         style={{ marginBottom: '8px',marginLeft: '32px'  }}
         placeholder="Select Branch"
         
@@ -362,15 +390,19 @@ const CNPreApproval = () => {
         <Option value="">Select Branch</Option>
         {branchNames && branchNames.length > 0 ? (
           branchNames.map((branch) => (
-            <Option key={branch.branchCode} value={branch.branchCode}>
+            <Option key={branch.branchCode} value={branch.branchName}>
               {branch.branchName}
+              
             </Option>
           ))
         ) : (
           <Option value="">No branches available</Option>
         )}
       </Select>
+      
     </div>
+    
+    
 
     {/* Profoma Select */}
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
@@ -416,7 +448,7 @@ const CNPreApproval = () => {
     }}
   >
 
-    <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+<div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
                 <label htmlFor="type-select" style={{ marginBottom: '8px', marginLeft: '-70px' }}
         className="label-customer">
                   Reversal <span style={{ color: 'red' }}>*</span> 
@@ -424,7 +456,7 @@ const CNPreApproval = () => {
                 <Select
                   id="type-select"
                   value={ptype}
-                  onChange={handlePtypeChange}  // Correct handler
+                  onChange={handlePtypeChange}
                   placeholder="Select Type"
                   style={{ marginBottom: '8px', marginLeft: '30px' ,width:"230px"}}
         
@@ -546,6 +578,7 @@ const CNPreApproval = () => {
               name="crAmt"
               value={formData.crAmt}
               onChange={handleChange}
+              readOnly={ptype === "Full"}
               required
               style={{ width: "200px",marginBottom: '8px', marginLeft: '2px' }}
             />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes  } from "react-router-dom";
 import Approved2List from "./components/Approved2List";
 import ApprovedList from "./components/ApprovedList";
 import ConfirmationPage from "./components/ConfirmationPage";
@@ -20,12 +20,22 @@ import CRListingPage from "./components/CRListingPage";
 import CRApprovedList from "./components/CRApprovedList";
 import ExpenseList from "./components/ExpenseList";
 import ViewExpense from "./components/ViewExpense";
+import Transactions from "./components/Transactions";
+import Test from "./components/Test";
+import AccessDenied from "./components/AccessDenied";
+
+
+
+
 
 function App() {
+  
   return (
+    
     <Router future={{ v7_relativeSplatPath: true }}>
       {" "}
       {/* Add future flag */}
+      
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Dashboard />}>
@@ -41,16 +51,26 @@ function App() {
           <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
           <Route path="APAgeing" element={<APAgeing />} />
           <Route path="AddExpense" element={<AddExpense/>}/>
+        
           <Route path="CNPreApproval" element={<CNPreApproval/>} />
           <Route path="CRlisting" element={<CRListingPage />} />
           <Route path="CRApprovedList" element={<CRApprovedList />}/>
           <Route path="ExpenseList"  element={<ExpenseList />}/>
           <Route path="ViewExpense" element={<ViewExpense/>}/>
+          <Route path="transactions" element={<Transactions/>} />
+          <Route path="test" element={<Test/>} />
+        
+          <Route path="/access-denied" component={AccessDenied} />
   
           
         </Route>
+       
       </Routes>
+      
     </Router>
+    
+    
+    
   );
 }
 

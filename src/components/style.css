@@ -7,7 +7,7 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
   margin: 0;
 }
 
@@ -19,7 +19,7 @@ body {
 }
 
 .container {
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 50px auto;
   overflow: hidden;
@@ -448,13 +448,14 @@ a {
 
 h1 {
   display: inline-block;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+  /* font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; */
+  font-family: '"Familjen Grotesk"';
   font-size: 4em;
   letter-spacing: -0.05em;
   line-height: 0.75;
   margin: 0.5em 0;
   text-align: center;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   transform: rotate(-7deg);
 }
 

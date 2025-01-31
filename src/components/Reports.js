@@ -14,33 +14,6 @@ const clientReportData = [
   { name: "MIS", code: ""},
 ];
 
-const reportDetails = {
-  "EL-1 (OB)": {
-    revenue: 100000,
-    orders: 500,
-    newClients: 30,
-    data: [
-      { month: "Jan", value: 20000 },
-      { month: "Feb", value: 25000 },
-      { month: "Mar", value: 30000 },
-    ],
-    chartData: [20, 25, 30, 35, 40, 45],
-    expenses: 50000,
-  },
-  "EL-2 (SL)": {
-    revenue: 120000,
-    orders: 800,
-    newClients: 50,
-    data: [
-      { month: "Jan", value: 25000 },
-      { month: "Feb", value: 30000 },
-      { month: "Mar", value: 35000 },
-    ],
-    chartData: [15, 25, 35, 45, 50, 55],
-    expenses: 60000,
-  },
-  // Add similar mock data for all 23 reports
-};
 
 const Reports = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(true);
@@ -108,93 +81,42 @@ const Reports = () => {
 
   const isPopoverOpen = Boolean(popoverAnchor);
 
+  const responseScreens = localStorage.getItem("responseScreens");
+  console.log("responseScreens",responseScreens);
+  // let allowedScreens = [];
+  let parsedScreens = [];
+
+  try {
+    if (responseScreens) {
+      parsedScreens = JSON.parse(responseScreens);
+      // allowedScreens = parsedScreens.map((screen) => screen.screenName);
+    }
+  } catch (error) {
+    console.error("Error parsing responseScreens:", error);
+  }
+
+  // Filter menu items based on allowedScreens
+  const filteredMenuItems = clientReportData.filter((menu) =>
+    parsedScreens.includes(menu.name.toUpperCase())
+  );
+
+  console.log("menuItems", clientReportData);
+  console.log("filteredMenuItems", filteredMenuItems);
+
+
+
   return (
+    
+
+
     <div style={{ backgroundColor: isDarkMode ? "#ffffff" : "#ffffff" }}>
-      {/* Welcome Popup */}
-      {/* <Dialog
-        open={isPopupOpen}
-        onClose={handlePopupClose}
-        maxWidth="xs"
-        PaperProps={{
-          style: {
-            borderRadius: "12px",
-            padding: "15px",
-            textAlign: "center",
-            background: "linear-gradient(to right, #00c6ff, #0072ff)",
-            color: "#fff",
-          },
-        }}
-      >
-        <DialogContent>
-          <Typography variant="h3" gutterBottom style={{ fontWeight: "bold" }}>
-            Welcome Ramesh!
-          </Typography>
-          <Typography
-            variant="h5"
-            style={{ fontSize: "14px", marginTop: "10px" }}
-          >
-            Your monthly report is prepared and ready for download. Click below
-            to review the details and stay updated.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center" }}>
-          <Button
-            onClick={handlePopupClose}
-            variant="contained"
-            style={{
-              backgroundColor: "#00796b",
-              color: "#fff",
-              fontWeight: "bold",
-              borderRadius: "50px",
-              padding: "8px 30px",
-            }}
-          >
-            Done
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-
-      {/* Report Dialog */}
-      {/* <Dialog
-        open={!!selectedReport}
-        onClose={() => setSelectedReport(null)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>{selectedReport?.name}</DialogTitle>
-        <DialogContent>
-          <Typography>Code: {selectedReport?.code}</Typography>
-          <Divider style={{ margin: "10px 0" }} />
-          <Typography variant="h6">Financial Overview</Typography>
-          <Box display="flex" justifyContent="space-between" marginBottom={2}>
-            <Typography>
-              Total Revenue: ₹{reportDetails[selectedReport?.code]?.revenue}
-            </Typography>
-            <Typography>
-              Total Expenses: ₹{reportDetails[selectedReport?.code]?.expenses}
-            </Typography>
-          </Box>
-          <Typography variant="h6">
-            Orders: {reportDetails[selectedReport?.code]?.orders}
-          </Typography>
-          <Typography variant="h6">
-            New Clients: {reportDetails[selectedReport?.code]?.newClients}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelectedReport(null)} color="secondary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-
-      {/* Header */}
+    
 
       {/* Cards */}
       <br/><br/>
       <div className="ag-format-container">
         <div className="ag-courses_box">
-          {clientReportData.map((item, index) => (
+          {filteredMenuItems.map((item, index) => (
             <div
               key={index}
               className="ag-courses_item"
@@ -255,6 +177,7 @@ const Reports = () => {
         </Box>
       </Popover>
     </div>
+    
   );
 };
 

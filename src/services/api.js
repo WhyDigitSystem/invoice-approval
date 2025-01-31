@@ -533,10 +533,10 @@ export const getAllCreditParties = async () => {
 
 
 
-export const getInvoices = async (userName,branchCode) => {
+export const getInvoices = async (userName,branchName) => {
   try {
     const response = await axios.get(
-     `${API_URL}/api/InvoiceApproval/getInvoices?userName=${userName}&branchCode=${branchCode}`
+     `${API_URL}/api/InvoiceApproval/getInvoices?userName=${userName}&branchName=${branchName}`
     ); // Replace `/your-api-endpoint` with the actual endpoint path
     if (
       response.data.status &&
@@ -579,7 +579,8 @@ export const getAllExpense = async () => {
           partyCode : item.partyCode,
           empName : item.empName,
           totamt : item.totamt ,
-          id:item.id
+          id:item.id,
+          createdUpdatedDate:item.createdUpdatedDate
           
         })
       );

@@ -10,6 +10,9 @@ import rewindbutton from '.././rewindbutton.png';
 import Spinner3 from '.././Spinner3.gif';
 import NoDataAvailable from '../utils/NoDataAvailable';
 
+
+
+
 const { Option } = Select;
 
 export const MIS = () => {
@@ -91,9 +94,11 @@ export const MIS = () => {
   };
 
   return (
+    
     <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px', borderRadius: '10px' }}>
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
+      
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
         <b><p style={{align:'left', marginLeft:'-1000px'}}>MIS <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
           <Space style={{ marginBottom: '20px' }}>
@@ -187,22 +192,11 @@ export const MIS = () => {
         </div>
       </div>
 
-     {/* Loading Spinner */}
+     
     {loading ? (
-      //    <div className="loading-spinner" style={{ textAlign: 'center', width: '100%' }}>
-      //    <Progress size="large" />
-      //  </div>
+      
     <Col>
-          {/* <Progress
-            type="circle"
-            percent={percent}
-            trailColor="rgba(0, 0, 0, 0.06)"
-            strokeWidth={20}
-            steps={stepsCount} // Dynamic steps count
-            format={(percent) => `${percent}%`} // Optional: custom format
-            style={{ marginTop: stepsGap }} // Adjusting gap with dynamic margin
-          /> */}
-          {/* <SquareSpinner /> */}
+         
           <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/>
         </Col>
       ) :(
@@ -219,6 +213,7 @@ export const MIS = () => {
       {/* No Data Message */}
       
     </div>
+    
     );
 };
 

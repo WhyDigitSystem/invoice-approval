@@ -1,0 +1,273 @@
+
+.expenseListContainer {
+    padding: 20px;
+    text-align: center;
+    
+  }
+  
+  .header {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .ticketList {
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 1px 80px;
+    justify-content: center;
+    
+    
+  }
+  
+  .ticketContainer {
+    position: relative;
+    cursor: pointer;
+    
+  }
+  
+  .ticket {
+    width: 300px;
+    /* background: #fff; */
+    /* background: black; */
+    /* background-color: lightblue; */
+    /* background:#DDD; */
+    /* background: #FFB563; */
+    /* background-image: linear-gradient(-45deg, #8067B7, #EC87C0); */
+    background-color: #7EA9A9;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); 
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px dashed black; /* Dashed border for the card */
+  }
+  
+  .ticket:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .ticketTitle {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: black;
+    flex-grow: 1;
+    
+    
+  }
+  
+  .ticketDetail {
+    
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: black;
+  }
+  
+  hr {
+    flex-grow: 1;
+    height: 1px;
+    /* background:black; */
+    margin: 0 8px;
+    border-top: 2px dashed black;
+    /* margin: 16px 0; */
+  }
+  
+  .ticketRip {
+    display: flex;
+    align-items: center;
+    margin: 12px 0;
+  }
+  
+  .circleLeft,
+  .circleRight {
+    width: 12px;
+    height: 12px;
+    background: #f4f4f4;
+    border: 1px solid black;
+    border-radius: 50%;
+  }
+  
+  .ripLine {
+    flex-grow: 1;
+    height: 1px;
+    /* background:black; */
+    margin: 0 8px;
+    border-top: 2px dashed black;
+  }
+  
+  .ticketSubDetail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: black;
+    margin-top: 8px;
+    
+  }
+  
+  .code {
+    font-weight: bold;
+  }
+  
+  .date {
+    font-style: italic;
+  }
+  
+  .ticketShadow {
+    width: 300px;
+    /* height: 8px; */
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin: -4px auto 0;
+  }
+  
+
+
+
+/* ------------------------------------------- */
+
+/* ----------------------- */
+
+body{
+    /* display:flex; */
+    margin:0;
+    padding:0;
+    min-height: 100vh;
+    /* background: #444; */
+    justify-content: center;
+    align-items: center;
+    font-family: arial;
+  }
+  
+  .container{
+    width: 1000px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap:wrap;
+    
+  }
+  
+  .container .card{
+    position: relative;
+  }
+  
+  .container .card .face{
+    width:300px;
+    height: 200px;
+    transition:.4s;
+    
+  }
+  
+  .container .card .face.face1{
+    position: relative;
+    background: #333;
+    display: flex;
+    justify-content: center;
+    align-content:center;
+    align-items: center;
+    z-index: 1;
+    transform: translateY(100px);
+  }
+  
+  .container .card:hover .face.face1{
+    transform: translateY(0);
+    box-shadow:
+      inset 0 0 60px whitesmoke,
+      inset 20px 0 80px #f0f,
+      inset -20px 0 80px #0ff,
+      inset 20px 0 300px #f0f,
+      inset -20px 0 300px #0ff,
+      0 0 50px #fff,
+      -10px 0 80px #f0f,
+      10px 0 80px #0ff;
+     
+  }
+  
+  
+  /* .container .card .face.face1 .content{
+    opacity: .2;
+    transition:  0.5s;
+    text-align: center;
+  
+  } */
+
+  .container .card .face.face1 .content{
+    
+    text-align: center;
+    color:white;
+   
+  
+  }
+  
+  .container .card:hover .face.face1 .content{
+    opacity: 1;
+   
+  }
+  
+  .container .card .face.face1 .content i{
+    font-size: 3em;
+    color: white;
+    display: inline-block;
+     
+  }
+  
+  .container .card .face.face1 .content h3{
+    font-size: 1em;
+    color: white;
+    text-align: center;
+    
+  
+  }
+  
+  .container .card .face.face1 .content a{
+     transition: .5s;
+  }
+  
+  .container .card .face.face2{
+     position: relative;
+     background: whitesmoke;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 50px rgba(0,0,0,.8);
+    transform: translateY(-100px);
+  }
+  
+  .container .card:hover .face.face2{
+      transform: translateY(0);
+  
+  
+  }
+  
+  .container .card .face.face2 .content p, a{
+    font-size: 10pt;
+    margin: 0 ;
+    padding: 0;
+    color:#333;
+  }
+  
+  .container .card .face.face2 .content a{
+    text-decoration:none;
+    color: black;
+    box-sizing: border-box;
+    outline : 1px dashed #333;
+    padding: 10px;
+    margin: 15px 0 0;
+    display: inline-block;
+  }
+  
+  .container .card .face.face2 .content a:hover{
+    background: #333 ;
+    color: whitesmoke; 
+    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.5);
+  }
+  
