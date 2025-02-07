@@ -33,3 +33,78 @@
                -20px 40px 1px #c6c4c4, -21px 42px 1px #cbc9c8, -22px 44px 1px #cfcdcd, -23px 46px 1px #d4d2d1, -24px 48px 1px #d8d6d5, 
                -25px 50px 1px #dbdad9, -26px 52px 1px #dfdddc, -27px 54px 1px #e2e0df, -28px 56px 1px #e4e3e2;
 }
+
+
+
+
+/* ----------------------------- */
+
+
+.Btn1 {
+  width: 140px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border: none;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.089);
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.leftContainer1 {
+  width: 60%;
+  height: 100%;
+  background-color: #51c0ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color:black;
+}
+
+.leftContainer1 .like {
+  color: white;
+  font-weight: 600;
+}
+
+.likeCount1 {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0060ff;
+  font-weight: 600;
+  position: relative;
+  background-color: white;
+}
+
+.likeCount1::before {
+  height: 8px;
+  width: 8px;
+  position: absolute;
+  content: "";
+  background-color: rgb(255, 255, 255);
+  transform: rotate(45deg);
+  left: -4px;
+}
+
+.Btn1:hover .leftContainer {
+  background-color: #1d4292;
+}
+
+.Btn1:active .leftContainer {
+  background-color: #072b7a;
+}
+
+.Btn1:active .leftContainer svg {
+  transform: scale(1.15);
+  transform-origin: top;
+}
+
+
+
+/* ---------------------------------------- */

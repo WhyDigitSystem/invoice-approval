@@ -374,7 +374,7 @@ const ApprovedList = () => {
                     <Col xs={24} sm={12} md={8} key={item.expenceId}>
                       <div
                         class="note-container"
-                        style={{ backgroundColor: "#5D576B" }}
+                        // style={{ backgroundColor: "#5D576B" }}
                       >
                         <div
                           class="sticky-note sticky-note-two"

@@ -1,4 +1,5 @@
 import { MicNone } from "@mui/icons-material";
+import { experimentalStyled } from "@mui/material";
 import axios from "axios";
 
 
@@ -174,13 +175,13 @@ export const getInvDetailsApprove1 = async () => {
         (item) => ({
           expenceId: item.docId,
           name: item.partyName,
-          amount: item.totalInvAmtLc ? new Intl.NumberFormat('en-IN').format(item.totalInvAmtLc) : "0",
+          amount: item.totalInvAmtLc ,
           currency: "INR", // Assuming it's always INR; adjust if needed.
           docId: item.docId,
           docDate: item.docDate,
           creditDays: item.creditDays,
-          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0",
-          outStanding: item.outStanding ? new Intl.NumberFormat('en-IN').format(item.outStanding) : "0",
+          creditLimit: item.creditLimit ,
+          outStanding: item.outStanding ,
           id: item.gstInvoiceHdrId,
           approved1on: item.approve1on,
           approved2on: item.approve2on,
@@ -191,7 +192,7 @@ export const getInvDetailsApprove1 = async () => {
           unApproveAmt: item.unApproveAmt,
           category: item.category,
           controllingOffice: item.controllingOffice,
-          osBeyond: item.osBeyond ? new Intl.NumberFormat('en-IN').format(item.osBeyond) : "0",
+          osBeyond: item.osBeyond ,
           excessCredit: item.excessCredit,
           salespersonName: item.salespersonName    ,
           branchCode: item.branchCode        
@@ -227,21 +228,21 @@ export const getInvDetailsApprove2 = async () => {
           docId: item.docId,
           docDate: item.docDate,
           creditDays: item.creditDays,
-          creditLimit: item.creditLimit ? new Intl.NumberFormat('en-IN').format(item.creditLimit) : "0", 
-          outStanding: item.outStanding ? new Intl.NumberFormat('en-IN').format(item.outStanding) : "0",
+          creditLimit: item.creditLimit , 
+          outStanding: item.outStanding ,
           id: item.gstInvoiceHdrId,
           approved1on: item.approve1on,
           approved2on: item.approve2on,
           approved3on: item.approve3on,
           eligiSlab: item.eligiSlab,
-          totalInvAmtLc: item.totalInvAmtLc ? new Intl.NumberFormat('en-IN').format(item.totalInvAmtLc) : "0",
+          totalInvAmtLc: item.totalInvAmtLc ,
           slabRemarks: item.slabRemarks,
           exceedDays: item.exceedDays,
           unApproveAmt: item.unApproveAmt,
           category: item.category,
           controllingOffice: item.controllingOffice,
           osBeyond: item.osBeyond,
-          excessCredit: item.excessCredit ? new Intl.NumberFormat('en-IN').format(item.excessCredit) : "0",
+          excessCredit: item.excessCredit ,
           salespersonName: item.salespersonName      
         })
       );
@@ -445,6 +446,44 @@ export const getMIS = async (branchName, status, fromDate, toDate) => {
 };
 
 
+
+
+export const getDayBookBranchWise = async (branchName, fromDate, toDate) => {
+  try {
+    const response = await axios.get(
+     `${API_URL}/api/InvoiceApproval/getDayBookBranchWise?branchName=${branchName}&fromDate=${fromDate}&toDate=${toDate}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.dayBookBranchWiseDetails
+    ) {
+      return response.data.paramObjectsMap.dayBookBranchWiseDetails.map(
+        (item) => ({
+          branchCode : item.branchCode,
+          vchNo : item.vchNo, 
+          vchDate : item.vchDate ? new Date(item.vchDate).toLocaleDateString("en-GB"): " ",
+          docId : item.docId ,
+          docDt: item.docDt ? new Date(item.docDt).toLocaleDateString("en-GB"): " ",
+          accountCode: item.accountCode,
+          ledger: item.ledger,
+          subledgerCode: item.subledgerCode,
+          subledgerName: item.subledgerName,
+          curr: item.curr,
+          exRate : item.exRate,
+          bdbAmount :item.bdbAmount ? new Intl.NumberFormat('en-IN').format(item.bdbAmount) : "0", 
+          bcrAmount : item.bcrAmount ? new Intl.NumberFormat('en-IN').format(item.bcrAmount) : "0", 
+          remarks: item.remarks
+         
+        })
+      );
+    } else {
+      throw new Error("MIS Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching MIS data:", error);
+    throw error;
+  }
+};
 
 
 

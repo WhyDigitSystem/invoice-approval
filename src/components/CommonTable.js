@@ -41,6 +41,9 @@ const CommonTable = ({ columns, data }) => {
     }));
   };
 
+  // Helper function to check if value is numeric
+  const isNumeric = (value) => !isNaN(value) && value !== null;
+
   // Dynamically add right alignment to numeric columns
   const dynamicColumns = columns.map((column) => {
     return {
@@ -48,7 +51,7 @@ const CommonTable = ({ columns, data }) => {
       cell: (info) => (
         <span
           style={{
-            textAlign: typeof info.getValue() === 'number' ? 'right' : 'left',
+            textAlign: isNumeric(info.getValue()) ? 'right' : 'left',
             display: 'inline-block',
             width: '100%',
           }}
@@ -62,11 +65,11 @@ const CommonTable = ({ columns, data }) => {
   return (
     <Box
       sx={{
-        boxShadow: '0 8px 30px  rgba(0, 0, 0, 0.3)', // Apply shadow to table wrapper
-        borderRadius: '8px', // Rounded corners
-        padding: '16px', // Padding around the table container
-        backgroundColor: 'white', // White background to ensure contrast
-        overflow: 'hidden', // Ensure content doesn't overflow the card shape
+        boxShadow: "0 4px 5px rgba(0, 0, 0, 0.5)",
+        borderRadius: '8px',
+        padding: '16px',
+        backgroundColor: 'white',
+        overflow: 'hidden',
       }}
     >
       <MaterialReactTable
@@ -78,23 +81,23 @@ const CommonTable = ({ columns, data }) => {
         positionToolbarAlertBanner="bottom"
         muiTableContainerProps={{
           // sx: {
-          //   maxHeight: '400px', // Set a fixed height for the table container
-          //   overflowY: 'auto', // Enables vertical scrolling inside the table
+          //   maxHeight: '400px',
+          //   overflowY: 'auto',
           // },
         }}
         muiTableBodyCellProps={{
           sx: {
-            color: '#333', // Dark text color
+            color: '#333',
             fontWeight: 'bold',
             fontFamily: "'Roboto', sans-serif",
           },
         }}
         muiTableHeadCellProps={{
           sx: {
-            position: 'sticky', // Make header sticky
-            top: 0, // Fix header at the top
-            zIndex: 2, // Ensure header stays above the rows
-            backgroundColor: '#FFED86', // Prevent transparency issue
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
+            backgroundColor: '#FFED86',
             color: 'black',
             fontWeight: 'bold',
             fontFamily: "'Roboto', sans-serif",
@@ -108,13 +111,13 @@ const CommonTable = ({ columns, data }) => {
           <Box
             sx={{
               display: 'flex',
-              gap: '16px' ,
+              gap: '16px',
               padding: '8px',
               flexWrap: 'wrap',
-              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)", // Card-like shadow
-              borderRadius: "18px", // Rounded corners
-              padding: "16px", // Padding around the table
-              backgroundColor: "white", // White background to ensure contrast
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)",
+              borderRadius: "18px",
+              padding: "16px",
+              backgroundColor: "white",
               marginBottom: '10px',
             }}
           >
@@ -151,11 +154,10 @@ const CommonTable = ({ columns, data }) => {
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '16px',
-              gap: 2 ,
+              gap: 2,
               flexWrap: 'wrap',
             }}
           >
-            {/* Pagination Controls */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button
                 onClick={() => handlePageChange(0)} // Jump to the first page
@@ -192,7 +194,6 @@ const CommonTable = ({ columns, data }) => {
               </Button>
             </Box>
 
-            {/* Go to Page */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography variant="body1">Go to page:</Typography>
               <Input
@@ -212,7 +213,6 @@ const CommonTable = ({ columns, data }) => {
               />
             </Box>
 
-            {/* Rows per page */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography variant="body1">Rows per page:</Typography>
               <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>

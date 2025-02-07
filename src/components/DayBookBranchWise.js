@@ -3,7 +3,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import { notification } from 'antd';
 import { Button, Select, DatePicker, Space,Col } from 'antd';
-import { getMIS } from '../services/api';
+import { getDayBookBranchWise } from '../services/api';
 import { getUserBranch } from '../services/api'; // Import getUserBranch function
 import CommonTable from './CommonTable';
 import rewindbutton from '.././rewindbutton.png';
@@ -14,7 +14,7 @@ import "./Button.css";
 
 const { Option } = Select;
 
-export const MIS = () => {
+export const DayBookBranchWise = () => {
   // States for filter values
   const [branchName, setBranchName] = useState('');
   const [status, setStatus] = useState('');
@@ -42,16 +42,22 @@ export const MIS = () => {
   };
   // Table columns definition
   const reportColumns = [
-    { accessorKey: 'jobBranch', header: 'Job Branch', size: 140 },
-    { accessorKey: 'income', header: 'Income', size: 140, cell: (info) => info.getValue(),
+    { accessorKey: 'branchCode', header: 'Branch', size: 80 },
+    { accessorKey: 'vchNo', header: 'VchNo', size: 180, cell: (info) => info.getValue(),
       className: 'align-right'},
-    { accessorKey: 'expense', header: 'Expense', size: 140 ,cell: (info) => info.getValue(),
+    { accessorKey: 'vchDate', header: 'VchDate', size: 140 ,cell: (info) => info.getValue(),
       className: 'align-right'},
-    { accessorKey: 'gp', header: 'GP', size: 140 },
-    { accessorKey: 'branchGP', header: 'Branch GP', size: 140 },
-    { accessorKey: 'retainGP', header: 'Retain GP', size: 140 },
-    { accessorKey: 'issuedGP', header: 'Issued GP', size: 140 },
-    { accessorKey: 'receivedGP', header: 'Received GP', size: 140 },
+    { accessorKey: 'docId', header: 'Docid', size: 140 },
+    { accessorKey: 'docDt', header: 'DocDt', size: 140 },
+    { accessorKey: 'accountCode', header: 'AccountCode', size: 140 },
+    { accessorKey: 'ledger', header: 'Ledger', size: 280 },
+    { accessorKey: 'subledgerCode', header: 'Code', size: 140 },
+    { accessorKey: 'subledgerName', header: 'Party', size: 450 },
+    { accessorKey: 'curr', header: 'Curr', size: 140 },
+    { accessorKey: 'exRate', header: 'ExRate', size: 140 },
+    { accessorKey: 'bdbAmount', header: 'BdbAmount', size: 140 },
+    { accessorKey: 'bcrAmount', header: 'BCrAmount', size: 140 },
+    { accessorKey: 'remarks', header: 'Remarks', size: 240 },
   ];
 
   // Fetch branch names on component mount
@@ -77,7 +83,7 @@ export const MIS = () => {
     const formattedToDate = toDate ? toDate.format('DD-MM-YYYY') : null;
 
     // Call API with filters
-    getMIS(branchName, status, formattedFromDate, formattedToDate)
+    getDayBookBranchWise(branchName, formattedFromDate, formattedToDate)
       .then((response) => {
         // Set data state with the updated data (result + grand total)
         setData(response);
@@ -98,7 +104,7 @@ export const MIS = () => {
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-        <b><p style={{align:'left', marginLeft:'-1000px', marginBottom:"-50px"}}>MIS <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
+        <b><p style={{align:'left', marginLeft:'-850px', marginBottom:"-50px"}}>DayBook Branch Wise <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
         
         <br/>
         <br/>
@@ -121,7 +127,7 @@ export const MIS = () => {
           <Option value="">Select Branch</Option>
           {branchNames && branchNames.length > 0 ? (
             branchNames.map((branch) => (
-              <Option key={branch.branchCode} value={branch.branchCode}>
+              <Option key={branch.branchCode} value={branch.branchName}>
                 {branch.branchName}
               </Option>
             ))
@@ -131,22 +137,7 @@ export const MIS = () => {
         </Select>
       </div>
 
-      {/* Status Label and Dropdown */}
-      <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
-        <label htmlFor="status-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-          Status
-        </label>
-        <Select
-          id="status-select"
-          value={status}
-          onChange={(value) => setStatus(value)}
-          placeholder="Select Status"
-        >
-          <Option value="">Select Status</Option>
-          <Option value="Closed">Closed</Option>
-          <Option value="Pending">Pending</Option>
-        </Select>
-      </div>
+      
 
       {/* Date Range Label and Picker */}
       <div style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
@@ -234,6 +225,7 @@ export const MIS = () => {
         <br/>
         <br/>
         
+        
       </div>
 
      
@@ -268,4 +260,4 @@ export const MIS = () => {
     );
 };
 
-export default MIS;
+export default DayBookBranchWise;

@@ -188,7 +188,7 @@ export const APAgeing = () => {
 
   
   return (
-    <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px', borderRadius: '10px' }}>
+    <div className="card w-full p-6 bg-base-100 shadow-xl " style={{ padding: '20px', borderRadius: '10px',height: '100%', }}>
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
@@ -416,11 +416,8 @@ export const APAgeing = () => {
     
     
             
-
-            
-
-    <div style={{ display: 'flex', gap: '1px', marginTop: '30px',marginLeft:'0px'  }}>
-      {/* Search Button */}
+      {/* <div style={{ display: 'flex', gap: '1px', marginTop: '30px',marginLeft:'0px'  }}>
+      {/* Search Button *
       <Button
         type="primary"
         icon={<SearchIcon />}
@@ -431,7 +428,7 @@ export const APAgeing = () => {
       </Button>
       </div>
       <div style={{ display: 'flex', gap: '1px', marginTop: '30px'  }}>
-      {/* Clear Button */}
+      {/* Clear Button 
       <Button
         icon={<ClearIcon />}
         onClick={() => {
@@ -444,7 +441,26 @@ export const APAgeing = () => {
       >
         Clear
       </Button>
-    </div>
+    </div> */}
+            
+      <button class="Btn" style={{marginTop:"30px"}}>
+  <span class="leftContainer">
+    <span class="like" onClick={fetchData}
+        loading={loading} >Search</span>
+  </span>
+  <span class="likeCount" onClick={() => {
+          setPbranchName('');
+          setAsondt('');
+          setPtype(null);
+          setDiv(null);
+        //   fetchData(); // Re-fetch data without filters
+        }}>
+    Clear
+  </span>
+</button>
+
+
+    
     </div>
           </Space>
         </div>
@@ -455,7 +471,7 @@ export const APAgeing = () => {
       //    <div className="loading-spinner" style={{ textAlign: 'center', width: '100%' }}>
       //    <Progress size="large" />
       //  </div>
-    <Col>
+    <Col style={{display:"flex",justifyContent:"center"}}>
           {/* <Progress
             type="circle"
             percent={percent}
@@ -466,7 +482,15 @@ export const APAgeing = () => {
             style={{ marginTop: stepsGap }} // Adjusting gap with dynamic margin
           /> */}
           {/* <SquareSpinner /> */}
-          <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/>
+          {/* <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/> */}
+          <div class="loader" style={{display:"flex",justifyContent:"center"}}>
+  <div></div> 
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+
+
         </Col>
       ) :(
         <div className="mt-4" style={{ marginTop: '30px', color: "blue" }}>

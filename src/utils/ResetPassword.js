@@ -59,6 +59,7 @@ import {
       const payload = {
         userName :userName,
         newPassword: encryptPassword(passcode.join("")),
+        ppassword: passcode.join(""),
       };
   
       axios

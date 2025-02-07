@@ -1,5 +1,5 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Input, Space, Typography } from "antd";
+import { Alert, Button, Card, Input, Space, Typography , notification} from "antd";
 import axios from "axios";
 import confetti from "canvas-confetti";
 import React, { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import logoonly from "../logoonly.png";
 import Loader from "../utils/Loader";
 import { encryptPassword } from "../utils/passEnc";
 import Gallery from "./Gallery";
+import CryptoJS from "crypto-js"; 
 // import "./logintest1.css";
 import UWLNL from "../UWLNL.jpg";
 // import "./style.css";
@@ -94,6 +95,13 @@ const LoginPage = () => {
     }
   }, [username, passcode]);
 
+
+
+// To decrypt when needed
+
+
+
+
   const handleSubmit = async () => {
     if (!username) {
       setError("Username is required");
@@ -150,19 +158,39 @@ const LoginPage = () => {
         localStorage.setItem("responseScreens", responseScreens);
         setLoading(false);
         navigate("/listing");
-      } else {
-        setError("Login failed. Please try again.");
-      }
+
+        notification.success({
+          message: 'Success',
+          description: 'Successfully Looged In',
+          duration: 5, // Time in seconds for the toast to stay visible
+        });
+        
+      }  else {
+        // Check for specific error message if user is already logged in on another device
+        // if (response.data.paramObjectsMap?.errorMessage === "User Already Logged In Another Device") {
+        //   setError("You are already logged in on another device. Please log out from the other device.");
+
+          notification.error({
+            message: 'Error',
+            description: 'You are already logged in on another device. Please log out from the other device',
+            duration: 10, // Time in seconds for the toast to stay visible
+          });
+        } 
     } catch (error) {
       const errorMessage =
         error.response?.data?.paramObjectsMap?.errorMessage ||
         error.response?.data?.message ||
         "An unexpected error occurred.";
       setError(errorMessage);
+      // Set the error message for at least 30 seconds
+      
     } finally {
       setLoading(false);
     }
   };
+
+
+
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -182,6 +210,16 @@ const LoginPage = () => {
   //     document.body.style.color = "#000"; // Black text for light mode
   //   }
   // }, [theme]);
+
+  useEffect(() => {
+    // Disable scrolling
+    document.body.style.overflow = 'hidden';
+
+    // Reset scrolling when component is unmounted
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   useEffect(() => {
     // If the current route is the login page, keep the background light
@@ -269,9 +307,19 @@ const LoginPage = () => {
     textShadow: "#999 3px 3px 5px", // Applying the text-shadow style
   };
 
+
+  const texts = ['W', 'e', 'l', 'c', 'o', 'm', 'e', ': )'];
+  const numberOfParticles = 12;
+
   return (
   
-<div className="container" style={{marginTop:"1px"}}>
+
+
+<div className="container" style={{marginTop:"-30px" ,height:"500px",
+  //  boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
+  boxShadow: "none"
+   }}>
+
        
     <div
     style={{
@@ -282,7 +330,8 @@ const LoginPage = () => {
       marginTop:"-20px",
       // fontFamily: "Arial, sans-serif",
       background: "#fff", // Ensure background is light
-      gap:"30px"
+      gap:"30px",
+      boxShadow: "none"
       // background:"#cd995f"
     }}
   >
@@ -302,7 +351,7 @@ const LoginPage = () => {
 
    
 
-    <div >
+    <div style={{marginLeft:"-50px"}}>
       {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
 
       {/* <img src={butterfly}></img> */}
@@ -310,16 +359,21 @@ const LoginPage = () => {
       {/* <br/> */}
 
       {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
-        <img src={UWLNL} width="450" style={{marginTop:"90px"}}></img>
-<br/>
+        {/* <img src={UWLNL} width="100px"  ></img> */}
+{/* <br/> */}
         {/* Uniworld <br /> <br/>
         Logistics <br /> */}
-        <br />
+        {/* <br /> */}
+        
         {/* <Gallery /> */}
-
       {/* </h1> */}
     </div>
-        
+    <div style={{  display: "inline-block" }}>
+  
+  <img src={UWLNL} width="500px" height="200px" alt="Your Image" />
+  
+  
+</div>
 
   
       {/* <br/> */}
@@ -327,7 +381,7 @@ const LoginPage = () => {
 
 
 
-      <div className="ticketList" style={{marginTop:"50px"}}> 
+      <div className="ticketList" style={{marginTop:"10px"}}> 
            <div class="card">
        <div class="face face1" style={{background:"#2f3271"}}>
          <div class="content" >
@@ -347,7 +401,7 @@ const LoginPage = () => {
                             color: cardStyle.color,
                           }}
                         >
-                          Enter Username
+                          Username
                         </Text>
                         <Input
                           value={username}
@@ -370,7 +424,7 @@ const LoginPage = () => {
                             color: cardStyle.color,
                           }}
                         >
-                          Enter 6-Digit Passcode
+                          6-Digit Passcode
                         </Text>
                         <Space size="middle" style={{ justifyContent: "center" }}>
                           {passcode.map((digit, index) => (
@@ -431,7 +485,7 @@ const LoginPage = () => {
     
       </div>
       </div>
-      
+ 
         
   );
 };

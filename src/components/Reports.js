@@ -12,8 +12,14 @@ import "./Reports.css";
 const clientReportData = [
   { name: "AP - Ageing", code: ""},
   { name: "MIS", code: ""},
+  { name: "DayBook Branch Wise", code:""}
 ];
 
+const routes = {
+  "AP - Ageing": "/APAgeing",
+  MIS: "/MIS",
+  "DayBook Branch Wise": "/DayBookBranchWise"
+};
 
 const Reports = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(true);
@@ -38,12 +44,63 @@ const Reports = () => {
 
   const navigate = useNavigate();
 
+  const buttonStyles = {
+    display: "flex",
+    
+    width: "200px",
+    height: "40px",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: "0.5rem",
+    marginTop: "35px", 
+    border: "1px solid #979695",
+    borderRadius: "5px",
+    textAlign: "center",
+    fontSize: "16px",
+    // color: "#979695",
+    color:"black",
+    textDecoration: "none",
+    transition: "all 0.35s",
+    boxSizing: "border-box",
+    boxShadow: "0.3em 0.3em 0 #181617",
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    
+  
+    
+    
+
+  };
+
+  // const hoverStyles = {
+  //   boxShadow: "-0.3em -0.3em 0 #181617",
+  //   backgroundColor: "#dd6395",
+  //   borderColor: "#dd6395",
+  //   color: "#fff",
+  // };
+
+  const hoverStyles = {
+    boxShadow: "-0.3em -0.3em 0 white",
+    backgroundColor: "black",
+    borderColor: "black",
+    color: "white",
+    
+      left: 0,
+      bordertopcolor: "#51c0ef",
+      borderrightcolor: "#51c0ef",
+      borderbottomcolor: "#5d576b",
+      borderleftcolor: "#5d576b",
+    
+  };
+
+  const handleNavigate = (route) => {
+    navigate(route);
+  };
+
+
   const handleCardClick = (item) => {
     // Map card names to their respective routes
-    const routes = {
-      "AP - Ageing": "/APAgeing",
-      MIS: "/MIS",
-    };
+  
 
     // Navigate to the route based on the card name
     if (routes[item.name]) {
@@ -106,79 +163,118 @@ const Reports = () => {
 
 
   return (
+  
+
     
-
-
-    <div style={{ backgroundColor: isDarkMode ? "#ffffff" : "#ffffff" }}>
     
-
-      {/* Cards */}
-      <br/><br/>
-      <div className="ag-format-container">
-        <div className="ag-courses_box">
+      <div className="container" style={{ padding: "20px" ,marginTop:"100px",
+        boxShadow:"0 5px 10px rgba(0, 0, 0, 0.3)",background:"white"
+      }}>
+        
+  
+  
+        <div className="buttons-wrapper" style={{ display: "flex", flexWrap: "wrap",gap: "15px" ,bordercolor: "#51c0ef #51c0ef #5d576b #5d576b",
+      left: 0}}>
           {filteredMenuItems.map((item, index) => (
-            <div
-              key={index}
-              className="ag-courses_item"
-              style={{ cursor: "pointer" , height:"80px" , width:"80px"}}
-            >
-              <div
-                className="ag-courses-item_link"
-                onClick={() => handleCardClick(item)}
-              >
-                <div className="ag-courses-item_bg"></div>
-                <div className="ag-courses-item_title">{item.name}</div>
-                <div className="ag-courses-item_date-box">
-                  <span className="ag-courses-item_date">
-                    {item.code}
-                    &nbsp;
-                  
-                  </span>
-                </div>
+            
+            
+            
+            <div class="btn cube" key={index}
+            style={buttonStyles}
+              
+              onClick={() => handleNavigate(routes[item.name])}
+            > 
+            <a href="#">
+            <span class="fold"></span>
+              {item.name}</a>
+              
+              
+  
+  
               </div>
-            </div>
+  
+              
+          
+          
           ))}
         </div>
+        
       </div>
+    );
+  };
+  
 
-      {/* Popover for Download */}
-      <Popover
-        open={isPopoverOpen}
-        anchorEl={popoverAnchor}
-        onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        <Box
-          p={1}
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          gap={1}
-        >
-          <Tooltip title="Download PDF" arrow>
-            <IconButton onClick={() => handleDownload("pdf")} color="primary">
-              <PictureAsPdfIcon
-                style={{ fontSize: "24px", color: "#E53935" }}
-              />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Download Excel" arrow>
-            <IconButton onClick={() => handleDownload("excel")} color="primary">
-              <TableChartIcon style={{ fontSize: "24px", color: "#4CAF50" }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Popover>
-    </div>
+
+    // <div style={{ backgroundColor: isDarkMode ? "#ffffff" : "#ffffff" }}>
     
-  );
-};
+
+    //   {/* Cards */}
+    //   <br/><br/>
+    //   <div className="ag-format-container">
+    //     <div className="ag-courses_box">
+    //       {filteredMenuItems.map((item, index) => (
+    //         <div
+    //           key={index}
+    //           className="ag-courses_item"
+    //           style={{ cursor: "pointer" , height:"80px" , width:"80px"}}
+    //         >
+    //           <div
+    //             className="ag-courses-item_link"
+    //             onClick={() => handleCardClick(item)}
+    //           >
+    //             <div className="ag-courses-item_bg"></div>
+    //             <div className="ag-courses-item_title">{item.name}</div>
+    //             <div className="ag-courses-item_date-box">
+    //               <span className="ag-courses-item_date">
+    //                 {item.code}
+    //                 &nbsp;
+                  
+    //               </span>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       ))}
+    //     </div>
+    //   </div>
+
+    //   {/* Popover for Download */}
+    //   <Popover
+    //     open={isPopoverOpen}
+    //     anchorEl={popoverAnchor}
+    //     onClose={handlePopoverClose}
+    //     anchorOrigin={{
+    //       vertical: "bottom",
+    //       horizontal: "center",
+    //     }}
+    //     transformOrigin={{
+    //       vertical: "top",
+    //       horizontal: "center",
+    //     }}
+    //   >
+    //     <Box
+    //       p={1}
+    //       display="flex"
+    //       flexDirection="row"
+    //       alignItems="center"
+    //       gap={1}
+    //     >
+    //       <Tooltip title="Download PDF" arrow>
+    //         <IconButton onClick={() => handleDownload("pdf")} color="primary">
+    //           <PictureAsPdfIcon
+    //             style={{ fontSize: "24px", color: "#E53935" }}
+    //           />
+    //         </IconButton>
+    //       </Tooltip>
+    //       <Tooltip title="Download Excel" arrow>
+    //         <IconButton onClick={() => handleDownload("excel")} color="primary">
+    //           <TableChartIcon style={{ fontSize: "24px", color: "#4CAF50" }} />
+    //         </IconButton>
+    //       </Tooltip>
+    //     </Box>
+    //   </Popover>
+    // </div>
+    
+//   );
+// };
 
 export default Reports;

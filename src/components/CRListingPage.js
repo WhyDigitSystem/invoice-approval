@@ -740,7 +740,7 @@ import {
                                              </div>
 
                                                 <Space style={{ marginTop: "10px",marginLeft: "50px" }}>
-                                                                           <Button
+                                                                           {/* <Button
                                                                              id="celebrateBtn"
                                                                              type="default"
                                                                              onClick={(e) => {
@@ -774,7 +774,27 @@ import {
                                                                              }}
                                                                            >
                                                                              Reject
-                                                                           </Button>
+                                                                           </Button> */}
+
+
+
+                                                                         
+<button class="Btn1" >
+  <span class="leftContainer1" onClick={(e) => {
+                                                                               e.stopPropagation();
+                                                                               handleApprove(item);
+                                                                               handleCelebrate();
+                                                                             }}>
+    <span class="like1" >Approve</span>
+  </span>
+  <span class="likeCount1" onClick={(e) => {
+                                                                               e.stopPropagation();
+                                                                               handleReject(item);
+                                                                             }}>
+    Reject
+  </span>
+</button>
+
                                                                          </Space>
                                            </div>
                                          </div>

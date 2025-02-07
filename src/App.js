@@ -23,6 +23,7 @@ import ViewExpense from "./components/ViewExpense";
 import Transactions from "./components/Transactions";
 import Test from "./components/Test";
 import AccessDenied from "./components/AccessDenied";
+import DayBookBranchWise from "./components/DayBookBranchWise";
 
 
 
@@ -61,6 +62,7 @@ function App() {
           <Route path="test" element={<Test/>} />
         
           <Route path="/access-denied" component={AccessDenied} />
+          <Route path="/DayBookBranchWise" element={<DayBookBranchWise/>}/>
   
           
         </Route>
