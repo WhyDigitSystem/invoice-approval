@@ -57,7 +57,7 @@ export const DayBookBranchWise = () => {
     { accessorKey: 'exRate', header: 'ExRate', size: 140 },
     { accessorKey: 'bdbAmount', header: 'BdbAmount', size: 140 },
     { accessorKey: 'bcrAmount', header: 'BCrAmount', size: 140 },
-    { accessorKey: 'remarks', header: 'Remarks', size: 240 },
+    { accessorKey: 'remarks', header: 'Remarks', size: 840 },
   ];
 
   // Fetch branch names on component mount

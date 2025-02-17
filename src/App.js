@@ -24,7 +24,10 @@ import Transactions from "./components/Transactions";
 import Test from "./components/Test";
 import AccessDenied from "./components/AccessDenied";
 import DayBookBranchWise from "./components/DayBookBranchWise";
-
+import ARAgeing from "./components/ARAgeing";
+import ARAgeingOS from "./components/ARAgeingOS";
+import APAgeingOS from "./components/APAgeingOS";
+import PartyLedger from "./components/PartyLedger";
 
 
 
@@ -63,6 +66,10 @@ function App() {
         
           <Route path="/access-denied" component={AccessDenied} />
           <Route path="/DayBookBranchWise" element={<DayBookBranchWise/>}/>
+          <Route path="ARAgeing" element={<ARAgeing/>} />
+          <Route path="ARAgeingOS" element={<ARAgeingOS/>} />
+          <Route path="APAgeingOS" element={<APAgeingOS/>}/>
+          <Route path="PartyLedger" element={<PartyLedger/>}/>
   
           
         </Route>

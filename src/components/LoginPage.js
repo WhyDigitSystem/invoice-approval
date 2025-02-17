@@ -314,7 +314,6 @@ const LoginPage = () => {
   return (
   
 
-
 <div className="container" style={{marginTop:"-30px" ,height:"500px",
   //  boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
   boxShadow: "none"
@@ -370,7 +369,7 @@ const LoginPage = () => {
     </div>
     <div style={{  display: "inline-block" }}>
   
-  <img src={UWLNL} width="500px" height="200px" alt="Your Image" />
+  <img src={UWLNL} width="450px" height="200px" alt="Your Image" />
   
   
 </div>

@@ -3,7 +3,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import { notification } from 'antd';
 import { Button, Select, DatePicker, Space, Spin,Progress, Slider, Typography, Row, Col } from 'antd';
-import { getAPAgeing,getAllAPParties } from '../services/api';
+import { getAROS,getAllARParties } from '../services/api';
 import { getUserBranch } from '../services/api'; // Import getUserBranch function
 import CommonTable from './CommonTable';
 import dayjs from 'dayjs'; 
@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 
 const { Option } = Select;
 
-export const APAgeing = () => {
+export const ARAgeingOS = () => {
   // States for filter values
   const [pbranchname, setPbranchName] = useState('');
   const [div, setDiv] = useState('');
@@ -72,7 +72,7 @@ export const APAgeing = () => {
   
   // Fetch branch names on component mount
   useEffect(() => {
-    getAllAPParties()
+    getAllARParties()
       .then((response) => {
         setSubledgerNames(response); // Assuming the API returns a list of branch objects
         console.log("Subledgername",subledgerNames);
@@ -111,47 +111,56 @@ export const APAgeing = () => {
     return ''; // Return empty string for invalid range
   };
 
-
+  // Handle date range change
   const handleDateRangeChange = (dates) => {
     // Set the selected date range into asondt
     setAsondt(dates ? dates[0] : null); // Use the first date as the only value
   };
   // Table columns definition
   const reportColumns = [
-    { accessorKey: 'branchName', header: 'Branch', size: 140 },
-    { accessorKey: 'subledgerCode', header: 'Vendor Code', size: 140 },
-    { accessorKey: 'subledgerName', header: 'Vendor', size: 200 },
+    
+    { accessorKey: 'subledgerCode', header: 'Party Code', size: 140 },
+    { accessorKey: 'subledgerName', header: 'Party', size: 400 },
     // { accessorKey: 'cbranch', header: 'Ctrl Branch', size: 140 },
     // { accessorKey: 'salesPersonName', header: 'SalesPerson', size: 140 },
-    { accessorKey: 'currency', header: 'Currency', size: 140 },
-    { accessorKey: 'docid', header: 'Cost Invoice No', size: 140 },
-    { accessorKey: 'docdt', header: 'Cost Invoice Dt', size: 140 },
-    { accessorKey: 'refNo', header: 'Ref No', size: 140 },
-    { accessorKey: 'refDate', header: 'Ref Date', size: 140 },
-    { accessorKey: 'dueDate', header: 'Due Date', size: 140 },
-    { accessorKey: 'amount', header: 'Cost Inv Amt', size: 140, cell: (info) => info.getValue(),
-        className: 'align-right'},
+    // { accessorKey: 'jobBranch', header: 'Job Branch', size: 140 },
+    // { accessorKey: 'currency', header: 'Currency', size: 140 },
+    // { accessorKey: 'creditDays', header: 'Credit Days', size: 140 },
+    // { accessorKey: 'creditLimit', header: 'Credit Limit', size: 140 },
+    
+    // { accessorKey: 'amount', header: 'Inv Amt', size: 140, cell: (info) => info.getValue(),
+    //     className: 'align-right'},
     { accessorKey: 'outStanding', header: 'Out Standing', size: 140, cell: (info) => info.getValue(),
       className: 'align-right'},
+      { accessorKey: 'unAdjusted', header: 'Un Adjusted', size: 140 },
     { accessorKey: 'totalDue', header: 'Total Due', size: 140 ,cell: (info) => info.getValue(),
       className: 'align-right'},
-    { accessorKey: 'unAdjusted', header: 'Un Adjusted', size: 140 },
-    ...(slab1 !== 0  ? [{ accessorKey: 'mslab1', header: getSlabHeader(0, slab1), size: 140 }] : []),
+    
+      // Conditionally add slab columns only if the range is valid
+    ...(slab1 !== 0 ? [{ accessorKey: 'mslab1', header: getSlabHeader(0, slab1), size: 140 }] : []),
     ...(slab2 !== 0  ? [{ accessorKey: 'mslab2', header: getSlabHeader(slab1, slab2), size: 140 }] : []),
     ...(slab3 !== 0  ? [{ accessorKey: 'mslab3', header: getSlabHeader(slab2, slab3), size: 140 }] : []),
-    ...(slab4 !== 0 ? [{ accessorKey: 'mslab4', header: getSlabHeader(slab3, slab4), size: 140 }] : []),
-    ...(slab5 !== 0  ? [{ accessorKey: 'mslab5', header: getSlabHeader(slab4, slab5), size: 140 }] : []),
-    ...(slab6 !== 0  ? [{ accessorKey: 'mslab6', header: getSlabHeader(slab5, slab6), size: 140 }] : []),
-    ...(slab6 !== 0  ? [{ accessorKey: 'mslab7', header: getSlabHeader( slab6,0), size: 140 }] : []),
-      
-    // { accessorKey: 'mslab7', header: `More Than ${slab6} Days`, size: 140 },
-    { accessorKey: 'suppRefNo', header: 'Supplier Ref No', size: 140 },
-    { accessorKey: 'suppRefDate', header: 'Supplier Ref Date', size: 140 },
-    { accessorKey: 'whRefNo', header: 'WH RefNO', size: 140 },
-    { accessorKey: 'mno', header: 'Master No', size: 140 },
-    { accessorKey: 'hno', header: 'House No', size: 140 },
+    ...(slab4 !== 0  ? [{ accessorKey: 'mslab4', header: getSlabHeader(slab3, slab4), size: 140 }] : []),
+    ...(slab5 !== 0 ? [{ accessorKey: 'mslab5', header: getSlabHeader(slab4, 0), size: 140 }] : []),
+    
   
   ];
+
+  const handleInputChange = (e) => {
+    setSlab1(e.target.value);  // Update the state when user types
+  };
+
+  const handleImageClick = () => {
+    window.history.back(); // Takes the user to the previous page
+  };
+
+  const handleDateChange = (event) => {
+    const newDate = event.target.value; 
+
+    const formattedAsondt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
+
+    setAsondt(formattedAsondt); // Update the state with the selected date
+  };
 
   const handleSlabChange = (slab, value) => {
     let parsedValue = value === "" ? 0 : parseInt(value);  // If input is empty, reset to 0
@@ -182,22 +191,6 @@ export const APAgeing = () => {
 
 
 
-  const handleInputChange = (e) => {
-    setSlab1(e.target.value);  // Update the state when user types
-  };
-
-  const handleImageClick = () => {
-    window.history.back(); // Takes the user to the previous page
-  };
-
-  const handleDateChange = (event) => {
-    const newDate = event.target.value; 
-
-    const formattedAsondt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
-
-    setAsondt(formattedAsondt); // Update the state with the selected date
-  };
-
   // Fetch data based on the selected filters
   const fetchData = () => {
     setLoading(true);
@@ -211,7 +204,7 @@ export const APAgeing = () => {
     // const formattedAsonDate = asondt ? asondt.format('DD-MM-YYYY') : null;
     const formattedAsondt = asondt ? dayjs(asondt, 'DD-MM-YYYY').format('DD-MM-YYYY') : null;
     // Call API with filters
-    getAPAgeing(formattedAsondt,div,pbranchname, ptype, subledgerName,slab1,slab2,slab3,slab4,slab5,slab6,slab7)
+    getAROS(formattedAsondt,div,pbranchname, ptype, subledgerName,slab1,slab2,slab3,slab4,slab5,slab6,slab7)
       .then((response) => {
         // Set data state with the updated data (result + grand total)
         setData(response);
@@ -235,7 +228,7 @@ export const APAgeing = () => {
       {/* Filter Section */}
       <div className="row d-flex ml" style={{ marginTop: '40px' }}>
         <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-        <b><p style={{align:'left', marginLeft:'-1000px'}}>AP Ageing <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
+        <b><p style={{align:'left', marginLeft:'-900px'}}>AR OutStanding <img src={rewindbutton} alt="Go back" style={{width:"30px", marginLeft:"60px",cursor: 'pointer'  }} onClick={handleImageClick}/> </p></b>   <br/> 
         
           <Space style={{ marginBottom: '20px' }}>
             
@@ -246,24 +239,7 @@ export const APAgeing = () => {
         <label htmlFor="party-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
           Party Name
         </label>
-        {/* <Select
-          id="branch-select"
-          value={subledgerName}
-          onChange={(value) => setSubledgerName(value)}
-          placeholder="Select Party"
-        >
-          <Option value="">Select Party</Option>
-          {subledgerNames && subledgerNames.length > 0 ? (
-            subledgerNames.map((subledger) => (
-              <Option key={subledger.subledgerName} value={subledger.subledgerName}>
-                {subledger.subledgerName}
-              </Option>
-            ))
-          ) : (
-            <Option value="">No Subledger available</Option>
-          )}
-        </Select> */}
-        
+ 
         
       <div className="input-data">
         
@@ -307,7 +283,7 @@ export const APAgeing = () => {
           <Option value="">Select Branch</Option>
           {branchNames && branchNames.length > 0 ? (
             branchNames.map((branch) => (
-              <Option key={branch.branchName} value={branch.branchName}>
+              <Option key={branch.branchCode} value={branch.branchName}>
                 {branch.branchName}
               </Option>
             ))
@@ -330,6 +306,7 @@ export const APAgeing = () => {
         >
           <Option value="">Select Type</Option>
           <Option value="Branch">Branch</Option>
+          <Option value="Control">Control</Option>
           <Option value="Pan India">Pan India</Option>
         </Select>
       </div>
@@ -351,7 +328,7 @@ export const APAgeing = () => {
         </Select>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '120px' }}>
         <label htmlFor="division-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
           AsOn Date
         </label>
@@ -367,15 +344,15 @@ export const APAgeing = () => {
       
 <br/>
       
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
+    {/* <div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
   <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
     Slab1
   </label>
   <input
     id="slab1"
-    type="number"
-    value={slab1} 
-    onChange={(e) => handleSlabChange('slab1', e.target.value)}
+    type="text"
+    value={slab1} // Dynamically bound to the state
+    onChange={(e) => handleSlabChange(e, 1)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
 </div>
@@ -386,9 +363,9 @@ export const APAgeing = () => {
   </label>
   <input
     id="slab2"
-    type="number"
+    type="text"
     value={slab2} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange('slab2', e.target.value)}
+    onChange={(e) => handleSlabChange(e, 2)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
 </div>
@@ -399,9 +376,9 @@ export const APAgeing = () => {
   </label>
   <input
     id="slab3"
-    type="number"
+    type="text"
     value={slab3} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange('slab3', e.target.value)}
+    onChange={(e) => handleSlabChange(e, 3)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
 </div>
@@ -411,9 +388,9 @@ export const APAgeing = () => {
   </label>
   <input
     id="slab4"
-    type="number"
+    type="text"
     value={slab4} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange('slab4', e.target.value)}
+    onChange={(e) => handleSlabChange(e, 4)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
 </div>
@@ -423,9 +400,9 @@ export const APAgeing = () => {
   </label>
   <input
     id="slab5"
-    type="number"
+    type="text"
     value={slab5} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange('slab5', e.target.value)}
+    onChange={(e) => handleSlabChange(e, 5)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
 </div>
@@ -435,57 +412,13 @@ export const APAgeing = () => {
   </label>
   <input
     id="slab6"
-    type="number"
+    type="text"
     value={slab6} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange('slab6', e.target.value)}
+    onChange={(e) => handleSlabChange(e, 6)}  // Pass slab number to the handler
     style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
   /> 
-</div>
-  {/* <div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-    <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-      Slab7
-    </label>
-    <input
-      id="slab7"
-      type="text"
-      value={180}
-      // onChange={handleInputChange}  // Uncomment if needed
-      style={{ width: '100px', padding: '5px', fontSize: '14px' }} // Smaller width
-    /> 
-  </div> */}
-
-   
-      {/* Date Range Label and Picker */}
-    
-    
-            
-      {/* <div style={{ display: 'flex', gap: '1px', marginTop: '30px',marginLeft:'0px'  }}>
-      {/* Search Button *
-      <Button
-        type="primary"
-        icon={<SearchIcon />}
-        onClick={fetchData}
-        loading={loading}
-      >
-        Search
-      </Button>
-      </div>
-      <div style={{ display: 'flex', gap: '1px', marginTop: '30px'  }}>
-      {/* Clear Button 
-      <Button
-        icon={<ClearIcon />}
-        onClick={() => {
-          setPbranchName('');
-          setAsondt('');
-          setPtype(null);
-          setDiv(null);
-        //   fetchData(); // Re-fetch data without filters
-        }}
-      >
-        Clear
-      </Button>
-    </div> */}
-            
+</div> */}
+ 
       <button class="Btn" style={{marginTop:"30px"}}>
   <span class="leftContainer">
     <span class="like" onClick={fetchData}
@@ -552,4 +485,4 @@ export const APAgeing = () => {
   );
 };
 
-export default APAgeing;
+export default ARAgeingOS;

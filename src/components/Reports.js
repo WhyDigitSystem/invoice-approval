@@ -10,15 +10,24 @@ import "./Reports.css";
 
 // Mock Data for Reports
 const clientReportData = [
+  { name: "AR - Ageing", code: ""},
+  { name: "AR - OutStanding", code: ""},
   { name: "AP - Ageing", code: ""},
+  { name: "AP - OutStanding", code: ""},
   { name: "MIS", code: ""},
-  { name: "DayBook Branch Wise", code:""}
+  { name: "DayBook Branch Wise", code:""},
+  { name: "Party Ledger", code:""}
 ];
 
 const routes = {
+  "AR - Ageing": "/ARAgeing",
+  "AR - OutStanding" : "/ARAgeingOS",
   "AP - Ageing": "/APAgeing",
+  "AP - OutStanding" : "/APAgeingOS",
   MIS: "/MIS",
-  "DayBook Branch Wise": "/DayBookBranchWise"
+  "DayBook Branch Wise": "/DayBookBranchWise",
+  "Party Ledger" : "/PartyLedger",
+  
 };
 
 const Reports = () => {
@@ -28,6 +37,7 @@ const Reports = () => {
   const [popoverAnchor, setPopoverAnchor] = useState(null);
   const [popoverReport, setPopoverReport] = useState(null);
   const { width } = useWindowSize();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handlePopupClose = () => {
     setIsPopupOpen(false);
@@ -161,21 +171,41 @@ const Reports = () => {
   console.log("filteredMenuItems", filteredMenuItems);
 
 
+  // Filter further based on the search term
+  const filteredAndSearchedMenuItems = filteredMenuItems.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
   
 
-    
+
     
       <div className="container" style={{ padding: "20px" ,marginTop:"100px",
         boxShadow:"0 5px 10px rgba(0, 0, 0, 0.3)",background:"white"
       }}>
         
-  
+        <div class="InputContainer">
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "20px",
+          fontSize: "16px",
+          borderRadius: "5px",
+          border: "1px solid #979695",
+        }}
+      />
+      </div>
+      <br/>
   
         <div className="buttons-wrapper" style={{ display: "flex", flexWrap: "wrap",gap: "15px" ,bordercolor: "#51c0ef #51c0ef #5d576b #5d576b",
       left: 0}}>
-          {filteredMenuItems.map((item, index) => (
+          {filteredAndSearchedMenuItems.map((item, index) => (
             
             
             
@@ -189,6 +219,8 @@ const Reports = () => {
               {item.name}</a>
               
               
+              
+
   
   
               </div>
@@ -200,6 +232,7 @@ const Reports = () => {
         </div>
         
       </div>
+      
     );
   };
   

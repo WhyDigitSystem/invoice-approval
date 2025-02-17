@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button, Typography, MenuItem, Select, FormControl, Input } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -6,27 +6,64 @@ import { mkConfig, generateCsv, download } from 'export-to-csv';
 
 const CommonTable = ({ columns, data }) => {
   const [pagination, setPagination] = useState({
-    pageIndex: 0, // The current page index
-    pageSize: 10, // Number of rows per page
+    pageIndex: 0,
+    pageSize: 10,
   });
 
+  const [tableData, setTableData] = useState(data); // Track the table data state
+
+  // Initialize the CSV configuration
   const csvConfig = mkConfig({
     fieldSeparator: ',',
     decimalSeparator: '.',
     useKeysAsHeaders: true,
   });
 
-  const handleExportRows = (rows) => {
-    const rowData = rows.map((row) => row.original);
-    const csv = generateCsv(csvConfig)(rowData);
-    download(csvConfig)(csv);
+  // Function to calculate the grand total for numeric columns
+  const calculateGrandTotal = () => {
+    let grandTotal = {};
+
+    // Loop through all columns to sum numeric values
+    columns.forEach((column) => {
+      if (column.accessor) {
+        grandTotal[column.accessor] = data.reduce((sum, row) => {
+          if (typeof row[column.accessor] === 'number') {
+            return sum + row[column.accessor];
+          }
+          return sum;
+        }, 0);
+      }
+    });
+
+    return grandTotal;
   };
 
-  const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(data);
-    download(csvConfig)(csv);
+  // Helper function to create a grand total row object
+  const createGrandTotalRow = () => {
+    const grandTotal = calculateGrandTotal();
+
+    // Create a new row with the grand total values
+    const grandTotalRow = {};
+
+    columns.forEach((column) => {
+      if (column.accessor) {
+        grandTotalRow[column.accessor] = grandTotal[column.accessor] || 'Grand Total';
+      }
+    });
+
+    return grandTotalRow;
   };
 
+  // Add the grand total row to the table data
+  useEffect(() => {
+    const grandTotalRow = createGrandTotalRow();
+    
+    setTableData((prevData) => [...prevData, grandTotalRow]);
+
+
+  }, [data, columns]); // Recalculate when data or columns change
+
+  // Function to handle page changes
   const handlePageChange = (newPageIndex) => {
     setPagination((prevPagination) => ({
       ...prevPagination,
@@ -34,6 +71,8 @@ const CommonTable = ({ columns, data }) => {
     }));
   };
 
+
+  // Function to handle page size changes
   const handlePageSizeChange = (newPageSize) => {
     setPagination((prevPagination) => ({
       ...prevPagination,
@@ -41,31 +80,42 @@ const CommonTable = ({ columns, data }) => {
     }));
   };
 
+  // Function to handle exporting rows
+  const handleExportRows = (rows) => {
+    const rowData = rows.map((row) => row.original);
+    const csv = generateCsv(csvConfig)(rowData);
+    download(csvConfig)(csv);
+  };
+
+  // Function to handle exporting all data
+  const handleExportData = () => {
+    const csv = generateCsv(csvConfig)(tableData); // Export the full tableData including grand total
+    download(csvConfig)(csv);
+  };
+
   // Helper function to check if value is numeric
   const isNumeric = (value) => !isNaN(value) && value !== null;
 
   // Dynamically add right alignment to numeric columns
-  const dynamicColumns = columns.map((column) => {
-    return {
-      ...column,
-      cell: (info) => (
-        <span
-          style={{
-            textAlign: isNumeric(info.getValue()) ? 'right' : 'left',
-            display: 'inline-block',
-            width: '100%',
-          }}
-        >
-          {info.getValue()}
-        </span>
-      ),
-    };
-  });
+  const dynamicColumns = columns.map((column) => ({
+    ...column,
+    cell: (info) => (
+      <span
+        style={{
+          textAlign: isNumeric(info.getValue()) ? 'right' : 'left',
+          display: 'inline-block',
+          width: '100%',
+        }}
+      >
+        {info.getValue()}
+      </span>
+    ),
+  }));
 
   return (
     <Box
       sx={{
-        boxShadow: "0 4px 5px rgba(0, 0, 0, 0.5)",
+        boxShadow: '0 4px 5px rgba(0, 0, 0, 0.5)',
         borderRadius: '8px',
         padding: '16px',
         backgroundColor: 'white',
@@ -74,7 +124,7 @@ const CommonTable = ({ columns, data }) => {
     >
       <MaterialReactTable
         columns={dynamicColumns}
-        data={data}
+        data={tableData} // Use the tableData including the grand total row
         enableRowSelection={true}
         columnFilterDisplayMode="popover"
         paginationDisplayMode="pages"
@@ -85,15 +135,42 @@ const CommonTable = ({ columns, data }) => {
           //   overflowY: 'auto',
           // },
         }}
-        muiTableBodyCellProps={{
-          sx: {
-            color: '#333',
+        // muiTableBodyCellProps={{
+        //   sx: {
+        //     color: '#333',
+        //     fontWeight: 'bold',
+        //     fontFamily: "'Roboto', sans-serif",
+        //   },
+        // }}
+        // muiTableBodyCellProps={({ row }) => ({
+        //   sx: {
+        //     color: ['0', '3', '4'].includes(row.original.sno) ? 'maroon' : '#333', // Apply maroon for sno 1, 3, 4
+        //     fontWeight: 'bold',
+        //     fontFamily: "'Roboto', sans-serif",
+            
+        //   },
+        // })}
+        // muiTableHeadCellProps={{
+        //   sx: {
+        //     position: 'sticky',
+        //     top: 0,
+        //     zIndex: 2,
+        //     backgroundColor: '#FFED86',
+        //     color: 'black',
+        //     fontWeight: 'bold',
+        //     fontFamily: "'Roboto', sans-serif",
+            
+        //   },
+        // }}
+        muiTableBodyCellProps={({ row, column }) => ({
+          sx: column.id === 'sno' ? { display: 'none' } : {
+            color: ['0', '3', '4'].includes(row.original.sno) ? 'maroon' : '#333',
             fontWeight: 'bold',
             fontFamily: "'Roboto', sans-serif",
           },
-        }}
-        muiTableHeadCellProps={{
-          sx: {
+        })}
+        muiTableHeadCellProps={({ column }) => ({
+          sx: column.id === 'sno' ? { display: 'none' } : {
             position: 'sticky',
             top: 0,
             zIndex: 2,
@@ -102,7 +179,7 @@ const CommonTable = ({ columns, data }) => {
             fontWeight: 'bold',
             fontFamily: "'Roboto', sans-serif",
           },
-        }}
+        })}
         state={{
           pagination,
         }}
@@ -114,10 +191,10 @@ const CommonTable = ({ columns, data }) => {
               gap: '16px',
               padding: '8px',
               flexWrap: 'wrap',
-              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)",
-              borderRadius: "18px",
-              padding: "16px",
-              backgroundColor: "white",
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+              borderRadius: '18px',
+              padding: '16px',
+              backgroundColor: 'white',
               marginBottom: '10px',
             }}
           >
