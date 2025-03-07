@@ -1,0 +1,194 @@
+/* Add this to ProfitAndLoss.css */
+
+/* Add minimal space between the account name and the amount */
+.tree-leaf-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tree-leaf-text {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tree-leaf-text div {
+  margin-right: 5px; /* You can adjust the margin here to reduce space further */
+}
+
+.tree-leaf {
+  position: relative;
+}
+.tree-leaf .tree-child-leaves {
+  display: block;
+  margin-left: 15px;
+}
+.tree-leaf .hidden {
+  display: none;
+  visibility: hidden;
+}
+.tree-leaf .tree-expando {
+  background: #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  float: left;
+  height: 10px;
+  line-height: 10px;
+  position: relative;
+  text-align: center;
+  top: 5px;
+  width: 10px;
+}
+.tree-leaf .tree-expando:hover {
+  background: #aaa;
+}
+.tree-leaf .tree-leaf-text {
+  cursor: pointer;
+  float: left;
+  margin-left: 5px;
+}
+.tree-leaf .tree-leaf-text:hover {
+  color: #00f;
+}
+.tree-leaf .tree-leaf-content:after,
+.tree-leaf .tree-leaf-content:before {
+  content: " ";
+  display: table;
+}
+.tree-leaf .tree-leaf-content:after {
+  clear: both;
+}
+
+.switch-holder {
+  display: flex;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: -8px -8px 15px rgba(255, 255, 255, 0.7),
+    10px 10px 10px rgba(0, 0, 0, 0.2),
+    inset 8px 8px 15px rgba(255, 255, 255, 0.7),
+    inset 10px 10px 10px rgba(0, 0, 0, 0.2);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.switch-label {
+  padding: 0 20px 0 10px;
+}
+
+.switch-label i {
+  margin-right: 5px;
+}
+
+.switch-toggle {
+  height: 40px;
+}
+
+.switch-toggle input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -2;
+}
+
+.switch-toggle input[type="checkbox"] + label {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 40px;
+  border-radius: 20px;
+  margin: 0;
+  cursor: pointer;
+  box-shadow: inset -8px -8px 15px rgba(255, 255, 255, 0.6),
+    inset 10px 10px 10px rgba(0, 0, 0, 0.25);
+}
+
+.switch-toggle input[type="checkbox"] + label::before {
+  position: absolute;
+  content: "OFF";
+  font-size: 13px;
+  text-align: center;
+  line-height: 25px;
+  top: 8px;
+  left: 8px;
+  width: 45px;
+  height: 25px;
+  border-radius: 20px;
+  background-color: #eeeeee;
+  box-shadow: -3px -3px 5px rgba(255, 255, 255, 0.5),
+    3px 3px 5px rgba(0, 0, 0, 0.25);
+  transition: 0.3s ease-in-out;
+}
+
+.switch-toggle input[type="checkbox"]:checked + label::before {
+  left: 50%;
+  content: "ON";
+  color: #fff;
+  background-color: #00b33c;
+  box-shadow: -3px -3px 5px rgba(255, 255, 255, 0.5), 3px 3px 5px #00b33c;
+}
+
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 4.5em;
+  height: 2em;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: inset 1px 2px 5px 1px rgba(0, 0, 0, 0.329);
+  transition: 0.4s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.4em;
+  width: 1.4em;
+  border-radius: 20px;
+  left: 0.3em;
+  bottom: 0.3em;
+  background-color: rgb(255, 255, 255);
+  transition: 0.4s;
+}
+
+.switch input:checked + .slider {
+  background-color: #59c76b;
+}
+
+.switch input:focus + .slider {
+  box-shadow: inset 3px 2px 4px rgba(22, 22, 22, 0.253);
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(2.5em);
+}
+
+.tree-leaf {
+  width: 100%;
+}
+.tree-leaf-text {
+  font-weight: bold;
+  text-align: left;
+  flex: 1;
+  padding-right: 20px;
+}
+
+.tree-leaf-text-amount {
+  font-weight: bold;
+  text-align: right;
+  width: 150px;
+}

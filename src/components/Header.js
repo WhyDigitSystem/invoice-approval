@@ -9,13 +9,22 @@ import {
   ListItemText,
   Popover,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
-import { notification, Select, Spin  } from 'antd'; // Impor
+import { notification, Select, Spin } from "antd"; // Impor
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResetPasswordPopup from "../utils/ResetPassword";
+import {
+  LogoutOutlined,
+  MoonOutlined,
+  RightCircleOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
+import LightDarkButton from "./LightDarkButton";
+import BulbButtonTheme from "./BulbButtonTheme";
+
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
 const Header = () => {
@@ -24,7 +33,40 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const username = localStorage.getItem("userName");
 
-  const hiddenPaths = ["/login", "/register","/authenticate"]; // Add other paths as needed
+  const hiddenPaths = ["/login", "/register", "/authenticate"]; // Add other paths as needed
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  // const toggleTheme = () => {
+  //   const newTheme = theme === "light" ? "dark" : "light";
+  //   setTheme(newTheme);
+  //   localStorage.setItem("theme", newTheme);
+  // };
+
+  // useEffect(() => {
+  //   if (theme === "dark") {
+  //     // document.body.style.backgroundColor = "#1c1c1c"; // Dark background for the entire page
+  //     document.body.style.backgroundColor = "#5D576B";
+  //     document.body.style.color = "#fff"; // White text for dark mode
+  //   } else {
+  //     document.body.style.backgroundColor = "#fff"; // Light background for the body
+  //     document.body.style.color = "#000"; // Black text for light mode
+  //   }
+  // }, [theme]);
+
+  const themeConfig =
+    theme === "dark"
+      ? {
+          token: {
+            // colorPrimary: '#1890ff', // Adjust as needed for dark mode
+            colorPrimary: "#5D576B",
+            // colorBgBase: '#1c1c1c', // Dark background
+            colorBgBase: "#5D576B",
+            colorTextBase: "#fff", // White text for dark mode
+            // colorTextBase: 'black',
+            colorLink: "#40a9ff", // Link color for dark mode
+          },
+        }
+      : {};
 
   // Hide the sidebar if the current path matches one of the hidden paths
   if (hiddenPaths.includes(location.pathname)) {
@@ -32,32 +74,29 @@ const Header = () => {
   }
 
   // Handle Logout
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     // Add your logout logic here (e.g., clearing authentication tokens)
     try {
       // Make the POST request using axios
-      const response = await axios.post(`${API_URL}/api/auth/logout?userName=${localStorage.getItem(
-        "userName"
-      )}`);
+      const response = await axios.post(
+        `${API_URL}/api/auth/logout?userName=${localStorage.getItem(
+          "userName"
+        )}`
+      );
 
       // Check if the response is successful
       if (response.status === 200 || response.status === 201) {
-          
-
-          // Show success toast message
-      notification.success({
-          message: 'Success',
-          description: 'Successfully Logged Out.',
+        // Show success toast message
+        notification.success({
+          message: "Success",
+          description: "Successfully Logged Out.",
           duration: 3, // Time in seconds for the toast to stay visible
         });
-
-    
-          
-      } 
-  } catch (error) {
+      }
+    } catch (error) {
       // Handle error during the request
       console.error("Error saving user:", error);
-  }
+    }
     localStorage.clear(); // Example: Clear local storage
     navigate("/login"); // Redirect to login page
   };
@@ -80,7 +119,8 @@ const Header = () => {
       position="fixed"
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: "#1B2631", // Custom AppBar color/
+        backgroundColor: "#1B2631", //
+        // Custom AppBar color/
       }}
     >
       <Toolbar>
@@ -99,7 +139,24 @@ const Header = () => {
         >
           UNIWORLD
         </Typography>
+        <Box sx={{ textAlign: "left" }}>
+          {/* <LightDarkButton /> */}
+          {/* <BulbButtonTheme /> */}
 
+          {/* <Button
+            type="text"
+            icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
+            onClick={toggleTheme}
+            size="small"
+            style={{ marginLeft: "10px", color: "white" }}
+          >
+            {theme === "light" ? "Dark Mode" : "Light Mode"}
+          </Button> */}
+        </Box>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {/* User Avatar and Name */}
         <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
           <Avatar
@@ -109,6 +166,7 @@ const Header = () => {
             onClick={handlePopoverOpen}
             style={{ cursor: "pointer" }}
           />
+
           <Typography
             variant="body1"
             sx={{
@@ -119,14 +177,12 @@ const Header = () => {
             onClick={handlePopoverOpen}
             style={{ cursor: "pointer" }}
           >
-         Welcome!!! &nbsp;   {localStorage.getItem("nickName")}{" "}
+            Welcome!!! &nbsp; {localStorage.getItem("nickName")}{" "}
             {/* Replace with actual user's name */}
           </Typography>
         </Box>
-
-        <ResetPasswordPopup/>
+        <ResetPasswordPopup />
         &nbsp;&nbsp;
-
         {/* User Popover */}
         <Popover
           open={open}
@@ -153,7 +209,6 @@ const Header = () => {
             </ListItem>
           </List>
         </Popover>
-
         {/* Logout Button */}
         <Box>
           <Button

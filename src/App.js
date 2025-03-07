@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, BrowserRouter as Router, Routes  } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Approved2List from "./components/Approved2List";
 import ApprovedList from "./components/ApprovedList";
 import ConfirmationPage from "./components/ConfirmationPage";
@@ -28,18 +28,22 @@ import ARAgeing from "./components/ARAgeing";
 import ARAgeingOS from "./components/ARAgeingOS";
 import APAgeingOS from "./components/APAgeingOS";
 import PartyLedger from "./components/PartyLedger";
-
-
-
+import LedgerReport from "./components/LedgerReport";
+import GSTR1Filling from "./components/GSTR1Filling";
+import ProfitAndLoss from "./components/ProfitAndLoss";
+import JobCard from "./components/JobCard";
+import JobCostSheetDetails from "./components/JobCostSheetDetails";
+import JobCostSheetSummary from "./components/JobCostSheetSummary";
+import ExpandingCards from "./components/ExpandingCards";
+import TaxInvoicePdf from "./components/TaxInvoicePdf";
+import TaxInvoiceList from "./components/TaxInvoiceList";
+import TaxInvoiceCommonTable from "./components/TaxInvoiceCommonTable";
 
 function App() {
-  
   return (
-    
     <Router future={{ v7_relativeSplatPath: true }}>
       {" "}
       {/* Add future flag */}
-      
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Dashboard />}>
@@ -54,32 +58,42 @@ function App() {
           <Route path="MIS" element={<MIS />} />
           <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
           <Route path="APAgeing" element={<APAgeing />} />
-          <Route path="AddExpense" element={<AddExpense/>}/>
-        
-          <Route path="CNPreApproval" element={<CNPreApproval/>} />
+          <Route path="AddExpense" element={<AddExpense />} />
+
+          <Route path="CNPreApproval" element={<CNPreApproval />} />
           <Route path="CRlisting" element={<CRListingPage />} />
-          <Route path="CRApprovedList" element={<CRApprovedList />}/>
-          <Route path="ExpenseList"  element={<ExpenseList />}/>
-          <Route path="ViewExpense" element={<ViewExpense/>}/>
-          <Route path="transactions" element={<Transactions/>} />
-          <Route path="test" element={<Test/>} />
-        
+          <Route path="CRApprovedList" element={<CRApprovedList />} />
+          <Route path="ExpenseList" element={<ExpenseList />} />
+          <Route path="ViewExpense" element={<ViewExpense />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="test" element={<Test />} />
+
           <Route path="/access-denied" component={AccessDenied} />
-          <Route path="/DayBookBranchWise" element={<DayBookBranchWise/>}/>
-          <Route path="ARAgeing" element={<ARAgeing/>} />
-          <Route path="ARAgeingOS" element={<ARAgeingOS/>} />
-          <Route path="APAgeingOS" element={<APAgeingOS/>}/>
-          <Route path="PartyLedger" element={<PartyLedger/>}/>
-  
-          
+          <Route path="/DayBookBranchWise" element={<DayBookBranchWise />} />
+          <Route path="ARAgeing" element={<ARAgeing />} />
+          <Route path="ARAgeingOS" element={<ARAgeingOS />} />
+          <Route path="APAgeingOS" element={<APAgeingOS />} />
+          <Route path="PartyLedger" element={<PartyLedger />} />
+          <Route path="LedgerReport" element={<LedgerReport />} />
+          <Route path="GSTR1Filling" element={<GSTR1Filling />} />
+          <Route path="ProfitAndLoss" element={<ProfitAndLoss />} />
+          <Route path="JobCard" element={<JobCard />} />
+          <Route path="JobCostSheetDetails" element={<JobCostSheetDetails />} />
+          <Route path="JobCostSheetSummary" element={<JobCostSheetSummary />} />
+          <Route path="ExpandingCards" element={<ExpandingCards />} />
+          <Route path="TaxInvoicePdf" element={<TaxInvoicePdf />} />
+          <Route path="TaxInvoiceList" element={<TaxInvoiceList />} />
+          <Route
+            path="/TaxInvoicePdf/:documentNumber"
+            element={<TaxInvoicePdf />}
+          />
         </Route>
-       
+        <Route
+          path="TaxInvoiceCommonTable"
+          element={<TaxInvoiceCommonTable />}
+        />
       </Routes>
-      
     </Router>
-    
-    
-    
   );
 }
 

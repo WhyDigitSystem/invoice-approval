@@ -12,24 +12,20 @@ import {
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 
-const CommonTable = ({ columns, data }) => {
+const TaxInvoiceCommonTable = ({ columns, data }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const [tableData, setTableData] = useState(data); // Track the table data state
+  const [tableData, setTableData] = useState(data);
 
-  // Initialize the CSV configuration
   const csvConfig = mkConfig({
     fieldSeparator: ",",
     decimalSeparator: ".",
     useKeysAsHeaders: true,
   });
 
-  // Function to calculate the grand total for numeric columns
-
-  // Function to handle page changes
   const handlePageChange = (newPageIndex) => {
     setPagination((prevPagination) => ({
       ...prevPagination,
@@ -37,7 +33,6 @@ const CommonTable = ({ columns, data }) => {
     }));
   };
 
-  // Function to handle page size changes
   const handlePageSizeChange = (newPageSize) => {
     setPagination((prevPagination) => ({
       ...prevPagination,
@@ -45,23 +40,19 @@ const CommonTable = ({ columns, data }) => {
     }));
   };
 
-  // Function to handle exporting rows
   const handleExportRows = (rows) => {
     const rowData = rows.map((row) => row.original);
     const csv = generateCsv(csvConfig)(rowData);
     download(csvConfig)(csv);
   };
 
-  // Function to handle exporting all data
   const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(tableData); // Export the full tableData including grand total
+    const csv = generateCsv(csvConfig)(tableData);
     download(csvConfig)(csv);
   };
 
-  // Helper function to check if value is numeric
   const isNumeric = (value) => !isNaN(value) && value !== null;
 
-  // Dynamically add right alignment to numeric columns
   const dynamicColumns = columns.map((column) => ({
     ...column,
     cell: (info) => (
@@ -72,7 +63,19 @@ const CommonTable = ({ columns, data }) => {
           width: "100%",
         }}
       >
-        {info.getValue()}
+        {/* If the cell value is a link, render it as a hyperlink */}
+        {column.id === "documentNumber" ? (
+          <a
+            href={`https://example.com/document/${info.getValue()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "blue", textDecoration: "underline" }}
+          >
+            {info.getValue()}
+          </a>
+        ) : (
+          info.getValue()
+        )}
       </span>
     ),
   }));
@@ -89,57 +92,16 @@ const CommonTable = ({ columns, data }) => {
     >
       <MaterialReactTable
         columns={dynamicColumns}
-        data={tableData} // Use the tableData including the grand total row
+        data={tableData}
         enableRowSelection={true}
         columnFilterDisplayMode="popover"
         paginationDisplayMode="pages"
         positionToolbarAlertBanner="bottom"
-        muiTableContainerProps={
-          {
-            // sx: {
-            //   maxHeight: '400px',
-            //   overflowY: 'auto',
-            // },
-          }
-        }
-        // muiTableBodyCellProps={{
-        //   sx: {
-        //     color: '#333',
-        //     fontWeight: 'bold',
-        //     fontFamily: "'Roboto', sans-serif",
-        //   },
-        // }}
-        // muiTableBodyCellProps={({ row }) => ({
-        //   sx: {
-        //     color: ['0', '3', '4'].includes(row.original.sno) ? 'maroon' : '#333', // Apply maroon for sno 1, 3, 4
-        //     fontWeight: 'bold',
-        //     fontFamily: "'Roboto', sans-serif",
-
-        //   },
-        // })}
-        // muiTableHeadCellProps={{
-        //   sx: {
-        //     position: 'sticky',
-        //     top: 0,
-        //     zIndex: 2,
-        //     backgroundColor: '#FFED86',
-        //     color: 'black',
-        //     fontWeight: 'bold',
-        //     fontFamily: "'Roboto', sans-serif",
-
-        //   },
-        // }}
         muiTableBodyCellProps={({ row, column }) => ({
-          sx:
-            column.id === "sno"
-              ? { display: "none" }
-              : {
-                  color: ["0", "3", "4"].includes(row.original.sno)
-                    ? "maroon"
-                    : "#333",
-                  fontWeight: "bold",
-                  fontFamily: "'Roboto', sans-serif",
-                },
+          sx: {
+            textAlign: column.id === "documentNumber" ? "center" : "left",
+            cursor: column.id === "documentNumber" ? "pointer" : "default",
+          },
         })}
         muiTableHeadCellProps={({ column }) => ({
           sx:
@@ -149,7 +111,6 @@ const CommonTable = ({ columns, data }) => {
                   position: "sticky",
                   top: 0,
                   zIndex: 2,
-                  // backgroundColor: '#FFED86',
                   backgroundColor: "#FFED86",
                   color: "black",
                   fontWeight: "bold",
@@ -299,4 +260,4 @@ const CommonTable = ({ columns, data }) => {
   );
 };
 
-export default CommonTable;
+export default TaxInvoiceCommonTable;

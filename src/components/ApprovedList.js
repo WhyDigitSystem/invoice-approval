@@ -24,6 +24,7 @@ import checkcircle from "../checkcircle.png";
 import { getInvDetailsApprove1 } from "../services/api"; // mock API call
 import NoDataFallback from "../utils/fallBack";
 import "./style.css";
+import ButtonTrans from "./ButtonTrans";
 
 const { Text } = Typography;
 
@@ -316,10 +317,12 @@ const ApprovedList = () => {
                 >
                   {/* <Text strong style={{ fontSize: '20px' }}>Approved Lists</Text> */}
 
+                  <ButtonTrans />
                   <p>Approved Lists</p>
 
                   <div>
                     <Button
+                      className="button1"
                       type="text"
                       icon={
                         theme === "light" ? <MoonOutlined /> : <SunOutlined />
@@ -336,9 +339,10 @@ const ApprovedList = () => {
                       title="Filter"
                       trigger="click"
                       placement="bottomLeft"
-                      style={{ marginLeft: "10px" }}
+                      style={{ marginRight: "0px" }}
                     >
                       <Button
+                        className="button1"
                         type="text"
                         icon={<LogoutOutlined />}
                         size="small"
@@ -346,11 +350,12 @@ const ApprovedList = () => {
                         Filter
                       </Button>
                       <Button
+                        className="button1"
                         type="text"
                         icon={<RightCircleOutlined />}
                         onClick={Listing}
                         size="small"
-                        style={{ alignSelf: "center" }}
+                        style={{ alignSelf: "center", marginLeft: "0px" }}
                       >
                         Listing
                       </Button>
@@ -390,7 +395,7 @@ const ApprovedList = () => {
                               gap: "5px",
                             }}
                           >
-                              <div
+                            <div
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -412,7 +417,6 @@ const ApprovedList = () => {
                               </Text>
                             </div>
 
-                            
                             <div
                               style={{
                                 display: "flex",
@@ -423,11 +427,10 @@ const ApprovedList = () => {
                                 SalesPerson:
                               </Text> */}
                               <Text strong style={{ color: "black" }}>
-                              {item.salespersonName}
+                                {item.salespersonName}
                               </Text>
                             </div>
-                            
-                           
+
                             <div
                               style={{
                                 display: "flex",
@@ -456,7 +459,7 @@ const ApprovedList = () => {
                               </Text>
                             </div> */}
 
-<div
+                            <div
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -485,13 +488,6 @@ const ApprovedList = () => {
                                 )}
                               </Text>
                             </div>
-
-                            
-
-                            
-                            
-
-
 
                             <div
                               style={{
@@ -555,7 +551,7 @@ const ApprovedList = () => {
                               </Text>
                             </div> */}
 
-{/*                             
+                            {/*                             
                             <div
                               style={{
                                 display: "flex",
@@ -569,7 +565,7 @@ const ApprovedList = () => {
                                 {item.controllingoffice}
                               </Text>
                             </div> */}
-{/*           
+                            {/*           
           
                             <div
                               style={{
@@ -592,7 +588,7 @@ const ApprovedList = () => {
                               }}
                             >
                               <Text strong style={{ flex: 1, color: "black" }}>
-                              Policy :
+                                Policy :
                               </Text>
 
                               <Text strong style={{ color: "black" }}>
@@ -600,7 +596,6 @@ const ApprovedList = () => {
                               </Text>
                             </div>
 
-                            
                             <div
                               style={{
                                 display: "flex",
@@ -612,9 +607,12 @@ const ApprovedList = () => {
                                 Invoice No:
                               </Text> */}
                               <Text strong style={{ color: "black" }}>
-                                {item.expenceId} | {new Date(item.docDate).toLocaleDateString(
+                                {item.expenceId} |{" "}
+                                {new Date(item.docDate).toLocaleDateString(
                                   "en-GB"
-                                )}{" "} |  {new Intl.NumberFormat("en-IN").format(
+                                )}{" "}
+                                |{" "}
+                                {new Intl.NumberFormat("en-IN").format(
                                   item.amount
                                 )}
                               </Text>

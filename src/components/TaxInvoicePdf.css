@@ -1,0 +1,92 @@
+.invoice-container {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+}
+
+.invoice-info {
+  width: 100%;
+}
+
+.invoice-info caption {
+  text-transform: uppercase;
+  text-align: left;
+  font-size: 30pt;
+  margin-bottom: 10px;
+}
+
+.address-section {
+  padding-top: 1cm;
+  padding-bottom: 1cm;
+  font-size: 14px;
+}
+
+.address-section table {
+  width: 100%;
+  font-size: 14px;
+}
+
+.items-table {
+  margin-top: 20px;
+}
+
+.items-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items-table th,
+.items-table td {
+  border-top: 1px solid #eee;
+  padding: 5px;
+}
+
+.items-table th {
+  text-align: left;
+}
+
+.items-table td {
+  text-align: center;
+}
+
+.items-table td:last-child {
+  text-align: right;
+}
+
+.totals-section {
+  margin-top: 20px;
+}
+
+.totals-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.totals-section td {
+  padding: 5px;
+  text-align: right;
+}
+
+.notes-section {
+  margin-top: 1cm;
+  margin-bottom: 1cm;
+}
+
+.notes-section p {
+  font-size: 10pt;
+  line-height: 14pt;
+}

@@ -1,0 +1,238 @@
+.receipt {
+  width: 250px;
+  /* background: white; */
+  /* background: #649173; */
+  /* background: -webkit-linear-gradient(to left, #dbd5a4, #649173);
+  background: linear-gradient(to left, #dbd5a4, #649173); 
+  */
+
+  box-shadow: -2px -2px 5px rgba(9, 148, 255, 0.25),
+    inset -2px -2px 55px rgba(9, 148, 255, 0.5);
+  border: 3px dashed #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --lightness: 80%;
+  background: #ffffff80;
+  color: #000;
+  outline: 1px solid rgb(255, 255, 255);
+  box-shadow: -2px -2px 5px rgba(9, 148, 255, 0.25),
+    inset -2px -2px 55px rgba(9, 148, 255, 0.5);
+  transition: all ease-in-out 0.3s;
+}
+
+.shop-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.info {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+.receipt table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+}
+
+.receipt table th,
+.receipt table td {
+  padding: 4px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.barcode {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.thanks {
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.receipt:hover {
+  --lightness: 80%;
+  background: #ffffff80;
+  color: #000;
+  outline: 1px solid rgb(255, 255, 255);
+  box-shadow: -2px -2px 5px rgba(9, 148, 255, 0.25),
+    inset -2px -2px 55px rgba(9, 148, 255, 0.5);
+  transition: all ease-in-out 0.3s;
+}
+
+.receipt:hover > .cta {
+  outline: none;
+  background-color: #0d0d0d;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping if the screen is smaller */
+  justify-content: space-between; /* Distribute the cards evenly */
+  gap: 20px; /* Add space between the cards */
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.info {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.total {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .receipt {
+    flex: 1 1 calc(50% - 20px); /* 2 cards in a row for smaller screens */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .receipt {
+    flex: 1 1 100%; /* 1 card per row for very small screens */
+  }
+}
+.custom-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox .checkmark {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #333;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
+  transform-style: preserve-3d;
+}
+
+.custom-checkbox .checkmark::before {
+  content: "\2713";
+  font-size: 16px;
+  color: transparent;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  background-color: #333;
+  border-color: #333;
+  transform: scale(1.1) rotateZ(360deg) rotateY(360deg);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark::before {
+  color: #fff;
+}
+
+.custom-checkbox:hover {
+  color: #666;
+}
+
+.custom-checkbox:hover .checkmark {
+  border-color: #666;
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.custom-checkbox input[type="checkbox"]:focus + .checkmark {
+  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.custom-checkbox .checkmark,
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  transition: background-color 1.3s, border-color 1.3s, color 1.3s,
+    transform 0.3s;
+}
+
+.cta {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cta span {
+  padding-bottom: 7px;
+  letter-spacing: 4px;
+  font-size: 14px;
+  padding-right: 15px;
+  text-transform: uppercase;
+}
+
+.cta svg {
+  transform: translateX(-8px);
+  transition: all 0.3s ease;
+}
+
+.cta:hover svg {
+  transform: translateX(0);
+}
+
+.cta:active svg {
+  transform: scale(0.9);
+}
+
+.hover-underline-animation {
+  position: relative;
+  color: black;
+  padding-bottom: 20px;
+}
+
+.hover-underline-animation:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #000000;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.cta:hover .hover-underline-animation:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}

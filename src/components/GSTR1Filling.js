@@ -15,19 +15,10 @@ import {
   Col,
   ConfigProvider,
 } from "antd";
-import {
-  LogoutOutlined,
-  MoonOutlined,
-  RightCircleOutlined,
-  SunOutlined,
-  FolderOpenOutlined,
-  FolderOutlined,
-} from "@ant-design/icons";
-import { getPartyLedger, getPartyLedgerPartyName } from "../services/api";
+import { getGSTR1Parties, getGSTR1Filling } from "../services/api";
 import { getUserBranch } from "../services/api"; // Import getUserBranch function
 import CommonTable from "./CommonTable";
 // import dayjs from 'dayjs';
-import { useNavigate } from "react-router-dom";
 import { MenuItem, CircularProgress } from "@mui/material";
 import "./ApAgeing.css";
 import NoDataAvailable from "../utils/NoDataAvailable";
@@ -37,11 +28,20 @@ import rewindbutton from ".././rewindbutton.png";
 import Spinner3 from ".././Spinner3.gif";
 import moment from "moment";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import ButtonNew from "./ButtonNew";
+import {
+  LogoutOutlined,
+  MoonOutlined,
+  RightCircleOutlined,
+  SunOutlined,
+  FolderOpenOutlined,
+  FolderOutlined,
+} from "@ant-design/icons";
 
 const { Option } = Select;
 
-export const PartyLedger = () => {
+export const GSTR1Filling = () => {
   // States for filter values
   const [pbranchname, setPbranchName] = useState("");
   const [party, setParty] = useState("");
@@ -56,6 +56,7 @@ export const PartyLedger = () => {
   const [slab6, setSlab6] = useState(180);
   const [slab7, setSlab7] = useState(180);
   const navigate = useNavigate();
+
   const [status, setStatus] = useState("");
   const [fromdt, setFromdt] = useState(null);
   const [todt, setTodt] = useState(null);
@@ -74,7 +75,6 @@ export const PartyLedger = () => {
   const [stepsGap, setStepsGap] = useState(7); // Dynamic gap between progress bars
   const [percent, setPercent] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
-
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   const toggleTheme = () => {
@@ -126,6 +126,23 @@ export const PartyLedger = () => {
     }
   }, [percent, loading]);
 
+  // useEffect(() => {
+  //   getGSTR1Parties()
+  //         .then((response) => {
+  //           console.log(response);  // Log to verify data structure
+  //           setParty(response);
+  //           setLoading(false);
+  //         })
+  //         .catch(() => {
+  //           notification.error({
+  //             message: "Data Fetch Error",
+  //             description: "Failed to fetch updated data for the listing.",
+  //           });
+  //           setLoading(false);
+  //         });
+  //       }
+  //     )
+
   useEffect(() => {
     getUserBranch()
       .then((response) => {
@@ -138,29 +155,6 @@ export const PartyLedger = () => {
         });
       });
   }, []);
-
-  // Fetch parties based on selected Type
-  const fetchPartyByType = (selectedType) => {
-    setLoading(true); // Set loading to true when fetching data
-    getPartyLedgerPartyName(selectedType)
-      .then((response) => {
-        setParty(response); // Update party state with fetched data
-        setLoading(false); // Set loading to false once data is fetched
-      })
-      .catch(() => {
-        notification.error({
-          message: "Data Fetch Error",
-          description: "Failed to fetch Party Names based on selected Type.",
-        });
-        setLoading(false);
-      });
-  };
-
-  // Handle Type selection change
-  const handleTypeChange = (value) => {
-    setPtype(value); // Update the Type state
-    fetchPartyByType(value); // Fetch Party Names based on selected Type
-  };
 
   // Handle date range change
   // const handleDateRangeChange = (dates) => {
@@ -196,41 +190,88 @@ export const PartyLedger = () => {
   // ];
 
   const reportColumns = [
+    { accessorKey: "gstin", header: "GSTIN", size: 180 },
+    { accessorKey: "branchCode", header: "Branch Code", size: 180 },
+    { accessorKey: "caption", header: "Caption", size: 180 },
+    { accessorKey: "bizType", header: "Business Type", size: 180 },
+    { accessorKey: "irnServiceType", header: "IRN Service Type", size: 180 },
+    { accessorKey: "vchNo", header: "Voucher No.", size: 180 },
+    { accessorKey: "vchDt", header: "Voucher Date", size: 140 },
+    { accessorKey: "docId", header: "Invoice No.", size: 180 },
+    { accessorKey: "docDt", header: "Invoice Date", size: 140 },
+    { accessorKey: "partyCode", header: "Party Code", size: 180 },
+    { accessorKey: "partyType", header: "Party Type", size: 180 },
+    { accessorKey: "partyName", header: "Party Name", size: 480 },
+    { accessorKey: "pgstin", header: "Party GSTIN", size: 180 },
+    { accessorKey: "pSupply", header: "Supply", size: 180 },
     {
-      accessorKey: "sno",
-      header: "SNo",
+      accessorKey: "chargeCode",
+      header: "Charge Code",
       size: 140,
     },
-    { accessorKey: "docid", header: "Invoice No", size: 180 },
-    { accessorKey: "docDate", header: "Invoice Date", size: 140 },
-    { accessorKey: "refNo", header: "Ref No", size: 140 },
-    { accessorKey: "refDate", header: "Ref Date", size: 140 },
-    { accessorKey: "particulars", header: "Particulars", size: 400 },
-    { accessorKey: "opbal", header: "Op Bal.", size: 140 },
     {
-      accessorKey: "dbAmount",
-      header: "Db Amt",
+      accessorKey: "gchargeCode",
+      header: "G Charge Code",
+      size: 140,
+    },
+    {
+      accessorKey: "chargeName",
+      header: "Charge Name",
+      size: 380,
+    },
+    {
+      accessorKey: "lCamT",
+      header: "LCA Amt",
       size: 140,
       cell: (info) => info.getValue(),
       className: "align-right",
     },
-    { accessorKey: "crAmount", header: "Cr Amt", size: 140 },
     {
-      accessorKey: "billDbAmount",
-      header: "Bill Db Amt",
+      accessorKey: "totInvAmtLC",
+      header: "Total Invoice Amt (LC)",
+      size: 180,
+      cell: (info) => info.getValue(),
+      className: "align-right",
+    },
+    { accessorKey: "gstP", header: "GST Percentage", size: 140 },
+    { accessorKey: "gstType", header: "GST Type", size: 140 },
+    {
+      accessorKey: "gst",
+      header: "GST Amount",
       size: 140,
       cell: (info) => info.getValue(),
       className: "align-right",
     },
     {
-      accessorKey: "billCrAmount",
-      header: "Bill Cr Amt",
+      accessorKey: "igst",
+      header: "IGST",
       size: 140,
       cell: (info) => info.getValue(),
       className: "align-right",
     },
-    { accessorKey: "suppRefNo", header: "Supp Ref No", size: 140 },
-    { accessorKey: "suppRefDate", header: "Supp Ref Date", size: 140 },
+    {
+      accessorKey: "cgst",
+      header: "CGST",
+      size: 140,
+      cell: (info) => info.getValue(),
+      className: "align-right",
+    },
+    {
+      accessorKey: "sgst",
+      header: "SGST",
+      size: 140,
+      cell: (info) => info.getValue(),
+      className: "align-right",
+    },
+    { accessorKey: "maker", header: "Maker", size: 380 },
+    { accessorKey: "approver", header: "Approver", size: 380 },
+    { accessorKey: "ackDt", header: "Ack Date", size: 140 },
+    { accessorKey: "ackNo", header: "Ack No.", size: 180 },
+    { accessorKey: "irnId", header: "IRN ID", size: 180 },
+    { accessorKey: "type", header: "Type", size: 180 },
+    { accessorKey: "fType", header: "F Type", size: 180 },
+    { accessorKey: "product", header: "Product", size: 180 },
+    { accessorKey: "territory", header: "Territory", size: 180 }, // Added territory column
   ];
 
   const handleInputChange = (e) => {
@@ -258,24 +299,6 @@ export const PartyLedger = () => {
   //   setTodt(formattedTodt); // Update the state with the selected date
   // };
 
-  // Fetch data when branch name changes
-  const fetchPartyData = (ptype) => {
-    setLoading(true);
-    getPartyLedgerPartyName(ptype)
-      .then((response) => {
-        console.log(response); // Log to verify data structure
-        setParty(response);
-        setLoading(false);
-      })
-      .catch(() => {
-        notification.error({
-          message: "Data Fetch Error",
-          description: "Failed to fetch updated data for the listing.",
-        });
-        setLoading(false);
-      });
-  };
-
   const handleDateRangeChange = (dates) => {
     if (dates && dates.length > 0) {
       setFromdt(dates[0]); // First date is the fromDate
@@ -300,14 +323,8 @@ export const PartyLedger = () => {
     // Call API with filters
     const formattedFromDate = fromdt ? fromdt.format("DD/MM/YYYY") : null;
     const formattedToDate = todt ? todt.format("DD/MM/YYYY") : null;
-    getPartyLedger(
-      pbranchname,
-      selectedParty,
-      formattedFromDate,
-      formattedToDate,
-      ptype,
-      div
-    )
+    const tparty = "ALL";
+    getGSTR1Filling(pbranchname, tparty, formattedFromDate, formattedToDate)
       .then((response) => {
         // Set data state with the updated data (result + grand total)
         setData(response);
@@ -336,7 +353,7 @@ export const PartyLedger = () => {
           >
             <b>
               <p style={{ align: "center" }}>
-                Party Ledger{" "}
+                GSTR1 Filling{" "}
                 {/* <img
                 src={rewindbutton}
                 alt="Go back"
@@ -361,77 +378,48 @@ export const PartyLedger = () => {
               {/* Branch Name Dropdown */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
                 {/* Status Label and Dropdown */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "150px",
-                  }}
+                {/* 
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "200px",
+                }}
+              >
+                <label
+                  htmlFor="party-select"
+                  style={{ marginBottom: "8px", fontWeight: "bold" }}
                 >
-                  <label
-                    htmlFor="type-select"
-                    style={{ marginBottom: "8px", fontWeight: "bold" }}
-                  >
-                    Type
-                  </label>
+                  Party Name
+                </label>
+
+                <div className="input-data">
                   <Select
-                    id="type-select"
-                    value={ptype}
-                    onChange={handleTypeChange}
-                    placeholder="Select Type"
+                    showSearch // Enable search functionality
+                    value={selectedParty}
+                    onChange={setSelectedParty}
+                    // onChange={(value) => setSubledgerName(value)}
+                    placeholder="Select a Party"
+                    style={{ width: "100%" }} // Ensure the dropdown is wide enough
+                    loading={loading}
                   >
-                    <Option value="">Select Type</Option>
-                    <Option value="CUSTOMER">Customer</Option>
-                    <Option value="INTERCOMPANY">InterCompany</Option>
-                    <Option value="AIR CARRIER">Air Carrier</Option>
-                    <Option value="SEA CARRIER">Sea Carrier</Option>
-                    <Option value="PARTNER">Partner</Option>
-                    <Option value="VENDOR">Vendor</Option>
-                    <Option value="FX">FX</Option>
+                    {party.length > 0 ? (
+                      party.map((partyItem) => (
+                        <MenuItem
+                          key={partyItem.party_name}
+                          value={partyItem.party_name}
+                        >
+                          {partyItem.party_name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <Select.Option disabled>
+                        No party names available
+                      </Select.Option>
+                    )}
                   </Select>
                 </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "200px",
-                  }}
-                >
-                  <label
-                    htmlFor="party-select"
-                    style={{ marginBottom: "8px", fontWeight: "bold" }}
-                  >
-                    Party Name
-                  </label>
-
-                  <div className="input-data">
-                    <Select
-                      showSearch // Enable search functionality
-                      value={selectedParty}
-                      onChange={setSelectedParty}
-                      // onChange={(value) => setSubledgerName(value)}
-                      placeholder="Select a Party"
-                      style={{ width: "100%" }} // Ensure the dropdown is wide enough
-                      loading={loading}
-                    >
-                      {party.length > 0 ? (
-                        party.map((partyItem) => (
-                          <MenuItem
-                            key={partyItem.subledgerName}
-                            value={partyItem.subledgerName}
-                          >
-                            {partyItem.subledgerName}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <Select.Option disabled>
-                          No party names available
-                        </Select.Option>
-                      )}
-                    </Select>
-                  </div>
-                </div>
+              </div> */}
 
                 <div
                   style={{
@@ -457,7 +445,7 @@ export const PartyLedger = () => {
                       branchNames.map((branch) => (
                         <Option
                           key={branch.branchCode}
-                          value={branch.branchName}
+                          value={branch.branchCode}
                         >
                           {branch.branchName}
                         </Option>
@@ -469,29 +457,6 @@ export const PartyLedger = () => {
                 </div>
 
                 {/* Status Label and Dropdown */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "140px",
-                  }}
-                >
-                  <label
-                    htmlFor="division-select"
-                    style={{ marginBottom: "8px", fontWeight: "bold" }}
-                  >
-                    With Details
-                  </label>
-                  <Select
-                    id="division-select"
-                    value={div}
-                    onChange={(value) => setDiv(value)}
-                    placeholder="With Details"
-                  >
-                    <Option value="Yes">Yes</Option>
-                    <Option value="No">No</Option>
-                  </Select>
-                </div>
 
                 {/* <div style={{ display: 'flex', flexDirection: 'column', width: '140px' }}>
         <label htmlFor="division-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
@@ -555,8 +520,6 @@ export const PartyLedger = () => {
                       setPbranchName("");
                       setFromdt("");
                       setTodt("");
-                      setPtype(null);
-                      setDiv(null);
                       setSelectedParty(null);
                       //   fetchData(); // Re-fetch data without filters
                     }}
@@ -606,4 +569,4 @@ export const PartyLedger = () => {
   );
 };
 
-export default PartyLedger;
+export default GSTR1Filling;

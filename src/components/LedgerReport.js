@@ -23,16 +23,16 @@ import {
   FolderOpenOutlined,
   FolderOutlined,
 } from "@ant-design/icons";
-import { getAROS, getAllARParties } from "../services/api";
+import { getLedgerReport, getLedgerAccountName } from "../services/api";
 import { getUserBranch } from "../services/api"; // Import getUserBranch function
 import CommonTable from "./CommonTable";
-import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+// import dayjs from 'dayjs';
 import { MenuItem, CircularProgress } from "@mui/material";
 import "./ApAgeing.css";
 import NoDataAvailable from "../utils/NoDataAvailable";
 import { AiFillBackward } from "react-icons/ai";
 import rewindbutton from ".././rewindbutton.png";
-import { useNavigate } from "react-router-dom";
 import ButtonNew from "./ButtonNew";
 
 import Spinner3 from ".././Spinner3.gif";
@@ -41,9 +41,10 @@ import { format } from "date-fns";
 
 const { Option } = Select;
 
-export const ARAgeingOS = () => {
+export const LedgerReport = () => {
   // States for filter values
   const [pbranchname, setPbranchName] = useState("");
+  const [party, setParty] = useState("");
   const [div, setDiv] = useState("");
   const [ptype, setPtype] = useState("");
   const [sbcode, setSbCode] = useState("");
@@ -54,10 +55,10 @@ export const ARAgeingOS = () => {
   const [slab5, setSlab5] = useState(150);
   const [slab6, setSlab6] = useState(180);
   const [slab7, setSlab7] = useState(180);
-  const navigate = useNavigate();
 
   const [status, setStatus] = useState("");
-  const [asondt, setAsondt] = useState(dayjs().format("DD-MM-YYYY"));
+  const [fromdt, setFromdt] = useState(null);
+  const [todt, setTodt] = useState(null);
   const [subledgerName, setSubledgerName] = useState("");
 
   const [subledgerNames, setSubledgerNames] = useState("");
@@ -67,6 +68,8 @@ export const ARAgeingOS = () => {
   const [branchName, setBranchName] = useState([]); // Initialize as empty array
   const [branchNames, setBranchNames] = useState([]); // Initialize as empty array
   const { RangePicker } = DatePicker; // Destructure RangePicker
+  const [selectedParty, setSelectedParty] = useState("");
+  const navigate = useNavigate();
 
   const [stepsCount, setStepsCount] = useState(5); // Dynamic steps count
   const [stepsGap, setStepsGap] = useState(7); // Dynamic gap between progress bars
@@ -93,37 +96,17 @@ export const ARAgeingOS = () => {
           },
         }
       : {};
+
   useEffect(() => {
     if (theme === "dark") {
+      // document.body.style.backgroundColor = "#1c1c1c"; // Dark background for the entire page
       document.body.style.backgroundColor = "#5D576B";
       document.body.style.color = "#fff"; // White text for dark mode
-      // Update styles for inputs and date fields
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.style.backgroundColor = "#5D576B";
-        input.style.color = "#fff";
-      });
     } else {
       document.body.style.backgroundColor = "#fff"; // Light background for the body
       document.body.style.color = "#000"; // Black text for light mode
-      // Update styles for inputs and date fields
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.style.backgroundColor = "#fff";
-        input.style.color = "#000";
-      });
     }
   }, [theme]);
-  // useEffect(() => {
-  //   if (theme === "dark") {
-  //     // document.body.style.backgroundColor = "#1c1c1c"; // Dark background for the entire page
-  //     document.body.style.backgroundColor = "#5D576B";
-  //     document.body.style.color = "#fff"; // White text for dark mode
-  //   } else {
-  //     document.body.style.backgroundColor = "#fff"; // Light background for the body
-  //     document.body.style.color = "#000"; // Black text for light mode
-  //   }
-  // }, [theme]);
 
   // Simulate data loading
   useEffect(() => {
@@ -142,22 +125,8 @@ export const ARAgeingOS = () => {
     }
   }, [percent, loading]);
 
-  // Fetch branch names on component mount
   useEffect(() => {
-    getAllARParties()
-      .then((response) => {
-        setSubledgerNames(response); // Assuming the API returns a list of branch objects
-        console.log("Subledgername", subledgerNames);
-      })
-      .catch((error) => {
-        notification.error({
-          message: "Failed to fetch Branches",
-          description: "Error occurred while fetching branch names.",
-        });
-      });
-  }, []);
-
-  useEffect(() => {
+    fetchPartyByType();
     getUserBranch()
       .then((response) => {
         setBranchNames(response); // Assuming the API returns a list of branch objects
@@ -170,135 +139,143 @@ export const ARAgeingOS = () => {
       });
   }, []);
 
-  const getSlabHeader = (slabStart, slabEnd) => {
-    if (slabStart && slabEnd && slabStart < slabEnd) {
-      return `Days ${slabStart} - ${slabEnd}`;
-    }
-    if (slabStart == 0 && slabStart < slabEnd) {
-      return `Below ${slabEnd} Days`;
-    }
-    if (slabStart != 0 && slabEnd == 0) {
-      return `Days ${slabStart}+ `;
-    }
-    return ""; // Return empty string for invalid range
+  // Fetch parties based on selected Type
+  const fetchPartyByType = () => {
+    setLoading(true); // Set loading to true when fetching data
+    getLedgerAccountName()
+      .then((response) => {
+        setParty(response); // Update party state with fetched data
+        setLoading(false); // Set loading to false once data is fetched
+      })
+      .catch(() => {
+        notification.error({
+          message: "Data Fetch Error",
+          description: "Failed to fetch Party Names based on selected Type.",
+        });
+        setLoading(false);
+      });
   };
 
   // Handle date range change
-  const handleDateRangeChange = (dates) => {
-    // Set the selected date range into asondt
-    setAsondt(dates ? dates[0] : null); // Use the first date as the only value
-  };
+  // const handleDateRangeChange = (dates) => {
+  //   // Set the selected date range into asondt
+  //   setAsondt(dates ? dates[0] : null); // Use the first date as the only value
+  // };
   // Table columns definition
+  // const reportColumns = [
+  //   { accessorKey: 'SNo', header: 'sno', size: 140 },
+  //   { accessorKey: 'docid', header: 'Invoice No', size: 140 },
+  //   { accessorKey: 'docDate', header: 'Invoice Date', size: 140 },
+  //   { accessorKey: 'refNo', header: 'Ref No', size: 140 },
+  //   { accessorKey: 'refDate', header: 'Ref Date', size: 140 },
+  //   { accessorKey: 'suppRefNo', header: 'Supp Ref No', size: 140 },
+  //   { accessorKey: 'suppRefDate', header: 'Supp Ref Date', size: 140 },
+  //   // { accessorKey: 'subledgerCode', header: 'Party Code', size: 140 },
+  //   // { accessorKey: 'subledgerName', header: 'Party', size: 400 },
+  //   // { accessorKey: 'currency', header: 'Currency', size: 140 },
+  //   { accessorKey: 'particulars', header: 'Particulars', size: 400 },
+  //   { accessorKey: 'opbal', header: 'Op Bal.', size: 140 },
+  //   // { accessorKey: 'cbranch', header: 'Ctrl Branch', size: 140 },
+
+  //   { accessorKey: 'dbAmount', header: 'Db Amt', size: 140, cell: (info) => info.getValue(),
+  //     className: 'align-right'},
+  //     { accessorKey: 'crAmount', header: 'Cr Amt', size: 140 },
+
+  //     { accessorKey: 'billDbAmount', header: 'Bill Db Amt', size: 140, cell: (info) => info.getValue(),
+  //       className: 'align-right'},
+
+  //     { accessorKey: 'billCrAmount', header: 'Bill Cr Amt', size: 140 ,cell: (info) => info.getValue(),
+  //       className: 'align-right'},
+
+  // ];
+
   const reportColumns = [
-    { accessorKey: "subledgerCode", header: "Party Code", size: 140 },
-    { accessorKey: "subledgerName", header: "Party", size: 400 },
-    // { accessorKey: 'cbranch', header: 'Ctrl Branch', size: 140 },
-    // { accessorKey: 'salesPersonName', header: 'SalesPerson', size: 140 },
-    // { accessorKey: 'jobBranch', header: 'Job Branch', size: 140 },
-    // { accessorKey: 'currency', header: 'Currency', size: 140 },
-    // { accessorKey: 'creditDays', header: 'Credit Days', size: 140 },
-    // { accessorKey: 'creditLimit', header: 'Credit Limit', size: 140 },
-
-    // { accessorKey: 'amount', header: 'Inv Amt', size: 140, cell: (info) => info.getValue(),
-    //     className: 'align-right'},
     {
-      accessorKey: "outStanding",
-      header: "Out Standing",
+      accessorKey: "sno",
+      header: "SNo",
+      size: 140,
+    },
+    { accessorKey: "voucherNumber", header: "Invoice No", size: 180 },
+    { accessorKey: "voucherDate", header: "Invoice Date", size: 140 },
+    { accessorKey: "particulars", header: "Particulars", size: 400 },
+    // { accessorKey: 'opbal', header: 'Op Bal', size: 140, cell: (info) => info.getValue(), className: 'align-right' },
+    { accessorKey: "currency", header: "Currency", size: 100 },
+    {
+      accessorKey: "dbAmount",
+      header: "Db Amt",
       size: 140,
       cell: (info) => info.getValue(),
       className: "align-right",
     },
-    { accessorKey: "unAdjusted", header: "Un Adjusted", size: 140 },
+    { accessorKey: "crAmount", header: "Cr Amt", size: 140 },
     {
-      accessorKey: "totalDue",
-      header: "Total Due",
+      accessorKey: "nDbAmount",
+      header: "Bill Db Amt",
       size: 140,
       cell: (info) => info.getValue(),
       className: "align-right",
     },
-
-    // Conditionally add slab columns only if the range is valid
-    ...(slab1 !== 0
-      ? [{ accessorKey: "mslab1", header: getSlabHeader(0, slab1), size: 140 }]
-      : []),
-    ...(slab2 !== 0
-      ? [
-          {
-            accessorKey: "mslab2",
-            header: getSlabHeader(slab1, slab2),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab3 !== 0
-      ? [
-          {
-            accessorKey: "mslab3",
-            header: getSlabHeader(slab2, slab3),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab4 !== 0
-      ? [
-          {
-            accessorKey: "mslab4",
-            header: getSlabHeader(slab3, slab4),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab5 !== 0
-      ? [{ accessorKey: "mslab5", header: getSlabHeader(slab4, 0), size: 140 }]
-      : []),
+    {
+      accessorKey: "nCrAmount",
+      header: "Bill Cr Amt",
+      size: 140,
+      cell: (info) => info.getValue(),
+      className: "align-right",
+    },
+    { accessorKey: "narration", header: "Narration", size: 540 },
   ];
 
   const handleInputChange = (e) => {
     setSlab1(e.target.value); // Update the state when user types
   };
-
   const handleImageClick = () => {
     // window.history.back(); // Takes the user to the previous page
     navigate("/Reports");
   };
 
-  const handleDateChange = (event) => {
-    const newDate = event.target.value;
+  // const FromhandleDateChange = (event) => {
+  //   const newDate = event.target.value;
 
-    const formattedAsondt = newDate
-      ? dayjs(newDate).format("DD-MM-YYYY")
-      : null;
+  //   const formattedFromdt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
 
-    setAsondt(formattedAsondt); // Update the state with the selected date
+  //   setFromdt(formattedFromdt); // Update the state with the selected date
+  // };
+
+  // const TohandleDateChange = (event) => {
+  //   const newDate = event.target.value;
+
+  //   const formattedTodt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
+
+  //   setTodt(formattedTodt); // Update the state with the selected date
+  // };
+
+  // Fetch data when branch name changes
+  const fetchPartyData = () => {
+    setLoading(true);
+    getLedgerAccountName()
+      .then((response) => {
+        console.log(response); // Log to verify data structure
+        setParty(response);
+        setLoading(false);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Data Fetch Error",
+          description: "Failed to fetch updated data for the listing.",
+        });
+        setLoading(false);
+      });
   };
 
-  const handleSlabChange = (slab, value) => {
-    let parsedValue = value === "" ? 0 : parseInt(value); // If input is empty, reset to 0
-
-    switch (slab) {
-      case "slab1":
-        setSlab1(parsedValue);
-        break;
-      case "slab2":
-        setSlab2(parsedValue);
-        break;
-      case "slab3":
-        setSlab3(parsedValue);
-        break;
-      case "slab4":
-        setSlab4(parsedValue);
-        break;
-      case "slab5":
-        setSlab5(parsedValue);
-        break;
-      case "slab6":
-        setSlab6(parsedValue);
-        break;
-      default:
-        break;
+  const handleDateRangeChange = (dates) => {
+    if (dates && dates.length > 0) {
+      setFromdt(dates[0]); // First date is the fromDate
+      setTodt(dates[1]); // Second date is the toDate
+    } else {
+      setFromdt(null);
+      setTodt(null);
     }
   };
-
   // Fetch data based on the selected filters
   const fetchData = () => {
     setLoading(true);
@@ -308,23 +285,18 @@ export const ARAgeingOS = () => {
     // const formattedToDate = toDate ? toDate.format('DD-MM-YYYY') : null;
 
     // const formattedAsonDate = asondt ? asondt.format('DD-MM-YYYY') : null;
-    const formattedAsondt = asondt
-      ? dayjs(asondt, "DD-MM-YYYY").format("DD-MM-YYYY")
-      : null;
+    // const formattedfromdt = fromdt ? dayjs(fromdt, 'DD/MM/YYYY').format('DD/MM/YYYY') : null;
+
+    // const formattedtodt = todt ? dayjs(todt, 'DD/MM/YYYY').format('DD/MM/YYYY') : null;
     // Call API with filters
-    getAROS(
-      formattedAsondt,
-      div,
+    const formattedFromDate = fromdt ? fromdt.format("DD/MM/YYYY") : null;
+    const formattedToDate = todt ? todt.format("DD/MM/YYYY") : null;
+    getLedgerReport(
       pbranchname,
-      ptype,
-      subledgerName,
-      slab1,
-      slab2,
-      slab3,
-      slab4,
-      slab5,
-      slab6,
-      slab7
+      selectedParty,
+      formattedFromDate,
+      formattedToDate,
+      div
     )
       .then((response) => {
         // Set data state with the updated data (result + grand total)
@@ -354,7 +326,7 @@ export const ARAgeingOS = () => {
           >
             <b>
               <p style={{ align: "center" }}>
-                AR OutStanding{" "}
+                Ledger Report{" "}
                 {/* <img
                 src={rewindbutton}
                 alt="Go back"
@@ -378,6 +350,8 @@ export const ARAgeingOS = () => {
             <Space style={{ marginBottom: "20px" }}>
               {/* Branch Name Dropdown */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+                {/* Status Label and Dropdown */}
+
                 <div
                   style={{
                     display: "flex",
@@ -389,25 +363,26 @@ export const ARAgeingOS = () => {
                     htmlFor="party-select"
                     style={{ marginBottom: "8px", fontWeight: "bold" }}
                   >
-                    Party Name
+                    Account Name
                   </label>
 
                   <div className="input-data">
                     <Select
                       showSearch // Enable search functionality
-                      value={subledgerName}
-                      onChange={(value) => setSubledgerName(value)}
+                      value={selectedParty}
+                      onChange={setSelectedParty}
+                      // onChange={(value) => setSubledgerName(value)}
                       placeholder="Select a Party"
                       style={{ width: "100%" }} // Ensure the dropdown is wide enough
                       loading={loading}
                     >
-                      {subledgerNames.length > 0 ? (
-                        subledgerNames.map((party) => (
+                      {party.length > 0 ? (
+                        party.map((partyItem) => (
                           <MenuItem
-                            key={party.subledgerName}
-                            value={party.subledgerName}
+                            key={partyItem.accountName}
+                            value={partyItem.accountName}
                           >
-                            {party.subledgerName}
+                            {partyItem.accountName}
                           </MenuItem>
                         ))
                       ) : (
@@ -423,7 +398,7 @@ export const ARAgeingOS = () => {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    width: "200px",
+                    width: "180px",
                   }}
                 >
                   <label
@@ -459,156 +434,75 @@ export const ARAgeingOS = () => {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    width: "200px",
-                  }}
-                >
-                  <label
-                    htmlFor="type-select"
-                    style={{ marginBottom: "8px", fontWeight: "bold" }}
-                  >
-                    Type
-                  </label>
-                  <Select
-                    id="type-select"
-                    value={ptype}
-                    onChange={(value) => setPtype(value)}
-                    placeholder="Select Type"
-                  >
-                    <Option value="">Select Type</Option>
-                    <Option value="Branch">Branch</Option>
-                    <Option value="Control">Control</Option>
-                    <Option value="Pan India">Pan India</Option>
-                  </Select>
-                </div>
-                {/* Status Label and Dropdown */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "200px",
+                    width: "140px",
                   }}
                 >
                   <label
                     htmlFor="division-select"
                     style={{ marginBottom: "8px", fontWeight: "bold" }}
                   >
-                    Division
+                    With Details
                   </label>
                   <Select
                     id="division-select"
                     value={div}
                     onChange={(value) => setDiv(value)}
-                    placeholder="Select Division"
+                    placeholder="With Details"
                   >
-                    <Option value="">Select Division</Option>
-                    <Option value="ALL">ALL</Option>
-                    <Option value="FF">FF</Option>
-                    <Option value="WH">WH</Option>
+                    <Option value="Yes">Yes</Option>
+                    <Option value="No">No</Option>
                   </Select>
                 </div>
+
+                {/* <div style={{ display: 'flex', flexDirection: 'column', width: '140px' }}>
+        <label htmlFor="division-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
+          FromDate
+        </label>
+      <input
+        type="date"
+        id="fromdt"
+        value={fromdt ? dayjs(fromdt, 'DD-MM-YYYY').format('YYYY-MM-DD') : ''}
+        onChange={FromhandleDateChange}
+        placeholder="DD/MM/YYYY"
+      />
+    </div>
+
+      
+    <div style={{ display: 'flex', flexDirection: 'column', width: '140px' }}>
+        <label htmlFor="division-select" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
+          ToDate
+        </label>
+      <input
+        type="date"
+        id="todt"
+        value={todt ? dayjs(todt, 'DD-MM-YYYY').format('YYYY-MM-DD') : ''}
+        onChange={TohandleDateChange}
+        placeholder="DD/MM/YYYY"
+      />
+    </div> */}
 
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    width: "120px",
+                    width: "240px",
                   }}
                 >
                   <label
-                    htmlFor="division-select"
+                    htmlFor="date-range-picker"
                     style={{ marginBottom: "8px", fontWeight: "bold" }}
                   >
-                    AsOn Date
+                    Date Range
                   </label>
-                  <input
-                    type="date"
-                    id="asondt"
-                    value={
-                      asondt
-                        ? dayjs(asondt, "DD-MM-YYYY").format("YYYY-MM-DD")
-                        : ""
-                    }
-                    onChange={handleDateChange}
-                    placeholder="DD/MM/YYYY"
+                  <RangePicker
+                    id="date-range-picker"
+                    value={[fromdt, todt]}
+                    onChange={handleDateRangeChange}
+                    style={{ width: "100%" }}
+                    format="DD-MM-YYYY"
+                    placeholder={["Start Date", "End Date"]}
                   />
                 </div>
-
-                <br />
-
-                {/* <div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab1
-  </label>
-  <input
-    id="slab1"
-    type="text"
-    value={slab1} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 1)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div>
-
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab2
-  </label>
-  <input
-    id="slab2"
-    type="text"
-    value={slab2} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 2)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div>
-      
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab3
-  </label>
-  <input
-    id="slab3"
-    type="text"
-    value={slab3} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 3)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div>
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab4
-  </label>
-  <input
-    id="slab4"
-    type="text"
-    value={slab4} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 4)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div>
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab5
-  </label>
-  <input
-    id="slab5"
-    type="text"
-    value={slab5} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 5)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div>
-<div style={{ display: 'flex', flexDirection: 'column', width: 'auto' }}>
-  <label htmlFor="slab-input" style={{ marginBottom: '8px', fontWeight: 'bold' }}>
-    Slab6
-  </label>
-  <input
-    id="slab6"
-    type="text"
-    value={slab6} // Dynamically bound to the state
-    onChange={(e) => handleSlabChange(e, 6)}  // Pass slab number to the handler
-    style={{ width: '80px', padding: '3px', fontSize: '12px' }} // Reduced size
-  /> 
-</div> */}
 
                 <button class="Btn" style={{ marginTop: "30px" }}>
                   <span class="leftContainer">
@@ -620,9 +514,11 @@ export const ARAgeingOS = () => {
                     class="likeCount"
                     onClick={() => {
                       setPbranchName("");
-                      setAsondt("");
+                      setFromdt("");
+                      setTodt("");
                       setPtype(null);
                       setDiv(null);
+                      setSelectedParty(null);
                       //   fetchData(); // Re-fetch data without filters
                     }}
                   >
@@ -640,17 +536,6 @@ export const ARAgeingOS = () => {
           //    <Progress size="large" />
           //  </div>
           <Col style={{ display: "flex", justifyContent: "center" }}>
-            {/* <Progress
-            type="circle"
-            percent={percent}
-            trailColor="rgba(0, 0, 0, 0.06)"
-            strokeWidth={20}
-            steps={stepsCount} // Dynamic steps count
-            format={(percent) => `${percent}%`} // Optional: custom format
-            style={{ marginTop: stepsGap }} // Adjusting gap with dynamic margin
-          /> */}
-            {/* <SquareSpinner /> */}
-            {/* <img src={Spinner3} alt="Loading" style={{marginLeft:"550px"}}/> */}
             <div
               class="loader"
               style={{ display: "flex", justifyContent: "center" }}
@@ -682,4 +567,4 @@ export const ARAgeingOS = () => {
   );
 };
 
-export default ARAgeingOS;
+export default LedgerReport;

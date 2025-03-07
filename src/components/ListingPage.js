@@ -29,6 +29,7 @@ import "./date.css";
 import "./style.css";
 
 import confetti from "canvas-confetti";
+import ButtonTrans from "./ButtonTrans";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -162,7 +163,7 @@ const ListingPage = () => {
         });
 
         setEmailData([item]);
-        console.log("Email Data",emailData);
+        console.log("Email Data", emailData);
 
         // Handle first email flag logic
         if (
@@ -267,10 +268,12 @@ const ListingPage = () => {
       (item.name &&
         item.name.toLowerCase().includes(filter.name?.toLowerCase() || ""));
 
-        const branchMatch =
-        filter.branchCode === "" ||
-        (item.branchCode &&
-          item.branchCode.toLowerCase().includes(filter.branchCode?.toLowerCase() || ""));
+    const branchMatch =
+      filter.branchCode === "" ||
+      (item.branchCode &&
+        item.branchCode
+          .toLowerCase()
+          .includes(filter.branchCode?.toLowerCase() || ""));
 
     const amountMatch =
       filter.amount === null ||
@@ -453,8 +456,6 @@ const ListingPage = () => {
     </Space>
   );
 
-
-
   return (
     <ConfigProvider theme={themeConfig}>
       {" "}
@@ -462,65 +463,6 @@ const ListingPage = () => {
       <div style={{ padding: "20px", marginTop: "40px" }}>
         {/* Toggle Dark/Light Mode */}
         <Row gutter={[16, 16]}>
-          {/* Filter Section */}
-          {/* <Col xs={24} sm={8} md={6} lg={5}>
-            <Card
-              title="Filters"
-              bordered={false}
-              size="small"
-              style={{
-                borderRadius: "8px",
-                boxShadow: boxShadowStyle, // Apply custom box shadow
-                border: `1px solid ${cardBorderColor}`, // Apply the border color here
-                color: "white",
-                padding: "10px",
-              }}
-            >
-              <Space
-                direction="horizontal" // Change to horizontal
-                size="middle" // Add spacing between items
-                style={{
-                  width: "100%",
-                  justifyContent: "space-between", // Adjust alignment
-                  flexWrap: "wrap", // Allow wrapping if items overflow
-                }}
-              >
-                <Input
-                  name="name"
-                  value={filter.name}
-                  onChange={handleFilterChange}
-                  placeholder="Filter by Name"
-                  style={{ width: "200px" }} // Adjust width if needed
-                />
-                <Input
-                  name="amount"
-                  value={filter.amount}
-                  onChange={handleFilterChange}
-                  placeholder="Filter by Amount"
-                  type="number"
-                  style={{ width: "200px" }} // Adjust width if needed
-                />
-                <RangePicker
-                  value={[filter.startDate, filter.endDate]}
-                  onChange={handleDateRangeChange}
-                  format="YYYY-MM-DD"
-                  placeholder={["Start Date", "End Date"]}
-                  style={{ width: "300px" }} // Adjust width for RangePicker
-                />
-                <Button
-                  type="text"
-                  icon={<RightCircleOutlined />}
-                  onClick={approvedList}
-                  size="small"
-                  style={{ alignSelf: "center" }} // Align button to center vertically
-                >
-                  Approved List
-                </Button>
-              </Space>
-            </Card>
-
-            <br />
-          </Col> */}
 
           {/* Listing Section */}
           <Col xs={24} sm={16} md={22} lg={22}>
@@ -533,9 +475,11 @@ const ListingPage = () => {
                     padding: "15px",
                   }}
                 >
+                  <ButtonTrans />
                   <p>Additional Credit Requests</p>
                   <div>
                     <Button
+                      className="button1"
                       type="text"
                       icon={
                         theme === "light" ? <MoonOutlined /> : <SunOutlined />
@@ -555,18 +499,21 @@ const ListingPage = () => {
                       style={{ marginLeft: "10px" }}
                     >
                       <Button
+                        className="button1"
                         type="text"
                         icon={<LogoutOutlined />}
                         size="small"
+                        style={{ marginRight: "0px" }}
                       >
                         Filter
                       </Button>
                       <Button
+                        className="button1"
                         type="text"
                         icon={<RightCircleOutlined />}
                         onClick={approvedList}
                         size="small"
-                        style={{ alignSelf: "center" }}
+                        style={{ alignSelf: "center", marginLeft: "0px" }}
                       >
                         Approved List
                       </Button>
@@ -624,7 +571,6 @@ const ListingPage = () => {
                               </Text>
                             </div>
 
-                            
                             <div
                               style={{
                                 display: "flex",
@@ -635,11 +581,10 @@ const ListingPage = () => {
                                 SalesPerson:
                               </Text> */}
                               <Text strong style={{ color: "black" }}>
-                              {item.salespersonName}
+                                {item.salespersonName}
                               </Text>
                             </div>
-                            
-                           
+
                             <div
                               style={{
                                 display: "flex",
@@ -668,7 +613,7 @@ const ListingPage = () => {
                               </Text>
                             </div> */}
 
-<div
+                            <div
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -697,13 +642,6 @@ const ListingPage = () => {
                                 )}
                               </Text>
                             </div>
-
-                            
-
-                            
-                            
-
-
 
                             <div
                               style={{
@@ -767,7 +705,7 @@ const ListingPage = () => {
                               </Text>
                             </div> */}
 
-{/*                             
+                            {/*                             
                             <div
                               style={{
                                 display: "flex",
@@ -781,7 +719,7 @@ const ListingPage = () => {
                                 {item.controllingoffice}
                               </Text>
                             </div> */}
-{/*           
+                            {/*           
           
                             <div
                               style={{
@@ -804,7 +742,7 @@ const ListingPage = () => {
                               }}
                             >
                               <Text strong style={{ flex: 1, color: "black" }}>
-                              Policy :
+                                Policy :
                               </Text>
 
                               <Text strong style={{ color: "black" }}>
@@ -812,9 +750,6 @@ const ListingPage = () => {
                               </Text>
                             </div>
 
-
-
-                            
                             <div
                               style={{
                                 display: "flex",
@@ -863,7 +798,9 @@ const ListingPage = () => {
 
                             {/* <br /> */}
                             {/* Approve/Reject Buttons on Card */}
-                            <Space style={{ marginTop: "10px",marginLeft: "50px" }}>
+                            <Space
+                              style={{ marginTop: "10px", marginLeft: "50px" }}
+                            >
                               <Button
                                 id="celebrateBtn"
                                 type="default"

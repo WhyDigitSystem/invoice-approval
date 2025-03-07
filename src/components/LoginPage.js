@@ -1,5 +1,13 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Input, Space, Typography , notification} from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Input,
+  Space,
+  Typography,
+  notification,
+} from "antd";
 import axios from "axios";
 import confetti from "canvas-confetti";
 import React, { useEffect, useState } from "react";
@@ -8,11 +16,11 @@ import logoonly from "../logoonly.png";
 import Loader from "../utils/Loader";
 import { encryptPassword } from "../utils/passEnc";
 import Gallery from "./Gallery";
-import CryptoJS from "crypto-js"; 
+import CryptoJS from "crypto-js";
 // import "./logintest1.css";
 import UWLNL from "../UWLNL.jpg";
 // import "./style.css";
-import "./LoginPage.css"; // 
+import "./LoginPage.css"; //
 
 const { Text } = Typography;
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
@@ -95,12 +103,7 @@ const LoginPage = () => {
     }
   }, [username, passcode]);
 
-
-
-// To decrypt when needed
-
-
-
+  // To decrypt when needed
 
   const handleSubmit = async () => {
     if (!username) {
@@ -127,12 +130,14 @@ const LoginPage = () => {
         );
 
         const userData = response.data.paramObjectsMap?.userVO;
-        const screens = response.data.paramObjectsMap?.userVO.roleVO[0].responsibilityVO[0].screensVO;
-  
+        const screens =
+          response.data.paramObjectsMap?.userVO.roleVO[0].responsibilityVO[0]
+            .screensVO;
+
         // Store user data and screens in localStorage
         localStorage.setItem("userData", JSON.stringify(userData));
-        localStorage.setItem("screens", JSON.stringify(screens));  // Store screen list
-  
+        localStorage.setItem("screens", JSON.stringify(screens)); // Store screen list
+
         localStorage.setItem("authToken", userData?.token);
 
         const token = response.data.paramObjectsMap?.userVO?.token;
@@ -160,22 +165,22 @@ const LoginPage = () => {
         navigate("/listing");
 
         notification.success({
-          message: 'Success',
-          description: 'Successfully Looged In',
+          message: "Success",
+          description: "Successfully Looged In",
           duration: 5, // Time in seconds for the toast to stay visible
         });
-        
-      }  else {
+      } else {
         // Check for specific error message if user is already logged in on another device
         // if (response.data.paramObjectsMap?.errorMessage === "User Already Logged In Another Device") {
         //   setError("You are already logged in on another device. Please log out from the other device.");
 
-          notification.error({
-            message: 'Error',
-            description: 'You are already logged in on another device. Please log out from the other device',
-            duration: 10, // Time in seconds for the toast to stay visible
-          });
-        } 
+        notification.error({
+          message: "Error",
+          description:
+            "You are already logged in on another device. Please log out from the other device",
+          duration: 10, // Time in seconds for the toast to stay visible
+        });
+      }
     } catch (error) {
       const errorMessage =
         error.response?.data?.paramObjectsMap?.errorMessage ||
@@ -183,14 +188,10 @@ const LoginPage = () => {
         "An unexpected error occurred.";
       setError(errorMessage);
       // Set the error message for at least 30 seconds
-      
     } finally {
       setLoading(false);
     }
   };
-
-
-
 
   // Toggle Theme
   const toggleTheme = () => {
@@ -213,11 +214,11 @@ const LoginPage = () => {
 
   useEffect(() => {
     // Disable scrolling
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     // Reset scrolling when component is unmounted
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, []);
 
@@ -307,146 +308,141 @@ const LoginPage = () => {
     textShadow: "#999 3px 3px 5px", // Applying the text-shadow style
   };
 
-
-  const texts = ['W', 'e', 'l', 'c', 'o', 'm', 'e', ': )'];
+  const texts = ["W", "e", "l", "c", "o", "m", "e", ": )"];
   const numberOfParticles = 12;
 
   return (
-  
-
-<div className="container" style={{marginTop:"-30px" ,height:"500px",
-  //  boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
-  boxShadow: "none"
-   }}>
-
-       
     <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "85vh",
-      marginTop:"-20px",
-      // fontFamily: "Arial, sans-serif",
-      background: "#fff", // Ensure background is light
-      gap:"30px",
-      boxShadow: "none"
-      // background:"#cd995f"
-    }}
-  >
-    {(error || success) && (
+      className="container"
+      style={{
+        marginTop: "-30px",
+        height: "700px",
+        width: "900px",
+        //  boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
+        boxShadow: "none",
+      }}
+    >
       <div
         style={{
-          position: "absolute",
-          top: 30,
-          width: "100%",
-          maxWidth: "400px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "85vh",
+          marginTop: "-20px",
+          // fontFamily: "Arial, sans-serif",
+          background: "#fff", // Ensure background is light
+          gap: "30px",
+          boxShadow: "none",
+          // background:"#cd995f"
         }}
       >
-        {error && <Alert message={error} type="error" showIcon />}
-        {success && <Alert message={success} type="success" showIcon />}
-      </div>
-    )}
+        {(error || success) && (
+          <div
+            style={{
+              position: "absolute",
+              top: 30,
+              width: "100%",
+              maxWidth: "400px",
+            }}
+          >
+            {error && <Alert message={error} type="error" showIcon />}
+            {success && <Alert message={success} type="success" showIcon />}
+          </div>
+        )}
 
-   
+        <div style={{ marginLeft: "-50px" }}>
+          {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
 
-    <div style={{marginLeft:"-50px"}}>
-      {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
+          {/* <img src={butterfly}></img> */}
 
-      {/* <img src={butterfly}></img> */}
+          {/* <br/> */}
 
-      {/* <br/> */}
-
-      {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
-        {/* <img src={UWLNL} width="100px"  ></img> */}
-{/* <br/> */}
-        {/* Uniworld <br /> <br/>
+          {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
+          {/* <img src={UWLNL} width="100px"  ></img> */}
+          {/* <br/> */}
+          {/* Uniworld <br /> <br/>
         Logistics <br /> */}
-        {/* <br /> */}
-        
-        {/* <Gallery /> */}
-      {/* </h1> */}
-    </div>
-    <div style={{  display: "inline-block" }}>
-  
-  <img src={UWLNL} width="450px" height="200px" alt="Your Image" />
-  
-  
-</div>
+          {/* <br /> */}
 
-  
-      {/* <br/> */}
-      {/* <p >Expense Claim List</p> */}
+          {/* <Gallery /> */}
+          {/* </h1> */}
+        </div>
+        <div style={{ display: "inline-block" }}>
+          <img src={UWLNL} width="450px" height="200px" alt="Your Image" />
+        </div>
 
+        {/* <br/> */}
+        {/* <p >Expense Claim List</p> */}
 
+        <div className="ticketList" style={{ marginTop: "10px" }}>
+          <div class="card">
+            <div class="face face1" style={{ background: "#2f3271" }}>
+              <div class="content">
+                <p style={{ color: "white" }}>Welcome To UGS Portal</p>
+              </div>
+            </div>
+            <div class="face face2">
+              <div class="content">
+                <p>
+                  <Space
+                    direction="vertical"
+                    style={{ width: "100%", padding: "1px" }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        textAlign: "center",
+                        marginBottom: "12px",
+                        color: cardStyle.color,
+                      }}
+                    >
+                      Username
+                    </Text>
+                    <Input
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Username"
+                      style={{
+                        padding: "4px",
+                        fontSize: 16,
+                        borderRadius: 8,
+                        ...inputStyle,
+                        marginBottom: "15px",
+                      }}
+                    />
 
-      <div className="ticketList" style={{marginTop:"10px"}}> 
-           <div class="card">
-       <div class="face face1" style={{background:"#2f3271"}}>
-         <div class="content" >
-         <p style={{color:"white"}}>Welcome To UGS Portal</p>
-         </div>
-       </div>
-       <div class="face face2">
-         <div class="content">
-           <p>
-
-            <Space direction="vertical" style={{ width: "100%", padding: "1px" }}>
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            textAlign: "center",
-                            marginBottom: "12px",
-                            color: cardStyle.color,
-                          }}
-                        >
-                          Username
-                        </Text>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        textAlign: "center",
+                        marginBottom: "15px",
+                        color: cardStyle.color,
+                      }}
+                    >
+                      6-Digit Passcode
+                    </Text>
+                    <Space size="middle" style={{ justifyContent: "center" }}>
+                      {passcode.map((digit, index) => (
                         <Input
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          placeholder="Username"
+                          key={index}
+                          id={`otp-${index}`}
+                          value={digit}
+                          maxLength={1}
+                          onChange={(e) => handleChange(e.target.value, index)}
+                          onKeyDown={(e) => handleKeyDown(e, index)}
                           style={{
-                            padding: "4px",
-                            fontSize: 16,
-                            borderRadius: 8,
+                            width: "30px",
+                            height: "30px",
+                            textAlign: "center",
+                            fontSize: "14px",
+                            borderRadius: "8px",
                             ...inputStyle,
-                            marginBottom: "15px",
                           }}
                         />
-            
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            textAlign: "center",
-                            marginBottom: "15px",
-                            color: cardStyle.color,
-                          }}
-                        >
-                          6-Digit Passcode
-                        </Text>
-                        <Space size="middle" style={{ justifyContent: "center" }}>
-                          {passcode.map((digit, index) => (
-                            <Input
-                              key={index}
-                              id={`otp-${index}`}
-                              value={digit}
-                              maxLength={1}
-                              onChange={(e) => handleChange(e.target.value, index)}
-                              onKeyDown={(e) => handleKeyDown(e, index)}
-                              style={{
-                                width: "30px",
-                                height: "30px",
-                                textAlign: "center",
-                                fontSize: "14px",
-                                borderRadius: "8px",
-                                ...inputStyle,
-                              }}
-                            />
-                          ))}
-                        </Space>
-            
-                        {/* <Button
+                      ))}
+                    </Space>
+
+                    {/* <Button
                         type="primary"
                         size="large"
                         block
@@ -462,9 +458,9 @@ const LoginPage = () => {
                       >
                         Login
                       </Button> */}
-            
-                        {/* Dark Mode Toggle */}
-                        {/* <Button
+
+                    {/* Dark Mode Toggle */}
+                    {/* <Button
                           type="text"
                           icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
                           onClick={toggleTheme}
@@ -473,19 +469,14 @@ const LoginPage = () => {
                         >
                           {theme === "light" ? "Dark Mode" : "Light Mode"}
                         </Button> */}
-                      </Space>
-           </p>
-           
-         </div>
-       </div>
+                  </Space>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-          
-      </div>
-    
-      </div>
-      </div>
- 
-        
   );
 };
 
