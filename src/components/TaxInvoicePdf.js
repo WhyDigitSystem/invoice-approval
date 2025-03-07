@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { notification } from "antd";
-import dayjs from "dayjs";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useEffect, useState } from "react";
@@ -17,7 +16,6 @@ import {
   getIRNGridDetails,
   getIRNJobContDetails,
   getIRNJobDetails,
-  getIRNJobInfo,
   getIRNQRbyDocNo,
 } from "../services/api";
 import { useParams } from "react-router-dom";
@@ -30,25 +28,20 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
   const [gridData, setGridData] = useState("");
   const [invoiceData, setInvoiceData] = useState([]);
   const { documentNumber } = useParams();
-  const [detailsData, setDetailsData] = useState([]); // Initialize as an array
+  const [detailsData, setDetailsData] = useState([]);
   const [qrData, setQRData] = useState("");
   const [jobData, setJobData] = useState([]);
   const [jobContData, setJobContData] = useState([]);
   const [jobFormData, setJobFormData] = useState([]);
-  const [jobInfoData, setJobInfoData] = useState("");
-  const [pjobno, setPJobNo] = useState(true);
   const [loading, setLoading] = useState(true);
   const [jobContFormData, setJobContFormData] = useState([]);
 
   useEffect(() => {
     getIRNDetails(documentNumber)
       .then((response) => {
-        setLoading(true);
         setData(response);
         const formattedData = formatInvoiceData(response);
-        // Use only the first item in the array
-        setInvoiceData(formattedData.slice(0, 1)); // Ensure only one item is used
-        console.log("InvoiceData", formattedData);
+        setInvoiceData(formattedData.slice(0, 1));
       })
       .catch((error) => {
         notification.error({
@@ -62,11 +55,9 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
   useEffect(() => {
     getIRNJobDetails(documentNumber)
       .then((response) => {
-        setLoading(true);
         setJobData(response);
         const formattedData = formatJobInvoiceData(response);
         setJobFormData(formattedData);
-        console.log("JobFormData", jobFormData);
       })
       .catch((error) => {
         notification.error({
@@ -78,37 +69,9 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
   }, [documentNumber]);
 
   useEffect(() => {
-    getIRNDetails(documentNumber)
-      .then((response) => {
-        setLoading(true);
-        setData(response);
-        const formattedData = formatInvoiceData(response);
-        setInvoiceData(formattedData);
-        console.log("InvoiceData", formattedData);
-      })
-      .catch((error) => {
-        notification.error({
-          message: "Failed to fetch Branches",
-          description: "Error occurred while fetching branch names.",
-        });
-        setLoading(false);
-      });
-  }, [documentNumber]);
-
-  useEffect(() => {
     getIRNQRbyDocNo(documentNumber)
       .then((response) => {
-        // Log the original response to check the structure
-        console.log("Original Grid Data:", response);
-
         setQRData(response);
-
-        // Check if the response is an array and log it
-        if (Array.isArray(response)) {
-          console.log("Grid Data is an array");
-        } else {
-          console.log("Grid Data is NOT an array");
-        }
       })
       .catch((error) => {
         notification.error({
@@ -121,24 +84,8 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
   useEffect(() => {
     getIRNGridDetails(documentNumber)
       .then((response) => {
-        // Log the original response to check the structure
-        console.log("Original Grid Data:", response);
-
         setGridData(response);
-
-        // Check if the response is an array and log it
-        if (Array.isArray(response)) {
-          console.log("Grid Data is an array");
-        } else {
-          console.log("Grid Data is NOT an array");
-        }
-
-        // Format the data
         const formattedGridData = formatInvoiceDetailsData(response);
-
-        // Log the formatted data
-        console.log("Formatted Grid Data:", formattedGridData);
-
         setDetailsData(formattedGridData);
       })
       .catch((error) => {
@@ -218,287 +165,6 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
     },
   };
 
-  // Format function - Ensure it handles cases where gridData is not as expected
-  function formatInvoiceDetailsData(gridData) {
-    console.log("Formatting gridData:", gridData);
-
-    if (!gridData || !Array.isArray(gridData)) {
-      console.log("Invalid or empty gridData");
-      return []; // Return an empty array if invalid data
-    }
-
-    return gridData.map((item, index) => {
-      // Log each item to inspect its structure
-      console.log(`Formatting item ${index + 1}:`, item);
-
-      // Ensure each item has charge-related fields before proceeding
-      //   const charges =
-      //     item.chargeName && item.gChargeCode
-      //       ? [
-      //           {
-      //             sac: item.gChargeCode.trim(),
-      //             details: item.chargeName.trim(),
-      //             currency: item.curr.trim(),
-      //             exRate: item.exRate.trim(),
-      //             applyOn: item.applyOn.trim(),
-      //             qty: item.qty.trim(),
-      //             rate: item.rate.trim(),
-      //             fcAmount: item.fcAmt.trim(),
-      //             gst: item.gst.trim(),
-      //             amount: item.amount.trim(),
-      //           },
-      //         ]
-      //       : [];
-
-      // Returning the formatted item
-      return {
-        docNo: item.docNo.trim() || "N/A",
-        docDt: item.docDt.trim() || "N/A",
-        sno: item.sno.trim() || "N/A",
-        containerNo: item.cont,
-        // qty: item.qty.trim() || "N/A",
-        pkgs: item.pkgs.trim() || "N/A",
-        chargeDetails: [
-          {
-            sac: item.gChargeCode.trim(),
-            details: item.chargeName.trim(),
-            currency: item.curr.trim(),
-            exRate: item.exRate.trim(),
-            applyOn: item.applyOn.trim(),
-            qty: item.qty.trim(),
-            rate: item.rate.trim(),
-            fcAmount: item.fcAmt.trim(),
-            gst: item.gst.trim(),
-            amount: item.amount.trim(),
-            gstP: item.gstType.trim(),
-          },
-        ],
-      };
-    });
-  }
-
-  //   function formatJobInfoInvoiceData(data) {
-  //     return jobInfoData.map((item) => ({
-  //       flightNo: "AY-0122",
-  //       currency: "INR",
-  //       pol: "AMD",
-  //       etd: "10-FEB-25",
-  //       eta: "12-FEB-25",
-  //       pod: "MMX",
-  //       fpod: "MMX",
-  //       volume: "1",
-  //       weight: item.chwt,
-  //       containerNo: "",
-  //       billOfEntry: "",
-  //       igmNo: "",
-  //       goodsDesc: "",
-  //       totalAmount: item.totalInvoiceValue || "N/A",
-  //       amountInWords: item.totalInvoiceValue || "N/A",
-  //       remarks: "Shipment Ref No:",
-  //       shipperInvoiceNo: item.sinv || "N/A",
-  //       sqr: item.sqr,
-  //       printedOn: new Date().toLocaleString(),
-  //     }));
-  //   }
-
-  function formatJobInvoiceData(data) {
-    return jobData.map((item) => ({
-      jobNumber: item.jobNo,
-      jobDate: item.jobDt,
-      houseNo: item.hNo,
-      houseDate: item.hDt,
-      masterNo: item.mNo,
-      masterDt: item.mDt,
-      chwt: item.chwt,
-      grwt: item.grwt,
-      pkgs: item.pkgs,
-      containerNo: "",
-      billOfEntry: "",
-      goodsDesc: "",
-      nCurr: item.nCurr,
-      exRate: item.exRate,
-      totalAmount: item.totalInvoiceValue || "N/A",
-      amountInWords: item.totalInvoiceValue || "N/A",
-      remarks: "Shipment Ref No:",
-      shipperInvoiceNo: item.sinv || "N/A",
-      sqr: item.sqr,
-      printedOn: new Date().toLocaleString(),
-    }));
-  }
-
-  function formatJobContFormData(data) {
-    return jobContData.map((item) => ({
-      //   dueDate: "27/03/2025",
-      pol: item.mPol,
-      et: item.et,
-      pod: item.hPod,
-      fpod: "MMX",
-      volume: "1",
-      containerNo: "",
-      billOfEntry: "",
-      igmNo: item.igmNo,
-      igmDt: item.igmDt,
-      goodsDesc: "",
-      carrierNo: item.carrierNo,
-      hItemDesc: item.hItemDesc,
-    }));
-  }
-
-  function formatInvoiceData(data) {
-    return data.map((item) => ({
-      invoiceNo: item.documentNumber,
-      invoiceDate: item.documentDate?.split(" ")[0] || "N/A",
-      ackNo: item.ackNo || "N/A",
-      irnNo: item.irnId || "N/A",
-      name: item.recipientLegalName || "N/A",
-      gstn: item.recipientGSTIN || "N/A",
-      address: item.recipientAddress || "N/A",
-      placeOfSupply: item.placeOfSupply || "N/A",
-      dueDate: "27/03/2025",
-
-      //   containerNo: item.cont,
-      billOfEntry: "",
-      goodsDesc: "",
-      totalAmount: item.totalInvoiceValue || "N/A",
-      amountInWords: item.totalInvoiceValue || "N/A",
-      remarks: "Shipment Ref No:",
-      shipperInvoiceNo: item.sinv || "N/A",
-      sqr: item.sqr,
-      printedOn: new Date().toLocaleString(),
-      bankDetails: {
-        bankName: "HDFC BANK LIMITED",
-        accountCode: "UM LMD",
-        beneficiaryName: "UNIVORLD LOGISTICS PVT LTD",
-        branch: "KORAMANGALA, BENGALURU",
-        ifsc: "HDFC0000053",
-        accountNo: "00530330000072",
-        accountType: "CURRENT ACCOUNT",
-      },
-      termsAndConditions: [
-        "OUR LIABILITY IS RESTRICTED AND LIMITED TO STANDARD TRADING CONDITIONS OF FEDERATIONS OF FREIGHT FORWARDERS ASSOCIATIONS IN INDIA OF WHICH WE ARE MEMBERS, COPIES OF STANDARD TRADING CONDITIONS ARE AVAILABLE ON REQUEST.",
-        "INTEREST WILL BE CHARGED AT 16% PER ANNUM FOR ALL PAYMENTS RECEIVED ON OR AFTER DUE DATE AS MENTIONED ABOVE.",
-        "CHEQUE / DD SHOULD BE IN FAVOUR OF UNIVORLD LOGISTICS PRIVATE LIMITED.",
-      ],
-    }));
-  }
-
-  //   const handleDownloadPdf = async () => {
-  //     const input = document.getElementById("pdf-content");
-  //     if (!input) {
-  //       console.error("Element not found: 'pdf-content'");
-  //       return;
-  //     }
-
-  //     try {
-  //       const pdf = new jsPDF("p", "mm", "a4");
-  //       const pageHeight = pdf.internal.pageSize.getHeight();
-  //       const pageWidth = pdf.internal.pageSize.getWidth();
-
-  //       // Split the content into multiple pages
-  //       const contentHeight = input.scrollHeight;
-  //       const totalPages = Math.ceil(contentHeight / pageHeight);
-
-  //       for (let i = 0; i < totalPages; i++) {
-  //         if (i > 0) {
-  //           pdf.addPage();
-  //         }
-
-  //         const canvas = await html2canvas(input, {
-  //           scrollY: -i * pageHeight,
-  //           height: pageHeight,
-  //           width: pageWidth,
-  //           windowHeight: input.scrollHeight,
-  //           windowWidth: input.scrollWidth,
-  //           useCORS: true, // Ensure CORS is enabled for external images
-  //           scale: 2, // Increase scale for better quality
-  //         });
-
-  //         const imgData = canvas.toDataURL("image/png", 1.0);
-  //         pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
-  //       }
-
-  //       pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
-
-  //       // Check if modalClose is a function before calling it
-  //       if (typeof modalClose === "function") {
-  //         modalClose();
-  //       }
-  //     } catch (error) {
-  //       console.error("Error generating PDF:", error);
-  //       notification.error({
-  //         message: "Failed to generate PDF",
-  //         description: "An error occurred while generating the PDF.",
-  //       });
-  //     }
-  //   };
-
-  //   const handleDownloadPdf = async () => {
-  //     const input = document.getElementById("pdf-content");
-  //     if (!input) {
-  //       console.error("Element not found: 'pdf-content'");
-  //       return;
-  //     }
-
-  //     try {
-  //       const pdf = new jsPDF("p", "mm", "a4");
-  //       const pageHeight = pdf.internal.pageSize.getHeight();
-  //       const pageWidth = pdf.internal.pageSize.getWidth();
-  //       const margin = 10; // Margin in mm
-  //       const contentWidth = pageWidth - 2 * margin; // Adjust content width for margins
-
-  //       // Function to split content into pages
-  //       const splitContent = async (element, offsetY) => {
-  //         const canvas = await html2canvas(element, {
-  //           scale: 2, // Increase scale for better quality
-  //           useCORS: true, // Enable CORS for external images
-  //           windowHeight: element.scrollHeight,
-  //           windowWidth: element.scrollWidth,
-  //           y: offsetY, // Start capturing from this Y position
-  //           height: pageHeight, // Capture only one page height
-  //         });
-
-  //         const imgData = canvas.toDataURL("image/png", 1.0);
-  //         pdf.addImage(
-  //           imgData,
-  //           "PNG",
-  //           margin,
-  //           margin,
-  //           contentWidth,
-  //           0,
-  //           undefined,
-  //           "FAST"
-  //         );
-  //       };
-
-  //       // Calculate total height of the content
-  //       const totalHeight = input.scrollHeight;
-  //       let offsetY = 0;
-
-  //       // Loop through the content and split it into pages
-  //       while (offsetY < totalHeight) {
-  //         if (offsetY > 0) {
-  //           pdf.addPage(); // Add a new page for the next section
-  //         }
-  //         await splitContent(input, offsetY);
-  //         offsetY += pageHeight; // Move to the next section
-  //       }
-
-  //       // Save the PDF
-  //       pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
-
-  //       // Close the modal if the callback function is provided
-  //       if (typeof modalClose === "function") {
-  //         modalClose();
-  //       }
-  //     } catch (error) {
-  //       console.error("Error generating PDF:", error);
-  //       notification.error({
-  //         message: "Failed to generate PDF",
-  //         description: "An error occurred while generating the PDF.",
-  //       });
-  //     }
-  //   };
-
   const handleDownloadPdf = async () => {
     const input = document.getElementById("pdf-content");
     if (!input) {
@@ -565,8 +231,93 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
       });
     }
   };
-  modalClose = () => {
-    window.history.back(); // Takes the user to the previous page
+
+  const formatInvoiceDetailsData = (gridData) => {
+    if (!gridData || !Array.isArray(gridData)) {
+      return [];
+    }
+
+    return gridData.map((item) => ({
+      docNo: item.docNo?.trim() || "N/A",
+      docDt: item.docDt?.trim() || "N/A",
+      sno: item.sno?.trim() || "N/A",
+      containerNo: item.cont,
+      pkgs: item.pkgs?.trim() || "N/A",
+      chargeDetails: [
+        {
+          sac: item.gChargeCode?.trim(),
+          details: item.chargeName?.trim(),
+          currency: item.curr?.trim(),
+          exRate: item.exRate?.trim(),
+          applyOn: item.applyOn?.trim(),
+          qty: item.qty?.trim(),
+          rate: item.rate?.trim(),
+          fcAmount: item.fcAmt?.trim(),
+          gst: item.gst?.trim(),
+          amount: item.amount?.trim(),
+          gstP: item.gstType?.trim(),
+        },
+      ],
+    }));
+  };
+
+  const formatJobInvoiceData = (data) => {
+    return jobData.map((item) => ({
+      jobNumber: item.jobNo,
+      jobDate: item.jobDt,
+      houseNo: item.hNo,
+      houseDate: item.hDt,
+      masterNo: item.mNo,
+      masterDt: item.mDt,
+      chwt: item.chwt,
+      grwt: item.grwt,
+      pkgs: item.pkgs,
+      containerNo: "",
+      billOfEntry: "",
+      goodsDesc: "",
+      nCurr: item.nCurr,
+      exRate: item.exRate,
+      totalAmount: item.totalInvoiceValue || "N/A",
+      amountInWords: item.totalInvoiceValue || "N/A",
+      remarks: "Shipment Ref No:",
+      shipperInvoiceNo: item.sinv || "N/A",
+      sqr: item.sqr,
+      printedOn: new Date().toLocaleString(),
+    }));
+  };
+
+  const formatInvoiceData = (data) => {
+    return data.map((item) => ({
+      invoiceNo: item.documentNumber,
+      invoiceDate: item.documentDate?.split(" ")[0] || "N/A",
+      ackNo: item.ackNo || "N/A",
+      irnNo: item.irnId || "N/A",
+      name: item.recipientLegalName || "N/A",
+      gstn: item.recipientGSTIN || "N/A",
+      address: item.recipientAddress || "N/A",
+      placeOfSupply: item.placeOfSupply || "N/A",
+      dueDate: "27/03/2025",
+      totalAmount: item.totalInvoiceValue || "N/A",
+      amountInWords: item.totalInvoiceValue || "N/A",
+      remarks: "Shipment Ref No:",
+      shipperInvoiceNo: item.sinv || "N/A",
+      sqr: item.sqr,
+      printedOn: new Date().toLocaleString(),
+      bankDetails: {
+        bankName: "HDFC BANK LIMITED",
+        accountCode: "UM LMD",
+        beneficiaryName: "UNIVORLD LOGISTICS PVT LTD",
+        branch: "KORAMANGALA, BENGALURU",
+        ifsc: "HDFC0000053",
+        accountNo: "00530330000072",
+        accountType: "CURRENT ACCOUNT",
+      },
+      termsAndConditions: [
+        "OUR LIABILITY IS RESTRICTED AND LIMITED TO STANDARD TRADING CONDITIONS OF FEDERATIONS OF FREIGHT FORWARDERS ASSOCIATIONS IN INDIA OF WHICH WE ARE MEMBERS, COPIES OF STANDARD TRADING CONDITIONS ARE AVAILABLE ON REQUEST.",
+        "INTEREST WILL BE CHARGED AT 16% PER ANNUM FOR ALL PAYMENTS RECEIVED ON OR AFTER DUE DATE AS MENTIONED ABOVE.",
+        "CHEQUE / DD SHOULD BE IN FAVOUR OF UNIVORLD LOGISTICS PRIVATE LIMITED.",
+      ],
+    }));
   };
 
   useEffect(() => {
@@ -619,10 +370,6 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
                 fontWeight: "bold",
               }}
             >
-              {/* <p style={{ fontSize: "24px", marginLeft: "-280px" }}>
-                Tax Invoice
-              </p>{" "} */}
-              {/* <br /> */}
               UNIWORLD LOGISTICS PRIVATE LIMITED
               <br /> CIN: U63090TN2002PTC048430 <br />B 405/406 SAKAR - NEHRU
               BRIDGE CORNER, <br />
@@ -943,7 +690,6 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
                               padding: "10px",
                             }}
                           >
-                            {" "}
                             {chargeDetail.gst}
                           </td>
                           <td
