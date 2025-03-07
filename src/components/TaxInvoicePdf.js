@@ -20,6 +20,7 @@ import {
 } from "../services/api";
 import { useParams } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
+import { toWords } from "number-to-words";
 
 const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
   const [open, setOpen] = useState(false);
@@ -165,7 +166,233 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
     },
   };
 
+  const handleDownloadPdftest = async () => {
+    const input = document.getElementById("pdf-content");
+    if (input) {
+      // Wait for all images (including the QR code) to load
+      const images = input.getElementsByTagName("img");
+      const imagePromises = Array.from(images).map((img) => {
+        if (!img.complete) {
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Handle broken images
+          });
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(imagePromises);
+
+      // Capture the content with html2canvas
+      const canvas = await html2canvas(input, {
+        scale: 2, // Increase scale for better quality
+        useCORS: true, // Enable cross-origin images
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      // Create PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+      modalClose();
+    } else {
+      console.error("Element not found: 'pdf-content'");
+    }
+  };
+
   const handleDownloadPdf = async () => {
+    const input = document.getElementById("pdf-content");
+    if (input) {
+      const images = input.getElementsByTagName("img");
+      const imagePromises = Array.from(images).map((img) => {
+        if (!img.complete) {
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Handle broken images
+          });
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(imagePromises);
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      // Function to split content into chunks
+      const splitContentIntoChunks = async (element, chunkHeight) => {
+        const chunks = [];
+        let position = 0;
+
+        while (position < element.scrollHeight) {
+          // Create a temporary container for the chunk
+          const chunk = document.createElement("div");
+          chunk.style.width = `${element.clientWidth}px`;
+          chunk.style.height = `${chunkHeight}px`;
+          chunk.style.overflow = "hidden";
+          chunk.style.position = "absolute";
+          chunk.style.top = `-${position}px`;
+          chunk.style.left = "0";
+
+          // Clone the content and apply a transform to shift it
+          const contentClone = element.cloneNode(true);
+          contentClone.style.transform = `translateY(-${position}px)`;
+          chunk.appendChild(contentClone);
+
+          // Append the chunk to the body (temporarily)
+          document.body.appendChild(chunk);
+
+          // Capture the chunk with html2canvas
+          const canvas = await html2canvas(chunk, {
+            scale: 2,
+            useCORS: true,
+          });
+
+          // Remove the temporary chunk
+          document.body.removeChild(chunk);
+
+          // Add the canvas image data to the chunks array
+          chunks.push(canvas.toDataURL("image/png"));
+
+          // Move to the next chunk
+          position += chunkHeight;
+        }
+
+        return chunks;
+      };
+
+      // Calculate the height of each chunk (in pixels)
+      const chunkHeight = pageHeight * 3.78; // Convert mm to pixels (1mm = 3.78px)
+
+      // Split the content into chunks
+      const chunks = await splitContentIntoChunks(input, chunkHeight);
+
+      // Add each chunk to the PDF
+      for (let i = 0; i < chunks.length; i++) {
+        if (i > 0) {
+          pdf.addPage(); // Add a new page for each chunk after the first
+        }
+
+        const imgData = chunks[i];
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+      }
+
+      // Save the PDF
+      pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+      modalClose();
+    } else {
+      console.error("Element not found: 'pdf-content'");
+    }
+  };
+
+  const handleDownloadPdf4 = async () => {
+    const input = document.getElementById("pdf-content");
+    if (input) {
+      // Ensure all images are loaded
+      const images = input.getElementsByTagName("img");
+      const imagePromises = Array.from(images).map((img) => {
+        if (!img.complete) {
+          return new Promise((resolve) => {
+            img.onload = resolve;
+          });
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(imagePromises);
+
+      // Capture the entire content
+      const canvas = await html2canvas(input, {
+        scrollY: -window.scrollY,
+        scale: 2, // Increase scale for better quality
+        useCORS: true, // Enable cross-origin images
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      // Create PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Split content into multiple pages if it's too tall
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let position = 0;
+
+      while (position < imgHeight) {
+        if (position > 0) {
+          pdf.addPage(); // Add a new page if needed
+        }
+        pdf.addImage(imgData, "PNG", 0, -position, imgWidth, imgHeight);
+        position += pageHeight;
+      }
+
+      // Save the PDF
+      pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+      modalClose();
+    } else {
+      console.error("Element not found: 'pdf-content'");
+    }
+  };
+
+  const handleDownloadPdf3 = async () => {
+    const input = document.getElementById("pdf-content");
+    if (input) {
+      // Ensure all images are loaded
+      const images = input.getElementsByTagName("img");
+      const imagePromises = Array.from(images).map((img) => {
+        if (!img.complete) {
+          return new Promise((resolve) => {
+            img.onload = resolve;
+          });
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(imagePromises);
+
+      // Capture the full content
+      const canvas = await html2canvas(input, {
+        scrollY: -window.scrollY,
+        scale: 2, // Increase scale for better quality
+        useCORS: true, // Enable cross-origin images
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      // Create PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+      modalClose();
+    } else {
+      console.error("Element not found: 'pdf-content'");
+    }
+  };
+  const handleDownloadPdf2 = async () => {
+    const input = document.getElementById("pdf-content");
+    if (input) {
+      const canvas = await html2canvas(input);
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, "PNG", 0, 0);
+      pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+      modalClose();
+      // handleClose();
+    } else {
+      console.error("Element not found: 'pdf-content'");
+    }
+  };
+
+  const handleDownloadPdf1 = async () => {
     const input = document.getElementById("pdf-content");
     if (!input) {
       console.error("Element not found: 'pdf-content'");
@@ -179,13 +406,18 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
       const margin = 10; // Margin in mm
       const contentWidth = pageWidth - 2 * margin; // Adjust content width for margins
 
+      // Function to calculate the height of the content
+      const getContentHeight = (element) => {
+        return element.scrollHeight;
+      };
+
       // Function to split content into pages
       const splitContent = async (element, offsetY) => {
         const canvas = await html2canvas(element, {
           scale: 2, // Increase scale for better quality
           useCORS: true, // Enable CORS for external images
-          windowHeight: element.scrollHeight,
-          windowWidth: element.scrollWidth,
+          windowHeight: pageHeight,
+          windowWidth: pageWidth,
           y: offsetY, // Start capturing from this Y position
           height: pageHeight, // Capture only one page height
         });
@@ -204,7 +436,7 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
       };
 
       // Calculate total height of the content
-      const totalHeight = input.scrollHeight;
+      const totalHeight = getContentHeight(input);
       let offsetY = 0;
 
       // Loop through the content and split it into pages
@@ -231,6 +463,224 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
       });
     }
   };
+  //   const handleDownloadPdf = async () => {
+  //     const input = document.getElementById("pdf-content");
+  //     if (!input) {
+  //       console.error("Element not found: 'pdf-content'");
+  //       return;
+  //     }
+
+  //     try {
+  //       const pdf = new jsPDF("p", "mm", "a4");
+  //       const pageHeight = pdf.internal.pageSize.getHeight();
+  //       const pageWidth = pdf.internal.pageSize.getWidth();
+  //       const margin = 10; // Margin in mm
+  //       const contentWidth = pageWidth - 2 * margin; // Adjust content width for margins
+
+  //       // Function to split content into pages
+  //       const splitContent = async (element, offsetY) => {
+  //         const canvas = await html2canvas(element, {
+  //           scale: 2, // Increase scale for better quality
+  //           useCORS: true, // Enable CORS for external images
+  //           windowHeight: element.scrollHeight,
+  //           windowWidth: element.scrollWidth,
+  //           y: offsetY, // Start capturing from this Y position
+  //           height: pageHeight, // Capture only one page height
+  //         });
+
+  //         const imgData = canvas.toDataURL("image/png", 1.0);
+  //         pdf.addImage(
+  //           imgData,
+  //           "PNG",
+  //           margin,
+  //           margin,
+  //           contentWidth,
+  //           0,
+  //           undefined,
+  //           "FAST"
+  //         );
+  //       };
+
+  //       // Calculate total height of the content
+  //       const totalHeight = input.scrollHeight;
+  //       let offsetY = 0;
+
+  //       // Loop through the content and split it into pages
+  //       while (offsetY < totalHeight) {
+  //         if (offsetY > 0) {
+  //           pdf.addPage(); // Add a new page for the next section
+  //         }
+  //         await splitContent(input, offsetY);
+  //         offsetY += pageHeight; // Move to the next section
+  //       }
+
+  //       // Save the PDF
+  //       pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+
+  //       // Close the modal if the callback function is provided
+  //       if (typeof modalClose === "function") {
+  //         modalClose();
+  //       }
+  //     } catch (error) {
+  //       console.error("Error generating PDF:", error);
+  //       notification.error({
+  //         message: "Failed to generate PDF",
+  //         description: "An error occurred while generating the PDF.",
+  //       });
+  //     }
+  //   };
+
+  //   const handleDownloadPdf = async () => {
+  //     const input = document.getElementById("pdf-content");
+  //     if (!input) {
+  //       console.error("Element not found: 'pdf-content'");
+  //       return;
+  //     }
+
+  //     try {
+  //       const pdf = new jsPDF("p", "mm", "a4");
+  //       const pageHeight = pdf.internal.pageSize.getHeight();
+  //       const pageWidth = pdf.internal.pageSize.getWidth();
+  //       const margin = 10; // Margin in mm
+  //       const contentWidth = pageWidth - 2 * margin; // Adjust content width for margins
+
+  //       // Function to split content into pages
+  //       const splitContent = async (element, offsetY) => {
+  //         const canvas = await html2canvas(element, {
+  //           scale: 2, // Increase scale for better quality
+  //           useCORS: true, // Enable CORS for external images
+  //           windowHeight: element.scrollHeight,
+  //           windowWidth: element.scrollWidth,
+  //           y: offsetY, // Start capturing from this Y position
+  //           height: pageHeight, // Capture only one page height
+  //         });
+
+  //         const imgData = canvas.toDataURL("image/png", 1.0);
+  //         pdf.addImage(
+  //           imgData,
+  //           "PNG",
+  //           margin,
+  //           margin,
+  //           contentWidth,
+  //           0,
+  //           undefined,
+  //           "FAST"
+  //         );
+  //       };
+
+  //       // Calculate total height of the content
+  //       const totalHeight = input.scrollHeight;
+  //       let offsetY = 0;
+
+  //       // Loop through the content and split it into pages
+  //       while (offsetY < totalHeight) {
+  //         if (offsetY > 0) {
+  //           pdf.addPage(); // Add a new page for the next section
+  //         }
+  //         await splitContent(input, offsetY);
+  //         offsetY += pageHeight; // Move to the next section
+  //       }
+
+  //       // Save the PDF
+  //       pdf.save(`Tax-Invoice_${documentNumber}.pdf`);
+
+  //       // Close the modal if the callback function is provided
+  //       if (typeof modalClose === "function") {
+  //         modalClose();
+  //       }
+  //     } catch (error) {
+  //       console.error("Error generating PDF:", error);
+  //       notification.error({
+  //         message: "Failed to generate PDF",
+  //         description: "An error occurred while generating the PDF.",
+  //       });
+  //     }
+  //   };
+
+  const numberToWordsIndian = (number) => {
+    const units = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+    ];
+    const teens = [
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+    const tens = [
+      "",
+      "Ten",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    if (number === 0) return "Zero";
+
+    let words = "";
+
+    // Handle Crore
+    if (Math.floor(number / 10000000) > 0) {
+      words += numberToWordsIndian(Math.floor(number / 10000000)) + " Crore ";
+      number %= 10000000;
+    }
+
+    // Handle Lakh
+    if (Math.floor(number / 100000) > 0) {
+      words += numberToWordsIndian(Math.floor(number / 100000)) + " Lakh ";
+      number %= 100000;
+    }
+
+    // Handle Thousand
+    if (Math.floor(number / 1000) > 0) {
+      words += numberToWordsIndian(Math.floor(number / 1000)) + " Thousand ";
+      number %= 1000;
+    }
+
+    // Handle Hundred
+    if (Math.floor(number / 100) > 0) {
+      words += numberToWordsIndian(Math.floor(number / 100)) + " Hundred ";
+      number %= 100;
+    }
+
+    // Handle Tens and Units
+    if (number > 0) {
+      if (number < 10) {
+        words += units[number];
+      } else if (number < 20) {
+        words += teens[number - 10];
+      } else {
+        words += tens[Math.floor(number / 10)];
+        if (number % 10 > 0) {
+          words += " " + units[number % 10];
+        }
+      }
+    }
+
+    return words.trim();
+  };
+
+  // Usage
 
   const formatInvoiceDetailsData = (gridData) => {
     if (!gridData || !Array.isArray(gridData)) {
@@ -320,6 +770,10 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
     }));
   };
 
+  modalClose = () => {
+    window.history.back(); // Takes the user to the previous page
+  };
+
   useEffect(() => {
     if (invoiceData.length > 0) {
       setOpen(true);
@@ -342,7 +796,7 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
       fullWidth
       onEntered={handleDownloadPdf}
     >
-      <DialogTitle style={{ fontWeight: "bold" }}>Tax Invoice</DialogTitle>
+      <DialogTitle style={{ fontWeight: "bold" }}></DialogTitle>
       <DialogContent>
         <div
           id="pdf-content"
@@ -357,9 +811,7 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
           }}
         >
           {/* QR Code */}
-          <div style={{ position: "absolute", top: "10px", right: "10px" }}>
-            <QRCodeCanvas value={qrData.sqr || "N/A"} size={140} />
-          </div>
+
           <div>
             <img src={logo} style={{ marginLeft: "10px" }} alt="Your Image" />
             <div
@@ -370,6 +822,10 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
                 fontWeight: "bold",
               }}
             >
+              <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+                <QRCodeCanvas value={qrData.sqr || "N/A"} size={140} />
+              </div>
+              <p style={{ marginLeft: "-230px" }}>Tax Invoice</p> <br />
               UNIWORLD LOGISTICS PRIVATE LIMITED
               <br /> CIN: U63090TN2002PTC048430 <br />B 405/406 SAKAR - NEHRU
               BRIDGE CORNER, <br />
@@ -595,11 +1051,11 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
                     >
                       Tax %
                     </th>
-                    <th
+                    {/* <th
                       style={{ border: "1px solid #000000", padding: "10px" }}
                     >
                       GST
-                    </th>
+                    </th> */}
                     <th
                       style={{ border: "1px solid #000000", padding: "10px" }}
                     >
@@ -684,14 +1140,14 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
                           >
                             {chargeDetail.gstP}
                           </td>
-                          <td
+                          {/* <td
                             style={{
                               border: "1px solid #000000",
                               padding: "10px",
                             }}
                           >
                             {chargeDetail.gst}
-                          </td>
+                          </td> */}
                           <td
                             style={{
                               border: "1px solid #000000",
@@ -728,7 +1184,7 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
               </div>
               <div
                 style={{
-                  textAlign: "right",
+                  textAlign: "left",
                   fontWeight: "bold",
                   fontSize: "14px",
                   color: "#333",
@@ -736,7 +1192,8 @@ const TaxInvoicePdf = ({ docNo, row, callBackFunction, modalClose }) => {
               >
                 Amount in words:{" "}
                 <span style={{ fontWeight: "normal" }}>
-                  {item.amountInWords}
+                  {numberToWordsIndian(item.amountInWords)}
+                  {/* {toWords(parseFloat(item.amountInWords)).toUpperCase()} */}
                 </span>
               </div>
               <div
