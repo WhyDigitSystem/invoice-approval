@@ -101,6 +101,8 @@ const ExpenseList = () => {
 
   return (
     <ConfigProvider theme={themeConfig}>
+      <br />
+      <br />
       <div
         className="card w-full p-6 bg-base-100 shadow-xl "
         style={{ padding: "20px", borderRadius: "10px", height: "100%" }}

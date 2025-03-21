@@ -11,15 +11,11 @@
   margin: 0;
 }
 
-
-
 body {
   /* font-family: 'Loved by the King', cursive; */
   font-family: '"Familjen Grotesk", sans-serif';
   /* background-color: #5d576b; */
   /* color: #171A21; */
-  
-  
 }
 
 .container {
@@ -107,6 +103,23 @@ p {
   border-left-color: #5d576b;
 }
 
+.sticky-note.sticky-note-one1::before {
+  background-color: rgba(108, 212, 255, 0.6);
+  width: 120px;
+  height: 35px;
+  left: 50%;
+  top: -15px;
+  transform: translateX(-50%) rotate(3deg);
+}
+
+.sticky-note.sticky-note-one1::after {
+  left: 0;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
 .sticky-note.sticky-note-two {
   background-color: #6cd4ff;
   grid-area: sticker2;
@@ -141,10 +154,6 @@ p {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
-
-
-
 
 /* body {
   margin: 0;
@@ -666,4 +675,69 @@ h3 {
 .custom-placeholder-dark::placeholder {
   color: white; /* White placeholder text for dark mode */
   font-weight: bold;
+}
+/* ------------------------------------------- */
+.btn-shine {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 48px;
+  color: #fff;
+  background: linear-gradient(to right, #9f9f9f 0, #fff 10%, #868686 20%);
+  background-position: 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s infinite linear;
+  animation-fill-mode: forwards;
+  -webkit-text-size-adjust: none;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+  font-family: "Poppins", sans-serif;
+}
+@-moz-keyframes shine {
+  0% {
+    background-position: 0;
+  }
+  60% {
+    background-position: 180px;
+  }
+  100% {
+    background-position: 180px;
+  }
+}
+@-webkit-keyframes shine {
+  0% {
+    background-position: 0;
+  }
+  60% {
+    background-position: 180px;
+  }
+  100% {
+    background-position: 180px;
+  }
+}
+@-o-keyframes shine {
+  0% {
+    background-position: 0;
+  }
+  60% {
+    background-position: 180px;
+  }
+  100% {
+    background-position: 180px;
+  }
+}
+@keyframes shine {
+  0% {
+    background-position: 0;
+  }
+  60% {
+    background-position: 180px;
+  }
+  100% {
+    background-position: 180px;
+  }
 }

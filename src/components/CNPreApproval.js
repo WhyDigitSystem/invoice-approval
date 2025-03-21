@@ -45,6 +45,13 @@ const CNPreApproval = () => {
   const [crRemarks, setCrRemarks] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
+  const [files, setFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
+    setFiles(selectedFiles);
+  };
+
   const themeConfig =
     theme === "dark"
       ? {
@@ -323,6 +330,44 @@ const CNPreApproval = () => {
     return `${year}-${formattedMonth}-${formattedDay}`;
   };
 
+  const uploadFiles = async (crPreAppVOid, files) => {
+    if (!crPreAppVOid || !files || files.length === 0) {
+      console.error("No files or ID provided for upload.");
+      return;
+    }
+
+    const formDataPayload = new FormData();
+
+    // Append the ID to the FormData
+    formDataPayload.append("id", crPreAppVOid);
+
+    // Append each file to the FormData
+    files.forEach((file, index) => {
+      formDataPayload.append(`files`, file);
+    });
+
+    try {
+      // Send the file upload request
+      const uploadResponse = await axios.put(
+        `${API_URL}/api/crpreapp/uploadfile`, // File upload endpoint
+        formDataPayload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required for file upload
+          },
+        }
+      );
+
+      if (uploadResponse.status === 200) {
+        console.log("Files uploaded successfully.");
+      } else {
+        console.error("Failed to upload files.");
+      }
+    } catch (error) {
+      console.error("Error uploading files:", error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -337,8 +382,6 @@ const CNPreApproval = () => {
       alert("Please fill in all required fields.");
       return;
     }
-
-    // Format the vchDt field
 
     const formattedVchDt = formatDate(formData.vchDt);
 
@@ -363,17 +406,25 @@ const CNPreApproval = () => {
     };
 
     try {
+      // First API call to create/update the record
       const response = await axios.put(
         `${API_URL}/api/crpreapp/updateCRPreApp`,
         payload
       );
 
       if (response.status === 200 || response.status === 201) {
+        const crPreAppVOid = response.data.paramObjectsMap.crPreAppVO.id;
+
+        // Call the file upload function
+        await uploadFiles(crPreAppVOid, files);
+
         notification.success({
           message: "Success",
-          description: "The party information has been successfully updated.",
+          description:
+            "The party information and files have been successfully updated.",
           duration: 3,
         });
+
         startConfetti();
         handleClear();
         setTimeout(() => {
@@ -391,6 +442,128 @@ const CNPreApproval = () => {
       alert("An error occurred while saving.");
     }
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (
+  //     !formData.partyCode ||
+  //     !formData.profoma ||
+  //     !formData.reason ||
+  //     !formData.crAmt ||
+  //     !ptype ||
+  //     !crRemarks
+  //   ) {
+  //     alert("Please fill in all required fields.");
+  //     return;
+  //   }
+
+  //   // Format the vchDt field
+
+  //   const formattedVchDt = formatDate(formData.vchDt);
+
+  //   if (!formattedVchDt) {
+  //     alert("Please enter a valid date.");
+  //     return;
+  //   }
+
+  //   const payload = {
+  //     branchName: branchName,
+  //     partyCode: formData.partyCode,
+  //     partyName: formData.partyName,
+  //     profoma: formData.profoma,
+  //     vchNo: formData.vchNo,
+  //     vchDt: formattedVchDt,
+  //     ptype: ptype,
+  //     invAmt: formData.invAmt,
+  //     crAmt: formData.crAmt,
+  //     reason: formData.reason,
+  //     createdBy: localStorage.getItem("userName"),
+  //     crRemarks: crRemarks,
+  //   };
+
+  //   try {
+  //     const response = await axios.put(
+  //       `${API_URL}/api/crpreapp/updateCRPreApp`,
+  //       payload
+  //     );
+
+  //     if (response.status === 200 || response.status === 201) {
+  //       notification.success({
+  //         message: "Success",
+  //         description: "The party information has been successfully updated.",
+  //         duration: 3,
+  //       });
+
+  //       if (
+  //         response.status === 200 ||
+  //         (response.status === 201 && response.data.statusFlag === "Ok")
+  //       ) {
+  //         const crPreAppVOid = response.data.paramObjectsMap.crPreAppVO.id;
+
+  //         const formDataPayload = new FormData();
+  //         formDataPayload.append("data", JSON.stringify(payload));
+
+  //         files.forEach((file, index) => {
+  //           formDataPayload.append(`files`, file);
+  //           formDataPayload.append("crPreAppid", crPreAppVOid); // Append the corresponding expenseId
+  //         });
+
+  //         const formupdateData {
+  //           id: crPreAppVOid,
+  //           files: files
+  //         }
+
+  //         console.log("formData", formData);
+
+  //         // If there are files to upload, proceed with the API call
+
+  //         console.log("Uploading Files for CN...");
+
+  //         try {
+  //           // Send the image upload request with multiple files in a single API call
+  //           const uploadResponse = await axios.put(
+  //             `${API_URL}/api/crpreapp/uploadfile`,
+  //             formDataPayload,
+  //             {
+  //               headers: {
+  //                 "Content-Type": "multipart/form-data", // Required for file upload
+  //               },
+  //             }
+  //           );
+
+  //           if (uploadResponse.status === 200) {
+  //             console.log(
+  //               "Images uploaded successfully for the respective expense IDs."
+  //             );
+  //             // handleCelebrate();
+  //             // handleClear();
+  //           } else {
+  //             console.log("Failed to upload images.");
+  //           }
+  //         } catch (error) {
+  //           console.error("Error uploading images for the expenses:", error);
+  //         }
+  //       } else {
+  //         console.log("Failed to create expenses.");
+  //       }
+
+  //       // startConfetti();
+  //       // handleClear();
+  //       // setTimeout(() => {
+  //       //   window.location.reload();
+  //       // }, 2000);
+  //     } else {
+  //       notification.error({
+  //         message: "Error",
+  //         description: "Failed to update the party information.",
+  //         duration: 3,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //     alert("An error occurred while saving.");
+  //   }
+  // };
 
   const handleButtonClick = (e) => {
     handleSubmit(e);
@@ -413,6 +586,8 @@ const CNPreApproval = () => {
 
   return (
     <ConfigProvider theme={themeConfig}>
+      <br />
+      <br />
       <div
         className="card w-full p-6 bg-base-100 shadow-xl "
         style={{ padding: "20px", borderRadius: "10px", height: "100%" }}
@@ -870,6 +1045,31 @@ const CNPreApproval = () => {
                     }}
                   >
                     Reason <span style={{ color: "red" }}>*</span>{" "}
+                  </label>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="input-data">
+                  <input
+                    type="file"
+                    name="file"
+                    onChange={handleFileChange}
+                    multiple // Allow multiple files
+                    style={{
+                      width: "500px",
+                      marginBottom: "8px",
+                      marginLeft: "2px",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "2px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Attach Files <span style={{ color: "red" }}>*</span>
                   </label>
                 </div>
               </div>

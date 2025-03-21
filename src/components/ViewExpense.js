@@ -42,11 +42,13 @@ const ViewExpense = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [data1, setData1] = useState([]);
+  // const [editId, setEditId] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null); // Modal data
-
+  const [editId, setEditId] = useState(null); // Modal data
   const expenseId = location.state?.expenseId;
+
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   const themeConfig =
@@ -109,6 +111,14 @@ const ViewExpense = () => {
   }, [theme]);
 
   useEffect(() => {
+    if (location.state && location.state.expenseId) {
+      setEditId(location.state.expenseId); // Set expenseId in state
+    } else {
+      console.error("Expense ID is undefined in location.state");
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     if (theme === "dark") {
       document.body.style.backgroundColor = "#5D576B";
       document.body.style.color = "#fff"; // White text for dark mode
@@ -167,6 +177,13 @@ const ViewExpense = () => {
     // setIsModalOpen(true);
   };
 
+  // Use useEffect to log the updated editId after it's set
+  useEffect(() => {
+    if (editId !== null) {
+      console.log("EditId updated to:", editId);
+    }
+  }, [editId]); // This will run every time editId is updated
+
   useEffect(() => {
     if (expenseId) {
       fetchData(expenseId); // Fetch data using the expenseId
@@ -184,6 +201,14 @@ const ViewExpense = () => {
       // Log the response to check
       console.log("View API Response:", response);
       setData1(response.data.paramObjectsMap.employeeExpensesVO);
+
+      // Extract the employeeExpensesVO object from the response
+      const employeeExpensesVO =
+        response.data.paramObjectsMap.employeeExpensesVO;
+
+      // Store the "id" from employeeExpensesVO in setEditId
+      // setEditId(response.data.paramObjectsMap.employeeExpensesVO.id);
+      console.log("Fetching data for expenseId:", expenseId);
 
       // Assuming the response data is in response.data (default axios behavior)
       setData(
@@ -220,9 +245,7 @@ const ViewExpense = () => {
       const response = await axios.put(
         `${API_URL}/api/expense/approval1?approval=${"1"}&createdby=${localStorage.getItem(
           "userName"
-        )}&id=${parseInt(expenseId)}&userType=${localStorage.getItem(
-          "userType"
-        )}`
+        )}&id=${editId}&userType=${localStorage.getItem("userType")}`
       );
 
       if (response.data.status === true) {
@@ -293,6 +316,9 @@ const ViewExpense = () => {
 
   return (
     <ConfigProvider theme={themeConfig}>
+      <br />
+      <br />
+
       <div
         className="card w-full p-6 bg-base-100 shadow-xl "
         style={{ padding: "20px", borderRadius: "10px", height: "100%" }}
@@ -304,6 +330,8 @@ const ViewExpense = () => {
             style={{ marginBottom: "20px" }}
           ></div>
           <div className="container" style={{ width: "2200px" }}>
+            <br />
+            <br />
             {/* <br/> */}
             {/* <p >Expense Claim List</p> */}
             <div

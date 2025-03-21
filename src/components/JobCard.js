@@ -118,13 +118,13 @@ const JobCard = () => {
 
   // Determine the greeting based on the time of day
 
-  useEffect(() => {
-    // fetchData();
-    const intervalId = setInterval(fetchData, 180000);
+  // useEffect(() => {
+  //   // fetchData();
+  //   const intervalId = setInterval(fetchData, 180000);
 
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, []);
+  //   // Clean up the interval when the component unmounts
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   // Handle date change for each job
   const handleDateChange = (jobNo, date) => {
@@ -317,8 +317,6 @@ const JobCard = () => {
       document.body.style.color = "#000"; // Black text for light mode
     }
   }, [theme]);
-
-  
 
   const handleApprove = async (item) => {
     try {

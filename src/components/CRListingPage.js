@@ -3,6 +3,7 @@ import {
   MoonOutlined,
   RightCircleOutlined,
   SunOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -20,14 +21,16 @@ import {
   Typography,
 } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCRListingData } from "../services/api"; // mock API call
+import { getCRListingData, findByGSTPreCreditrId } from "../services/api"; // mock API call
 import EmailConfig from "../utils/emailConfig";
 import NoDataFallback from "../utils/fallBack";
 import "./date.css";
 import "./style.css";
 import ButtonTrans from "./ButtonTrans";
+
+import { Download } from "@mui/icons-material";
 
 import confetti from "canvas-confetti";
 
@@ -37,6 +40,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
 const CRListingPage = () => {
   const [data, setData] = useState([]);
+  const [attachData, setAttachData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [emailFlag, setEmailFlag] = useState(false);
   const [emailFlag2, setEmailFlag2] = useState(false);
@@ -59,6 +63,7 @@ const CRListingPage = () => {
   const loginemail = localStorage.getItem("email");
 
   const currentHour = new Date().getHours();
+  const hasFetchedRef = useRef(false);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -103,21 +108,221 @@ const CRListingPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const fetchData = () => {
+  // const fetchData = () => {
+  //   setLoading(true);
+  //   getCRListingData()
+  //     .then((response) => {
+  //       setData(response);
+  //       setLoading(false);
+  //     })
+  //     .catch(() => {
+  //       notification.error({
+  //         message: "Data Fetch Error",
+  //         description: "Failed to fetch updated data for the listing.",
+  //       });
+  //       setLoading(false);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   if (data.length > 0) {
+  //     // Fetch files for each item in filteredData
+  //     data.forEach((item) => {
+  //       findByGSTPreCreditrId(item.gst_precreditId)
+  //         .then((response) => {
+  //           // Update the item with the fetched files
+  //           setData((prevData) =>
+  //             prevData.map((dataItem) =>
+  //               dataItem.gst_precreditId === item.gst_precreditId
+  //                 ? { ...dataItem, files: response }
+  //                 : dataItem
+  //             )
+  //           );
+  //         })
+  //         .catch((error) => {
+  //           console.error(
+  //             `Failed to fetch files for gst_precreditId ${item.gst_precreditId}:`,
+  //             error
+  //           );
+  //         });
+  //     });
+  //   }
+  // }, [data]);
+
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await getCRListingData();
+  //     const attachmentResponse = await findByGSTPreCreditrId(
+  //       response.paramObjectsMap.pendingApprovalDetails[0].id
+  //     );
+
+  //     setData(response.paramObjectsMap.pendingApprovalDetails);
+  //     setAttachData(attachmentResponse.paramObjectsMap.crPreAppVO.attachment); // Store the attachment
+  //     console.log("AttachData", attachmentResponse);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Data Fetch Error",
+  //       description: "Failed to fetch data.",
+  //     });
+  //     setLoading(false);
+  //   }
+  // };
+  const fetchData = async () => {
     setLoading(true);
-    getCRListingData()
-      .then((response) => {
-        setData(response);
-        setLoading(false);
-      })
-      .catch(() => {
-        notification.error({
-          message: "Data Fetch Error",
-          description: "Failed to fetch updated data for the listing.",
-        });
-        setLoading(false);
+    try {
+      // Step 1: Fetch the CR listing data
+      const response = await getCRListingData();
+
+      console.log("first", response);
+
+      // Step 2: Fetch all attachments concurrently using Promise.all
+      const updatedData = await Promise.all(
+        response.map(async (item) => {
+          try {
+            // Fetch the attachment data for each item
+            const attachmentResponse = await findByGSTPreCreditrId(item.id);
+
+            // Log the response to check if attachment is present
+            console.log(
+              "Attachment Response for item ID",
+              item.id,
+              attachmentResponse
+            );
+
+            // Step 3: Extract the required attachment data
+            item.files =
+              attachmentResponse?.data?.paramObjectsMap?.crPreAppVO
+                ?.attachment || null;
+
+            // Log the attachment data to verify
+            console.log("Attachment for item", item.id, item.files);
+          } catch (error) {
+            console.error(
+              `Error fetching attachment for item with id ${item.id}:`,
+              error
+            );
+            item.files = null; // If there is an error, no file is attached
+          }
+
+          return item;
+        })
+      );
+
+      // Step 4: Update the state with the data and attachment information
+      setData(updatedData);
+
+      console.log("Updated Data:", updatedData);
+    } catch (error) {
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch data.",
       });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // const renderAttachment = (attachment) => {
+  //   if (!attachment) return <Text strong>No attachment available</Text>;
+
+  //   // Determine the file type (e.g., PDF, image, etc.)
+  //   const fileType = attachment.split(";")[0].split(":")[1]; // Extract MIME type
+
+  //   // Decode the Base64 string
+  //   const byteCharacters = atob(attachment.split(",")[1]);
+  //   const byteNumbers = new Array(byteCharacters.length);
+  //   for (let i = 0; i < byteCharacters.length; i++) {
+  //     byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //   }
+  //   const byteArray = new Uint8Array(byteNumbers);
+  //   const blob = new Blob([byteArray], { type: fileType });
+
+  //   // Create a URL for the Blob
+  //   const fileUrl = URL.createObjectURL(blob);
+
+  //   // Render based on file type
+  //   if (fileType.startsWith("image/")) {
+  //     return (
+  //       <img
+  //         src={fileUrl}
+  //         alt="Attachment"
+  //         style={{ maxWidth: "100%", height: "auto" }}
+  //       />
+  //     );
+  //   } else if (fileType === "application/pdf") {
+  //     return (
+  //       <iframe src={fileUrl} width="100%" height="500px" title="Attachment" />
+  //     );
+  //   } else {
+  //     return (
+  //       <a href={fileUrl} download="attachment">
+  //         <Button icon={<Download />}>Download Attachment</Button>
+  //       </a>
+  //     );
+  //   }
+  // };
+  // const fetchData = () => {
+  //   setLoading(true);
+  //   getCRListingData()
+  //     .then((response) => {
+  //       setData(response.paramObjectsMap.pendingApprovalDetails); // Set data from the API response
+  //       setLoading(false);
+  //     })
+  //     .catch(() => {
+  //       notification.error({
+  //         message: "Data Fetch Error",
+  //         description: "Failed to fetch updated data for the listing.",
+  //       });
+  //       setLoading(false);
+  //     });
+  // };
+  useEffect(() => {
+    // If files have already been fetched, skip the effect
+    if (hasFetchedRef.current) return;
+
+    const fetchFilesForEachItem = async () => {
+      if (data.length === 0) return; // If no data, do nothing
+
+      const updatedData = [...data]; // Create a copy to avoid mutation
+
+      for (let item of updatedData) {
+        // Check if files are already fetched, if yes, skip fetching
+        if (item.filesFetched) continue;
+
+        console.log("Fetching files for id:", item.id); // Assuming id is the correct field
+
+        if (!item.id) {
+          console.error(`Invalid id for item: ${JSON.stringify(item)}`);
+          continue; // Skip if id is invalid
+        }
+
+        try {
+          // Call the API to get the files using id instead of gst_precreditId
+          const filesResponse = await findByGSTPreCreditrId(item.id); // Use item.id instead of gst_precreditId
+          setAttachData(filesResponse.paramObjectsMap.crPreAppVO.attachment);
+          item.files = filesResponse || [];
+          item.filesFetched = true; // Mark as fetched
+        } catch (error) {
+          console.error(`Failed to fetch files for id ${item.id}:`, error);
+          item.files = [];
+          item.filesFetched = false; // Mark as not fetched in case of error
+        }
+      }
+
+      // Update the state with the modified data
+      setData(updatedData);
+      console.log("setAttachData", data);
+      hasFetchedRef.current = true; // Set the flag to true after files are fetched
+    };
+
+    fetchFilesForEachItem();
+  }, [data]); // Dependency on `data`, will run when data changes/ Dependency on data to fetch files only when data is updated or on page load
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -318,7 +523,47 @@ const CRListingPage = () => {
     year: "",
   });
 
-  // Function to show time
+  // const handleDownload = (base64String, fileName) => {
+  //   try {
+  //     if (!base64String || typeof base64String !== "string") {
+  //       console.error("Invalid attachment data");
+  //       return;
+  //     }
+
+  //     // Check if it's a valid Base64 string
+  //     const validBase64 = /^[A-Za-z0-9+/=]+$/.test(base64String.trim());
+  //     if (!validBase64) {
+  //       console.error("Received malformed Base64 data");
+  //       return;
+  //     }
+
+  //     // Decode Base64 into binary data
+  //     const byteCharacters = atob(base64String);
+  //     const byteNumbers = new Array(byteCharacters.length);
+  //     for (let i = 0; i < byteCharacters.length; i++) {
+  //       byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //     }
+  //     const byteArray = new Uint8Array(byteNumbers);
+
+  //     // Create a Blob (Assuming it's a text file, modify MIME type if needed)
+  //     const blob = new Blob([byteArray], { type: "application/octet-stream" });
+
+  //     // Create a temporary download link
+  //     const url = URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = fileName || "download.txt"; // Adjust filename if needed
+  //     document.body.appendChild(a);
+  //     a.click();
+
+  //     // Cleanup
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Error downloading file:", error);
+  //   }
+  // };
+  // // Function to show time
   const showTime = () => {
     let time = new Date();
     setTime(time.toLocaleTimeString("en-US", { hour12: false }));
@@ -369,6 +614,137 @@ const CRListingPage = () => {
     // Clean up interval when the component unmounts
     return () => clearInterval(timeInterval);
   }, []);
+
+  // const handleDownload = (fileData, fileName = "attachment.pdf") => {
+  //   try {
+  //     if (!fileData) {
+  //       console.error("No attachment found!");
+  //       return;
+  //     }
+
+  //     let blob;
+
+  //     // Case 1: If fileData is already a Blob
+  //     if (fileData instanceof Blob) {
+  //       blob = new Blob([fileData], { type: "application/pdf" }); // Ensure it's PDF
+  //     }
+  //     // Case 2: If fileData is a Base64 string (Ensure Base64 is valid)
+  //     else if (typeof fileData === "string" && fileData.startsWith("JVBER")) {
+  //       const byteCharacters = atob(fileData);
+  //       const byteNumbers = new Array(byteCharacters.length);
+  //       for (let i = 0; i < byteCharacters.length; i++) {
+  //         byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //       }
+  //       const byteArray = new Uint8Array(byteNumbers);
+  //       blob = new Blob([byteArray], { type: "application/pdf" });
+  //     }
+  //     // Case 3: If fileData is an ArrayBuffer
+  //     else if (fileData instanceof ArrayBuffer) {
+  //       blob = new Blob([fileData], { type: "application/pdf" });
+  //     } else {
+  //       console.error("Unsupported file format:", fileData);
+  //       return;
+  //     }
+
+  //     // Create a URL and download
+  //     const url = URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = fileName; // Ensure it downloads as a PDF
+  //     document.body.appendChild(a);
+  //     a.click();
+
+  //     // Cleanup
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Error downloading PDF file:", error);
+  //   }
+  // };
+
+  const handleDownload = (fileData, fileName) => {
+    try {
+      if (!fileData) {
+        console.error("No attachment found!");
+        return;
+      }
+
+      let blob;
+      let fileType;
+
+      // Case 1: If fileData is already a Blob
+      if (fileData instanceof Blob) {
+        // Check the MIME type of the Blob to determine file type
+        fileType = fileData.type || "application/octet-stream"; // Default to binary stream
+        blob = fileData;
+      }
+      // Case 2: If fileData is a Base64 string (ensure Base64 is valid)
+      else if (typeof fileData === "string") {
+        // PDF (starts with JVBER for PDF)
+        if (fileData.startsWith("JVBER")) {
+          const byteCharacters = atob(fileData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          blob = new Blob([byteArray], { type: "application/pdf" });
+          fileType = "application/pdf";
+          fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+        }
+        // Word (starts with PK for DOCX)
+        else if (fileData.startsWith("UEsDB")) {
+          const byteCharacters = atob(fileData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          blob = new Blob([byteArray], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          });
+          fileType =
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          fileName = fileName.endsWith(".docx") ? fileName : `${fileName}.docx`;
+        }
+        // Plain text (Notepad)
+        else {
+          const byteCharacters = atob(fileData);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          blob = new Blob([byteArray], { type: "text/plain" });
+          fileType = "text/plain";
+          fileName = fileName.endsWith(".txt") ? fileName : `${fileName}.txt`;
+        }
+      }
+      // Case 3: If fileData is an ArrayBuffer
+      else if (fileData instanceof ArrayBuffer) {
+        blob = new Blob([fileData], { type: "application/pdf" }); // Default to PDF if ArrayBuffer is given
+        fileType = "application/pdf";
+        fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+      } else {
+        console.error("Unsupported file format:", fileData);
+        return;
+      }
+
+      // Create a URL for the Blob and trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName; // Ensure it downloads with the appropriate file name
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
 
   const popoverContent = (
     <Space
@@ -488,7 +864,7 @@ const CRListingPage = () => {
                 <Spin tip="Loading..." />
               ) : (
                 <Row gutter={[12, 12]}>
-                  {filteredData.map((item) => (
+                  {data.map((item) => (
                     <Col xs={24} sm={12} md={8} key={item.gst_precreditId}>
                       <div class="note-container">
                         <div
@@ -723,6 +1099,40 @@ const CRListingPage = () => {
                             <Text strong style={{ color: "black" }}>
                               {item.reason}
                             </Text>
+                          </div>
+                          <div
+                            style={{
+                              position: "relative",
+                              maxWidth: "90vw",
+                              maxHeight: "90vh",
+                              padding: "10px",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Text strong style={{ color: "black" }}>
+                              {/* Attachments: */}
+                            </Text>
+                            <br />
+                            <div style={{ marginTop: "10px" }}>
+                              {/* <Button
+                                type="primary"
+                                icon={<DownloadOutlined />}
+                                onClick={() =>
+                                  handleDownload(item.files, item.vchNo)
+                                }
+                              >
+                                Download
+                              </Button> */}
+                              <a
+                                href="#"
+                                class="btn-shine"
+                                onClick={() =>
+                                  handleDownload(item.files, item.vchNo)
+                                }
+                              >
+                                Attachment Download
+                              </a>
+                            </div>
                           </div>
 
                           <Space

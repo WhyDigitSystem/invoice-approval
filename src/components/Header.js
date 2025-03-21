@@ -32,9 +32,60 @@ const Header = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const username = localStorage.getItem("userName");
+  const [time, setTime] = useState(new Date());
 
   const hiddenPaths = ["/login", "/register", "/authenticate"]; // Add other paths as needed
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date()); // Update the state with the current time
+    }, 1000); // Update every second
+
+    // Clean up the interval when the component is unmounted
+    return () => clearInterval(interval);
+  }, []);
+
+  // Get the day of the week (e.g., "Monday", "Tuesday")
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date()); // Update the state with the current time
+    }, 1000); // Update every second
+
+    // Clean up the interval when the component is unmounted
+    return () => clearInterval(interval);
+  }, []);
+
+  // Function to add the correct ordinal suffix to the day of the month
+  const getDayWithSuffix = (day) => {
+    if (day > 3 && day < 21) return `${day}`; // Special case for 11th, 12th, 13th, etc.
+    switch (day % 10) {
+      case 1:
+        return `${day}`;
+      case 2:
+        return `${day}`;
+      case 3:
+        return `${day}`;
+      default:
+        return `${day}`;
+    }
+  };
+
+  // Get the day of the week (e.g., "Saturday", "Sunday", etc.)
+  const dayOfWeek = time.toLocaleString("en-US", { weekday: "short" });
+
+  // Format the date
+  const dayWithSuffix = getDayWithSuffix(time.getDate());
+  const month = time.toLocaleString("en-US", { month: "short" }); // Get full month name
+  const year = time.getFullYear();
+
+  // Format time
+  const hours = time.getHours().toString().padStart(2, "0");
+  const minutes = time.getMinutes().toString().padStart(2, "0");
+  const seconds = time.getSeconds().toString().padStart(2, "0");
+
+  const formattedDate = `${dayOfWeek} ${dayWithSuffix} ${month} ${year}`;
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
 
   // const toggleTheme = () => {
   //   const newTheme = theme === "light" ? "dark" : "light";
@@ -158,6 +209,11 @@ const Header = () => {
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {/* User Avatar and Name */}
+        <p style={{ fontSize: "18px", fontWeight: "bold" }}>
+          {formattedDate} - {formattedTime}
+        </p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
           <Avatar
             sx={{ marginRight: 1 }}

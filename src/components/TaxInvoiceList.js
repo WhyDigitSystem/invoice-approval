@@ -72,13 +72,43 @@ export const TaxInvoiceList = () => {
     navigate("/Reports");
   };
 
-  const downloadPDF = (documentNumber) => {
-    const link = document.createElement("a");
-    link.href = `/TaxInvoicePdf/${documentNumber}`; // URL to the PDF file
-    link.download = `${documentNumber}.pdf`; // Name of the downloaded file
-    document.body.appendChild(link); // Append the link to the DOM
-    link.click(); // Trigger the download
-    document.body.removeChild(link); // Remove the link from the DOM
+  // const downloadPDF = async (documentNumber) => {
+  //   const url = `/TaxInvoicePdf/${documentNumber}`;
+  //   window.open(url, "_blank");
+  // };
+
+  const downloadPDF = async (documentNumber) => {
+    const url = `/TaxInvoicePdf/${documentNumber}`;
+
+    try {
+      // Fetch the PDF file from the server
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch the PDF file");
+      }
+
+      // Convert the response to a Blob (binary data)
+      const blob = await response.blob();
+
+      // Create an object URL for the Blob
+      const downloadUrl = URL.createObjectURL(blob);
+
+      // Create a hidden anchor element
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${documentNumber}.pdf`; // Specify the file name
+
+      // Append the link to the document, click it to trigger the download, then remove it
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Revoke the object URL to free up memory
+      URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
   };
 
   // Fetch branch names on component mount

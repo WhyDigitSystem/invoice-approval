@@ -1,4 +1,3 @@
-
 /* Expense Table Styles */
 .expense-table {
   width: 100%;
@@ -18,14 +17,13 @@
 }
 
 .expense-table th {
-  background-color: #f4f4f4;
+  background-color: rgb(255, 237, 134);
   font-weight: 600;
 }
 
 .expense-table td {
   background-color: #fafafa;
   font-size: 14px;
-  
 }
 
 /* Total Amount Display */
@@ -50,5 +48,3 @@
 .delete-btn:hover {
   background: #c0392b;
 }
-
-

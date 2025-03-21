@@ -211,15 +211,22 @@ const Reports = () => {
 
   return (
     <div
-      className="container"
+      className="sticky-note sticky-note-one1"
+      // className="container"
       style={{
         padding: "20px",
-        marginTop: "100px",
-        boxShadow: "0 5px 10px rgba(0, 0, 0, 0.3)",
-        // background: "white",
+        marginTop: "70px",
+
+        // boxShadow: "0 5px 10px rgba(0, 0, 0, 0.3)",
+        backgroundColor: "#fff",
+        width: "800px",
+        minHeight: "10px",
+        padding: "20px",
+        margin: "70px auto 0",
+        filter: "drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.3))",
       }}
     >
-      <div class="InputContainer">
+      <div className="InputContainer">
         <input
           type="text"
           placeholder="Search..."
@@ -235,14 +242,14 @@ const Reports = () => {
           }}
         />
       </div>
-      <br />
+
       <Button
         className="button1"
         type="text"
         icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
         onClick={toggleTheme}
         size="small"
-        style={{ marginLeft: "10px", marginTop: "10px" }}
+        style={{ marginLeft: "550px", marginTop: "-90px" }}
       >
         {theme === "light" ? "Dark Mode" : "Light Mode"}
       </Button>
@@ -279,6 +286,21 @@ const Reports = () => {
           </div>
         ))}
       </div>
+      <div
+        style={{
+          content: '""',
+          display: "block",
+          position: "absolute",
+          bottom: "-10px",
+          left: "0",
+          width: "100%",
+          height: "10px",
+          background:
+            "linear-gradient(45deg, transparent 33.333%, #FFF 33.333%, #FFF 66.667%, transparent 66.667%), linear-gradient(-45deg, transparent 33.333%, #FFF 33.333%, #FFF 66.667%, transparent 66.667%)",
+          backgroundSize: "20px 40px",
+          transform: "rotate(180deg)",
+        }}
+      ></div>
     </div>
   );
 };

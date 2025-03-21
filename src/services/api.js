@@ -66,6 +66,50 @@ export const getListingData = async () => {
   }
 };
 
+export const getTTListingData = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/TTInvoiceApproval/getPendingDetails?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          expenceId: item.docId,
+          name: item.partyName,
+          amount: item.totalInvAmtLc,
+          currency: "INR", // Assuming it's always INR; adjust if needed.
+          docId: item.docId,
+          docDate: item.docDate,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit,
+          outStanding: item.outStanding,
+          id: item.TTInvoiceHdrId,
+          eligiSlab: item.eligiSlab,
+          slabRemarks: item.slabRemarks,
+          exceedDays: item.exceedDays,
+          unApproveAmt: item.unApproveAmt,
+          category: item.category,
+          controllingOffice: item.controllingOffice,
+          osBeyond: item.osBeyond,
+          excessCredit: item.excessCredit,
+          salespersonName: item.salespersonName,
+          branchCode: item.branchCode,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
 export const getCRListingData = async () => {
   try {
     const response = await axios.get(
@@ -83,7 +127,59 @@ export const getCRListingData = async () => {
           vchNo: item.vchNo,
           reason: item.reason,
           invAmt: item.invAmt,
-          vchDt: item.vchDt,
+          vchDt: item.vchDt
+            ? new Date(item.vchDt).toLocaleDateString("en-GB")
+            : "",
+          crRemarks: item.crRemarks,
+          partyCode: item.partyCode,
+          partyName: item.partyName,
+          pType: item.pType,
+          branchName: item.branchName,
+          id: item.gst_precreditId,
+          crAmt: item.crAmt,
+          dDays: item.dDays,
+          osbcd: item.osbcd,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit
+            ? new Intl.NumberFormat("en-IN").format(item.creditLimit)
+            : "0",
+          controllingOffice: item.controllingOffice,
+          salesPersonName: item.salesPersonName,
+          category: item.category,
+          totDue: item.totDue
+            ? new Intl.NumberFormat("en-IN").format(item.totDue)
+            : "0",
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
+export const getCRListing2Data = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/crpreapp/getCRPending2Details?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          profoma: item.profoma,
+          vchNo: item.vchNo,
+          reason: item.reason,
+          invAmt: item.invAmt,
+          vchDt: item.vchDt
+            ? new Date(item.vchDt).toLocaleDateString("en-GB")
+            : "",
           crRemarks: item.crRemarks,
           partyCode: item.partyCode,
           partyName: item.partyName,
@@ -131,7 +227,9 @@ export const getCRDetailsApprove1 = async () => {
           vchNo: item.vchNo,
           reason: item.reason,
           invAmt: item.invAmt,
-          vchDt: item.vchDt,
+          vchDt: item.vchDt
+            ? new Date(item.vchDt).toLocaleDateString("en-GB")
+            : "",
           crRemarks: item.crRemarks,
           partyCode: item.partyCode,
           partyName: item.partyName,
@@ -151,6 +249,103 @@ export const getCRDetailsApprove1 = async () => {
           totDue: item.totDue
             ? new Intl.NumberFormat("en-IN").format(item.totDue)
             : "0",
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
+export const getCRDetailsApprove2 = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/crpreapp/getCRDetailsApprove2?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.approvedApprovalDetails2
+    ) {
+      return response.data.paramObjectsMap.approvedApprovalDetails2.map(
+        (item) => ({
+          profoma: item.profoma,
+          vchNo: item.vchNo,
+          reason: item.reason,
+          invAmt: item.invAmt,
+          vchDt: item.vchDt
+            ? new Date(item.vchDt).toLocaleDateString("en-GB")
+            : "",
+          crRemarks: item.crRemarks,
+          partyCode: item.partyCode,
+          partyName: item.partyName,
+          pType: item.pType,
+          branchName: item.branchName,
+          gst_precreditId: item.gst_precreditId,
+          crAmt: item.crAmt,
+          dDays: item.dDays,
+          osbcd: item.osbcd,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit
+            ? new Intl.NumberFormat("en-IN").format(item.creditLimit)
+            : "0",
+          controllingOffice: item.controllingOffice,
+          salesPersonName: item.salesPersonName,
+          category: item.category,
+          totDue: item.totDue
+            ? new Intl.NumberFormat("en-IN").format(item.totDue)
+            : "0",
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
+export const getTTInvDetailsApprove1 = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/TTInvoiceApproval/getTTInvDetailsApprove1?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.approvedApprovalDetails1
+    ) {
+      return response.data.paramObjectsMap.approvedApprovalDetails1.map(
+        (item) => ({
+          expenceId: item.docId,
+          name: item.partyName,
+          amount: item.totalInvAmtLc,
+          currency: "INR", // Assuming it's always INR; adjust if needed.
+          docId: item.docId,
+          docDate: item.docDate,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit,
+          outStanding: item.outStanding,
+          id: item.gstInvoiceHdrId,
+          approved1on: item.approve1on,
+          approved2on: item.approve2on,
+          approved3on: item.approve3on,
+          eligiSlab: item.eligiSlab,
+          slabRemarks: item.slabRemarks,
+          exceedDays: item.exceedDays,
+          unApproveAmt: item.unApproveAmt,
+          category: item.category,
+          controllingOffice: item.controllingOffice,
+          osBeyond: item.osBeyond,
+          excessCredit: item.excessCredit,
+          salespersonName: item.salespersonName,
+          branchCode: item.branchCode,
         })
       );
     } else {
@@ -275,6 +470,65 @@ export const getAllUsers = async () => {
   } catch (error) {
     console.error("Error fetching listing data:", error);
     throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getAllHeaderDetails = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/HeaderDetail/getAll`);
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.headerVO) {
+      // Map the filtered and transformed data and return it
+      return response.data.paramObjectsMap.headerVO.map((item) => ({
+        id: item.id,
+        docdt: item.docDt,
+        docid: item.docId,
+        total: item.total,
+      }));
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getAllHeaderDetailsById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/HeaderDetail/getById?id=${id}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    // Ensure the response has the expected structure
+    if (response.data.status && response.data.paramObjectsMap?.headerVO) {
+      const headerVO = response.data.paramObjectsMap.headerVO;
+
+      // If you want to map the 'headerDetail' array
+      const headerDetails = headerVO.headerDetail.map((item) => ({
+        id: item.id,
+        category: item.category,
+        description: item.description,
+        rate: item.rate,
+        qty: item.qty,
+        amount: item.amount,
+      }));
+
+      return {
+        headerId: headerVO.id,
+        docId: headerVO.docId,
+        docDt: headerVO.docDt,
+        cancel: headerVO.cancel,
+        createdBy: headerVO.createdBy,
+        modifiedBy: headerVO.modifiedBy,
+        headerDetails, // The list of details
+      };
+    } else {
+      throw new Error("HeaderVO not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Header details:", error);
+    throw error;
   }
 };
 
@@ -870,6 +1124,27 @@ export const getIRNQRbyDocNo = async (docNo) => {
     ); // Replace `/your-api-endpoint` with the actual endpoint path
     if (response.data.status && response.data.paramObjectsMap?.irnVo) {
       return response.data.paramObjectsMap.irnVo;
+      // sinv: item.sinv || " ",
+      // sqr: item.sqr || " ",
+    } else {
+      throw new Error("PL Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching PL data:", error);
+    throw error;
+  }
+};
+
+export const findByGSTPreCreditrId = async (id) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/crpreapp/getfindByGSTPreCreditrId?id=${id}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.crPreAppVO.attachment
+    ) {
+      return response;
       // sinv: item.sinv || " ",
       // sqr: item.sqr || " ",
     } else {

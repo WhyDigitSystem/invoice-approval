@@ -28,6 +28,7 @@ import NoDataFallback from "../utils/fallBack";
 import "./date.css";
 import "./style.css";
 
+
 import confetti from "canvas-confetti";
 import ButtonTrans from "./ButtonTrans";
 

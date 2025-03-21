@@ -19,6 +19,18 @@ import Gallery from "./Gallery";
 import CryptoJS from "crypto-js";
 // import "./logintest1.css";
 import UWLNL from "../UWLNL.jpg";
+import UWLNL1 from "../UWLNL1.png";
+import scmprocess from "../scmprocess.gif";
+
+import loginpage1 from "../loginpage1.png";
+import loginpage1New from "../loginpage1New.png";
+import expimp from "../expimp.jpg";
+
+import login4 from "../login4.jpg";
+
+import scm2 from "../scm2.jpg";
+
+import scmvideo from "../scmvideo.mp4";
 // import "./style.css";
 import "./LoginPage.css"; //
 
@@ -162,7 +174,7 @@ const LoginPage = () => {
         );
         localStorage.setItem("responseScreens", responseScreens);
         setLoading(false);
-        navigate("/listing");
+        navigate("/Transactions");
 
         notification.success({
           message: "Success",
@@ -312,137 +324,182 @@ const LoginPage = () => {
   const numberOfParticles = 12;
 
   return (
-    <div
-      className="container"
-      style={{
-        marginTop: "-30px",
-        height: "700px",
-        width: "900px",
-        //  boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
-        boxShadow: "none",
-      }}
-    >
+    <>
       <div
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "85vh",
-          marginTop: "-20px",
-          // fontFamily: "Arial, sans-serif",
-          background: "#fff", // Ensure background is light
-          gap: "30px",
-          boxShadow: "none",
-          // background:"#cd995f"
+          backgroundImage: `url(${loginpage1New})`, // Add the background image
+          backgroundSize: "cover", // Ensure the image covers the entire div
+          backgroundPosition: "center", // Center the background image
+          backgroundRepeat: "no-repeat",
+          height: "600px",
+          width: "1400px",
+          marginTop: "10px",
+
+          // opacity: 0.7, // Set the opacity to make it subtle like a watermark
+          // pointerEvents: "none", // Prevent the watermark from interfering with clicks
+          // zIndex: -1, // Place the watermark behind the content
+        }}
+      ></div>
+      <div
+        style={{
+          background: "transparent",
+          marginTop: "-600px",
         }}
       >
-        {(error || success) && (
+        <img src={UWLNL1} width="360px" height="140px" alt="Your Image" />
+      </div>
+
+      <div
+        className="container"
+        style={{
+          marginTop: "-30px",
+          height: "700px",
+          width: "900px",
+          // boxShadow: "0 8px 10px rgba(248, 192, 192, 0.2)",
+          boxShadow: "none",
+          // backgroundImage: `url(${loginpage1})`, // Add the background image
+          backgroundSize: "cover", // Ensure the image covers the entire div
+          backgroundPosition: "center", // Center the background image
+          backgroundRepeat: "no-repeat",
+          background: "transparent",
+          // opacity: 0.1, // Set the opacity to make it subtle like a watermark
+          // pointerEvents: "none", // Prevent the watermark from interfering with clicks
+          // zIndex: -1, // Place the watermark behind the content
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "85vh",
+            marginTop: "-20px",
+            // fontFamily: "Arial, sans-serif",
+            // background: "#fff", // Ensure background is light
+            gap: "30px",
+            boxShadow: "none",
+            background: "transparent",
+
+            // background:"#cd995f"
+          }}
+        >
+          {(error || success) && (
+            <div
+              style={{
+                position: "absolute",
+                top: 30,
+                width: "100%",
+                maxWidth: "400px",
+              }}
+            >
+              {error && <Alert message={error} type="error" showIcon />}
+              {success && <Alert message={success} type="success" showIcon />}
+            </div>
+          )}
+
+          <div style={{ marginLeft: "-50px", background: "transparent" }}>
+            {/* <img src="https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif" /> */}
+
+            {/* <img src={butterfly}></img> */}
+
+            {/* <br/> */}
+
+            {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
+            {/* <img src={UWLNL} width="100px"  ></img> */}
+            {/* <br/> */}
+            {/* Uniworld <br /> <br/>
+        Logistics <br /> */}
+            {/* <br /> */}
+
+            {/* <Gallery /> */}
+            {/* </h1> */}
+          </div>
+
+          <div id="root"></div>
+
+          <br />
+          {/* <br/> */}
+          {/* <p >Expense Claim List</p> */}
+
           <div
+            className="ticketList"
             style={{
-              position: "absolute",
-              top: 30,
-              width: "100%",
-              maxWidth: "400px",
+              marginTop: "-250px",
+              marginLeft: "260px",
+              background: "transparent",
             }}
           >
-            {error && <Alert message={error} type="error" showIcon />}
-            {success && <Alert message={success} type="success" showIcon />}
-          </div>
-        )}
-
-        <div style={{ marginLeft: "-50px" }}>
-          {/* <img  src='https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif' /> */}
-
-          {/* <img src={butterfly}></img> */}
-
-          {/* <br/> */}
-
-          {/* <h1 style={{ letterSpacing: "5px" , color:"#00008B"}}> */}
-          {/* <img src={UWLNL} width="100px"  ></img> */}
-          {/* <br/> */}
-          {/* Uniworld <br /> <br/>
-        Logistics <br /> */}
-          {/* <br /> */}
-
-          {/* <Gallery /> */}
-          {/* </h1> */}
-        </div>
-        <div style={{ display: "inline-block" }}>
-          <img src={UWLNL} width="450px" height="200px" alt="Your Image" />
-        </div>
-
-        {/* <br/> */}
-        {/* <p >Expense Claim List</p> */}
-
-        <div className="ticketList" style={{ marginTop: "10px" }}>
-          <div class="card">
-            <div class="face face1" style={{ background: "#2f3271" }}>
-              <div class="content">
-                <p style={{ color: "white" }}>Welcome To UGS Portal</p>
+            <div class="card">
+              <div class="face face1" style={{ background: "#2f3271" }}>
+                {/* <div class="face face1" style={{ background: "#2f3271" }}> */}
+                <div class="content">
+                  <p style={{ color: "white" }}>Welcome To UGS Portal</p>
+                </div>
               </div>
-            </div>
-            <div class="face face2">
-              <div class="content">
-                <p>
-                  <Space
-                    direction="vertical"
-                    style={{ width: "100%", padding: "1px" }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        textAlign: "center",
-                        marginBottom: "12px",
-                        color: cardStyle.color,
-                      }}
+              <div class="face face2">
+                <div class="content">
+                  <p>
+                    <Space
+                      direction="vertical"
+                      style={{ width: "100%", padding: "1px" }}
                     >
-                      Username
-                    </Text>
-                    <Input
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Username"
-                      style={{
-                        padding: "4px",
-                        fontSize: 16,
-                        borderRadius: 8,
-                        ...inputStyle,
-                        marginBottom: "15px",
-                      }}
-                    />
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          textAlign: "center",
+                          marginBottom: "12px",
+                          color: cardStyle.color,
+                        }}
+                      >
+                        Username
+                      </Text>
+                      <Input
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Username"
+                        style={{
+                          padding: "4px",
+                          fontSize: 16,
+                          borderRadius: 8,
+                          ...inputStyle,
+                          marginBottom: "15px",
+                        }}
+                      />
 
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        textAlign: "center",
-                        marginBottom: "15px",
-                        color: cardStyle.color,
-                      }}
-                    >
-                      6-Digit Passcode
-                    </Text>
-                    <Space size="middle" style={{ justifyContent: "center" }}>
-                      {passcode.map((digit, index) => (
-                        <Input
-                          key={index}
-                          id={`otp-${index}`}
-                          value={digit}
-                          maxLength={1}
-                          onChange={(e) => handleChange(e.target.value, index)}
-                          onKeyDown={(e) => handleKeyDown(e, index)}
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            textAlign: "center",
-                            fontSize: "14px",
-                            borderRadius: "8px",
-                            ...inputStyle,
-                          }}
-                        />
-                      ))}
-                    </Space>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          textAlign: "center",
+                          marginBottom: "15px",
+                          color: cardStyle.color,
+                        }}
+                      >
+                        6-Digit Passcode
+                      </Text>
+                      <Space size="middle" style={{ justifyContent: "center" }}>
+                        {passcode.map((digit, index) => (
+                          <Input
+                            key={index}
+                            id={`otp-${index}`}
+                            value={digit}
+                            maxLength={1}
+                            onChange={(e) =>
+                              handleChange(e.target.value, index)
+                            }
+                            onKeyDown={(e) => handleKeyDown(e, index)}
+                            style={{
+                              width: "30px",
+                              height: "30px",
+                              textAlign: "center",
+                              fontSize: "14px",
+                              borderRadius: "8px",
+                              ...inputStyle,
+                            }}
+                          />
+                        ))}
+                      </Space>
 
-                    {/* <Button
+                      {/* <Button
                         type="primary"
                         size="large"
                         block
@@ -459,8 +516,8 @@ const LoginPage = () => {
                         Login
                       </Button> */}
 
-                    {/* Dark Mode Toggle */}
-                    {/* <Button
+                      {/* Dark Mode Toggle */}
+                      {/* <Button
                           type="text"
                           icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
                           onClick={toggleTheme}
@@ -469,14 +526,15 @@ const LoginPage = () => {
                         >
                           {theme === "light" ? "Dark Mode" : "Light Mode"}
                         </Button> */}
-                  </Space>
-                </p>
+                    </Space>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

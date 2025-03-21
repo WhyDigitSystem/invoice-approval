@@ -1,9 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  getAllCreditParties,
-  getInvoices,
-  getUserBranch,
-} from "../services/api";
+import { getUserBranch } from "../services/api";
 import { notification, Select, Spin } from "antd"; // Impor
 import {
   DeleteOutlined,
@@ -568,6 +564,8 @@ const AddExpense = () => {
 
   return (
     <ConfigProvider theme={themeConfig}>
+      <br />
+      <br />
       <div
         className="card w-full p-6 bg-base-100 shadow-xl "
         style={{ padding: "20px", borderRadius: "10px", height: "100%" }}

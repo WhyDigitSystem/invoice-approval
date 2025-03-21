@@ -3,7 +3,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Approved2List from "./components/Approved2List";
 import ApprovedList from "./components/ApprovedList";
 import ConfirmationPage from "./components/ConfirmationPage";
-import Dashboard from "./components/Dashbord";
+import Dashboard from "./components/Dashboard";
 import ListingPage from "./components/ListingPage";
 import LoginPage from "./components/LoginPage";
 import MIS from "./components/MIS";
@@ -18,6 +18,7 @@ import AddExpense from "./components/AddExpense";
 import CNPreApproval from "./components/CNPreApproval";
 import CRListingPage from "./components/CRListingPage";
 import CRApprovedList from "./components/CRApprovedList";
+import CRApprovedList2 from "./components/CRApprovedList2";
 import ExpenseList from "./components/ExpenseList";
 import ViewExpense from "./components/ViewExpense";
 import Transactions from "./components/Transactions";
@@ -38,6 +39,12 @@ import ExpandingCards from "./components/ExpandingCards";
 import TaxInvoicePdf from "./components/TaxInvoicePdf";
 import TaxInvoiceList from "./components/TaxInvoiceList";
 import TaxInvoiceCommonTable from "./components/TaxInvoiceCommonTable";
+import TTListingPage from "./components/TTListingPage";
+import TTApprovedList from "./components/TTApprovedList";
+import HeaderDetail from "./components/HeaderDetail";
+import OrderAccept from "./components/OrderAccept";
+import CRPendingList from "./components/CRPendingList";
+import HDashboard from "./components/HDashboad";
 
 function App() {
   return (
@@ -49,20 +56,27 @@ function App() {
         <Route path="/" element={<Dashboard />}>
           <Route path="overview" element={<Overview />} />
           <Route path="approvedlist" element={<ApprovedList />} />
+          <Route path="TTapprovedlist" element={<TTApprovedList />} />
           <Route path="authenticate" element={<ConfirmationPage />} />
           <Route path="listing" element={<ListingPage />} />
+          <Route path="TTlisting" element={<TTListingPage />} />
           <Route path="reports" element={<Reports />} />
           <Route path="screen" element={<Screen />} />
           <Route path="userCreation" element={<UserCreation />} />
           <Route path="approved2list" element={<Approved2List />} />
           <Route path="MIS" element={<MIS />} />
+          <Route path="HeaderDetail" element={<HeaderDetail />} />
           <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
           <Route path="APAgeing" element={<APAgeing />} />
           <Route path="AddExpense" element={<AddExpense />} />
+          <Route path="HDashboard" element={<HDashboard />} />
 
           <Route path="CNPreApproval" element={<CNPreApproval />} />
           <Route path="CRlisting" element={<CRListingPage />} />
+          <Route path="CRPendingList" element={<CRPendingList />} />
           <Route path="CRApprovedList" element={<CRApprovedList />} />
+
+          <Route path="CRApprovedList2" element={<CRApprovedList2 />} />
           <Route path="ExpenseList" element={<ExpenseList />} />
           <Route path="ViewExpense" element={<ViewExpense />} />
           <Route path="transactions" element={<Transactions />} />
@@ -82,6 +96,8 @@ function App() {
           <Route path="JobCostSheetSummary" element={<JobCostSheetSummary />} />
           <Route path="ExpandingCards" element={<ExpandingCards />} />
           <Route path="TaxInvoicePdf" element={<TaxInvoicePdf />} />
+          <Route path="OrderAccept" element={<OrderAccept />} />
+
           <Route path="TaxInvoiceList" element={<TaxInvoiceList />} />
           <Route
             path="/TaxInvoicePdf/:documentNumber"

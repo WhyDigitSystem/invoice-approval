@@ -220,8 +220,9 @@ export const UserCreation = () => {
       !formData.employeeName ||
       !formData.employeeCode ||
       !formData.userType ||
-      !formData.email ||
-      (!userId && !formData.password) // Password is required for new users
+      !formData.email
+      // ||
+      // (!userId && !formData.password) // Password is required for new users
     ) {
       alert("Please fill in all required fields.");
       return;
@@ -234,7 +235,7 @@ export const UserCreation = () => {
       employeeName: formData.employeeName,
       nickName: formData.nickName,
       password: userId ? undefined : encryptPassword(formData.password), // Don't send password if editing
-      ppassword:formData.password,
+      ppassword: formData.password,
       userType: formData.userType,
       roleAccessDTO: roles.map((role) => ({
         role: role.role,

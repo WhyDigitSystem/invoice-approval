@@ -80,8 +80,9 @@ const CommonTable = ({ columns, data }) => {
   return (
     <Box
       sx={{
-        boxShadow: "0 4px 5px rgba(0, 0, 0, 0.5)",
-        borderRadius: "8px",
+        // boxShadow: "0 4px 5px rgba(0, 0, 0, 0.5)",
+        boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)",
+        borderRadius: "18px",
         padding: "16px",
         backgroundColor: "white",
         overflow: "hidden",
@@ -167,7 +168,8 @@ const CommonTable = ({ columns, data }) => {
               gap: "16px",
               padding: "8px",
               flexWrap: "wrap",
-              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)",
+              // boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+              boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)",
               borderRadius: "18px",
               padding: "16px",
               backgroundColor: "white",
