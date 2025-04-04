@@ -333,7 +333,7 @@ const LoginPage = () => {
           backgroundRepeat: "no-repeat",
           height: "600px",
           width: "1400px",
-          marginTop: "10px",
+          // marginTop: "10px",
 
           // opacity: 0.7, // Set the opacity to make it subtle like a watermark
           // pointerEvents: "none", // Prevent the watermark from interfering with clicks
@@ -372,8 +372,8 @@ const LoginPage = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: "85vh",
-            marginTop: "-20px",
+            height: "100vh",
+            marginTop: "30px",
             // fontFamily: "Arial, sans-serif",
             // background: "#fff", // Ensure background is light
             gap: "30px",
@@ -397,7 +397,7 @@ const LoginPage = () => {
             </div>
           )}
 
-          <div style={{ marginLeft: "-50px", background: "transparent" }}>
+          <div style={{ marginLeft: "-90px", background: "transparent" }}>
             {/* <img src="https://i.pinimg.com/originals/66/b0/02/66b002f6f5022553a6cf52d8d01241df.gif" /> */}
 
             {/* <img src={butterfly}></img> */}

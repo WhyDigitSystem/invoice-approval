@@ -268,9 +268,9 @@ export const GSTR1Filling = () => {
     { accessorKey: "ackDt", header: "Ack Date", size: 140 },
     { accessorKey: "ackNo", header: "Ack No.", size: 180 },
     { accessorKey: "irnId", header: "IRN ID", size: 180 },
-    { accessorKey: "type", header: "Type", size: 180 },
-    { accessorKey: "fType", header: "F Type", size: 180 },
-    { accessorKey: "product", header: "Product", size: 180 },
+    { accessorKey: "type", header: "Type", size: 80 },
+    { accessorKey: "fType", header: "F Type", size: 80 },
+    { accessorKey: "product", header: "Product", size: 40 },
     { accessorKey: "territory", header: "Territory", size: 180 }, // Added territory column
   ];
 

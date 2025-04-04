@@ -140,6 +140,7 @@ const CommonTable = ({ columns, data }) => {
                     : "#333",
                   fontWeight: "bold",
                   fontFamily: "'Roboto', sans-serif",
+                  lineHeight: "0.4",
                 },
         })}
         muiTableHeadCellProps={({ column }) => ({
@@ -155,6 +156,7 @@ const CommonTable = ({ columns, data }) => {
                   color: "black",
                   fontWeight: "bold",
                   fontFamily: "'Roboto', sans-serif",
+                  lineHeight: "0.8",
                 },
         })}
         state={{

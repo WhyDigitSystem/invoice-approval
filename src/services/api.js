@@ -149,6 +149,9 @@ export const getCRListingData = async () => {
           totDue: item.totDue
             ? new Intl.NumberFormat("en-IN").format(item.totDue)
             : "0",
+          description: item.description,
+          plImpact: item.plImpact,
+          documentsRequired: item.documentsRequired,
         })
       );
     } else {
@@ -196,6 +199,9 @@ export const getCRListing2Data = async () => {
           controllingOffice: item.controllingOffice,
           salesPersonName: item.salesPersonName,
           category: item.category,
+          description: item.description,
+          plImpact: item.plImpact,
+          documentsRequired: item.documentsRequired,
           totDue: item.totDue
             ? new Intl.NumberFormat("en-IN").format(item.totDue)
             : "0",
@@ -448,6 +454,107 @@ export const getInvDetailsApprove2 = async () => {
   } catch (error) {
     console.error("Error fetching listing data:", error);
     throw error;
+  }
+};
+
+export const getCRReasons = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(`${API_URL}/api/crpreapp/getCRReasons`);
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.crReasons) {
+      return response.data.paramObjectsMap.crReasons.map((item) => ({
+        id: item.gst_cnreasonId,
+        crReason: item.crReason,
+        description: item.description,
+        documentsRequired: item.documentsRequired,
+        plImpact: item.plImpact,
+      }));
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getApprove1Db = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getApprove1Db?userName=${localStorage.getItem(
+        "userName"
+      )}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getApprove1Db) {
+      return response.data.paramObjectsMap.getApprove1Db.map((item) => ({
+        cnUnApprove: item.cnUnApprove,
+        invApprove: item.invApprove,
+        cnApprove: item.cnApprove,
+        invUnApprove: item.invUnApprove,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getApprove1TblDb = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getApprove1TblDb?userName=${localStorage.getItem(
+        "userName"
+      )}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getApprove1TblDb) {
+      return response.data.paramObjectsMap.getApprove1TblDb.map((item) => ({
+        branchCode: item.branchCode,
+        cnUnApprove: item.cnUnApprove,
+        invApprove: item.invApprove,
+        cnApprove: item.cnApprove,
+        invUnApprove: item.invUnApprove,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getApprove1ChartDb = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getApprove1ChartDb?userName=${localStorage.getItem(
+        "userName"
+      )}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getApprove1ChartDb) {
+      return response.data.paramObjectsMap.getApprove1ChartDb.map((item) => ({
+        partyName: item.partyName,
+        cnApprove: item.cnApprove,
+        cnUnApprove: item.cnUnApprove,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
   }
 };
 
@@ -729,6 +836,35 @@ export const getPartyLedgerPartyName = async (pType) => {
   }
 };
 
+export const getHaiCustomerDetails = async (pName) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiCustomerDetails?pName=${pName}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.plParties) {
+      return response.data.paramObjectsMap.plParties.map((item) => ({
+        partyName: item.partyName,
+        partyCode: item.partyCode,
+        onYear: item.onYear,
+        category: item.category,
+        creditLimit: item.creditLimit,
+        creditDays: item.creditDays,
+        salesPersonName: item.salesPersonName,
+        ctrlOffice: item.ctrlOffice,
+        totDue: item.totDue,
+      }));
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Party data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
 export const getPartyLedger = async (
   branchName,
   sbcode,
@@ -973,14 +1109,14 @@ export const getGSTR1Filling = async (branchName, sbcode, fromdate, todate) => {
         gchargeCode: item.gchargeCode, // Corresponds to 'gchargeCode' in your SQL query
         chargeName: item.chargeName, // Corresponds to 'chargeName' in your SQL query
         lCamT:
-          item.lCamT === "0.00" || item.lCamT === 0
+          item.lcAmt === "0.00" || item.lcAmt === 0
             ? ""
-            : new Intl.NumberFormat("en-IN").format(item.lCamT),
+            : new Intl.NumberFormat("en-IN").format(item.lcAmt),
         totInvAmtLC:
           item.totInvAmtLC === "0.00" || item.totInvAmtLC === 0
             ? ""
             : new Intl.NumberFormat("en-IN").format(item.totInvAmtLC),
-        gstP: item.gstP,
+        gstP: item.gstp,
         gstType: item.gstType,
         gst:
           item.gst === "0.00" || item.gst === 0
@@ -1135,23 +1271,54 @@ export const getIRNQRbyDocNo = async (docNo) => {
   }
 };
 
+// export const findByGSTPreCreditrId = async (id) => {
+//   try {
+//     const response = await axios.get(
+//       `${API_URL}/api/crpreapp/getfindByGSTPreCreditrId?id=${id}`
+//     ); // Replace `/your-api-endpoint` with the actual endpoint path
+//     if (
+//       response.data.status &&
+//       response.data.paramObjectsMap?.crPreAppVO.attachment
+//     ) {
+//       return response;
+//       // sinv: item.sinv || " ",
+//       // sqr: item.sqr || " ",
+//     } else {
+//       throw new Error("PL Data not found or API error");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching PL data:", error);
+//     throw error;
+//   }
+// };
+
 export const findByGSTPreCreditrId = async (id) => {
   try {
     const response = await axios.get(
       `${API_URL}/api/crpreapp/getfindByGSTPreCreditrId?id=${id}`
-    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    );
+
+    // Ensure response structure exists before accessing properties
     if (
-      response.data.status &&
-      response.data.paramObjectsMap?.crPreAppVO.attachment
+      response.data?.status &&
+      response.data?.paramObjectsMap?.crPreAppVO?.crPreAppAttachmentVO
     ) {
-      return response;
-      // sinv: item.sinv || " ",
-      // sqr: item.sqr || " ",
+      // Extract multiple attachments safely
+      const attachments =
+        response.data.paramObjectsMap.crPreAppVO.crPreAppAttachmentVO.map(
+          (att, index) => ({
+            fileData: att?.attachment || "", // Avoid issues if `attachment` is missing
+            fileName: `attachment_${att?.id || index}`, // Assign a meaningful name
+          })
+        );
+
+      return { ...response, attachments };
     } else {
-      throw new Error("PL Data not found or API error");
+      console.warn("No attachments found for the given ID:", id);
+      return { ...response, attachments: [] }; // Return empty array if no attachments exist
     }
   } catch (error) {
-    console.error("Error fetching PL data:", error);
+    console.error(`Failed to fetch files for id ${id}:`, error);
     throw error;
   }
 };

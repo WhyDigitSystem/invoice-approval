@@ -447,10 +447,9 @@ const HDashboard = () => {
         style={{
           marginTop: "-400px",
           marginLeft: "840px",
-          marginBottom: "20px",
         }}
       >
-        <div class="card">
+        <div class="card1234">
           <p class="city">PINK CITY</p>
           <p class="weather">PARTILY CLOUDY</p>
           <svg
@@ -486,10 +485,7 @@ const HDashboard = () => {
         </div>
       </div>
 
-      <div
-        class="card456"
-        style={{ marginBottom: "150px", marginTop: "120px" }}
-      >
+      <div class="card456" style={{ marginTop: "120px" }}>
         <div class="card-content-wrapper">
           <div class="card-title">Free plan</div>
           <div class="card-price">
@@ -500,9 +496,47 @@ const HDashboard = () => {
         </div>
         <button class="card-btn">More info</button>
       </div>
-      <div class="card123" style={{ marginTop: "10px", marginBottom: "150px" }}>
-        <div class="bg"></div>
-        <div class="blob"></div>
+      <div
+        class="container000"
+        style={{
+          marginBottom: "150px",
+          marginTop: "-200px",
+          marginLeft: "180px",
+        }}
+      >
+        <div class="card000">hover</div>
+      </div>
+
+      <div
+        class="charts-wrapper"
+        style={{
+          marginBottom: "150px",
+          marginTop: "-400px",
+          marginLeft: "480px",
+        }}
+      >
+        <section role="credit-card">
+          <div class="top">
+            <img src="https://ozcanzaferayan.github.io/financial-crm/img/mastercard.svg" />
+            <img
+              src="https://ozcanzaferayan.github.io/financial-crm/img/apple_pay.svg"
+              class="apple_pay"
+            />
+          </div>
+          <div class="ccNumber">
+            <span>˙˙˙˙ ˙˙˙˙ ˙˙˙˙ 5610</span>
+          </div>
+          <div class="ccBottom">
+            <div class="ccValidThru">
+              <label>VALID THRU</label>
+              <span>05/21</span>
+            </div>
+            <div class="ccCardHolder">
+              <label>CARD HOLDER</label>
+              <span>Robert</span>
+            </div>
+          </div>
+        </section>
       </div>
       {/* Chart Section */}
       <div id="effect-example-2">

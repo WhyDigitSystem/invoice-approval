@@ -1,0 +1,131 @@
+.item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+.item-content {
+  background: #ffffff;
+  box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.15);
+  padding-top: 140px;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+.cart1 {
+  background-image: url("https://assets.codepen.io/3685267/products-interaction-mic.png");
+}
+.cart2 {
+  background-image: url("https://assets.codepen.io/3685267/products-interaction-radio2.png");
+}
+
+.bg-page {
+  background: #a7eef7;
+  min-height: 672px;
+}
+.bg-screen {
+  background-color: #fbe668;
+}
+
+.main-bg {
+  background-color: #515151;
+}
+.main-txt {
+  color: #515151;
+}
+
+.delivered {
+  color: #55c7ff;
+}
+
+.supplier {
+  color: #b0b0b0;
+}
+
+.floating-image {
+  box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.18);
+}
+
+.cart-item-inner {
+  box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.25);
+}
+.cart-item-outer {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+/* --------------------------------- */
+.form__group {
+  position: relative;
+  padding: 20px 0 0;
+  width: 200%;
+  max-width: 240px;
+  margin-left: 120px;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 17px;
+  color: #fff;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+  color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 17px;
+  cursor: text;
+  top: 20px;
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #9b9b9b;
+  pointer-events: none;
+}
+
+.form__field:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #116399, #38caef);
+  border-image-slice: 1;
+}
+
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #38caef;
+  font-weight: 700;
+}
+
+/* reset input */
+.form__field:required,
+.form__field:invalid {
+  box-shadow: none;
+}
+/* ----------------------- */

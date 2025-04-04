@@ -192,9 +192,28 @@ const CRListingPage = () => {
             );
 
             // Step 3: Extract the required attachment data
+            // item.files =
+            //   attachmentResponse?.data?.paramObjectsMap?.crPreAppVO
+            //     ?.attachment || null;
+            const filesResponse = await findByGSTPreCreditrId(item.id);
+            const profoma =
+              filesResponse?.data?.paramObjectsMap?.crPreAppVO?.profoma ||
+              "File";
+
+            // Generate filenames based on profoma and index
+            // const formattedAttachments = attachments.map((file, index) => ({
+            //   id: file.id,
+            //   attachment: file.attachment, // Base64 or Blob
+            //   fileName: `${profoma}_${String(index + 1).padStart(2, "0")}`, // Format: CBE24OSRN00001_01, CBE24OSRN00001_02, ...
+            // }));
+
             item.files =
-              attachmentResponse?.data?.paramObjectsMap?.crPreAppVO
-                ?.attachment || null;
+              attachmentResponse?.data?.paramObjectsMap?.crPreAppVO?.crPreAppAttachmentVO?.map(
+                (att, index) => ({
+                  fileData: att.attachment, // Assuming attachment is Base64 or Blob
+                  fileName: `${profoma}_${String(index + 1).padStart(2, "0")}`, // Format: CBE24OSRN00001_01, CBE24OSRN00001_02, ...
+                })
+              ) || [];
 
             // Log the attachment data to verify
             console.log("Attachment for item", item.id, item.files);
@@ -227,6 +246,68 @@ const CRListingPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (hasFetchedRef.current) return; // Prevent unnecessary re-fetching
+
+    const fetchFilesForEachItem = async () => {
+      if (data.length === 0) return; // No data, do nothing
+
+      const updatedData = data.map((item) => ({ ...item })); // Create a copy to avoid state mutation
+
+      for (let item of updatedData) {
+        if (item.filesFetched) continue; // Skip if already fetched
+
+        console.log("Fetching files for id:", item.id);
+        if (!item.id) {
+          console.error(`Invalid id for item: ${JSON.stringify(item)}`);
+          continue;
+        }
+
+        try {
+          // Call API to get attachments for the item
+          const filesResponse = await findByGSTPreCreditrId(item.id);
+
+          // Extract attachment array and profoma value safely
+          const attachments =
+            filesResponse?.data?.paramObjectsMap?.crPreAppVO
+              ?.crPreAppAttachmentVO || [];
+          const profoma =
+            filesResponse?.data?.paramObjectsMap?.crPreAppVO?.profoma || "File";
+
+          console.log("profomefilename", profoma);
+          // Generate filenames based on profoma and index
+          const formattedAttachments = attachments.map((file, index) => ({
+            id: file.id,
+            attachment: file.attachment, // Base64 or Blob
+            fileName: `${profoma}_${String(index + 1).padStart(2, "0")}`, // Format: CBE24OSRN00001_01, CBE24OSRN00001_02, ...
+          }));
+
+          console.log("formattedAttachments", formattedAttachments);
+
+          item.files = formattedAttachments;
+          item.filesFetched = true;
+
+          // Append files to state if there are any attachments
+          if (formattedAttachments.length > 0) {
+            setAttachData((prev) => [...prev, ...formattedAttachments]);
+          }
+        } catch (error) {
+          console.error(`Failed to fetch files for id ${item.id}:`, error);
+          item.files = [];
+          item.filesFetched = false;
+        }
+      }
+
+      // Update state once at the end
+      setData(updatedData);
+      console.log("Updated Attachments Data:", updatedData);
+
+      hasFetchedRef.current = true; // Mark as fetched
+    };
+
+    fetchFilesForEachItem();
+  }, [data]); // Dependency on `data` to re-run when data changes
 
   // const renderAttachment = (attachment) => {
   //   if (!attachment) return <Text strong>No attachment available</Text>;
@@ -282,47 +363,47 @@ const CRListingPage = () => {
   //       setLoading(false);
   //     });
   // };
-  useEffect(() => {
-    // If files have already been fetched, skip the effect
-    if (hasFetchedRef.current) return;
+  // useEffect(() => {
+  //   // If files have already been fetched, skip the effect
+  //   if (hasFetchedRef.current) return;
 
-    const fetchFilesForEachItem = async () => {
-      if (data.length === 0) return; // If no data, do nothing
+  //   const fetchFilesForEachItem = async () => {
+  //     if (data.length === 0) return; // If no data, do nothing
 
-      const updatedData = [...data]; // Create a copy to avoid mutation
+  //     const updatedData = [...data]; // Create a copy to avoid mutation
 
-      for (let item of updatedData) {
-        // Check if files are already fetched, if yes, skip fetching
-        if (item.filesFetched) continue;
+  //     for (let item of updatedData) {
+  //       // Check if files are already fetched, if yes, skip fetching
+  //       if (item.filesFetched) continue;
 
-        console.log("Fetching files for id:", item.id); // Assuming id is the correct field
+  //       console.log("Fetching files for id:", item.id); // Assuming id is the correct field
 
-        if (!item.id) {
-          console.error(`Invalid id for item: ${JSON.stringify(item)}`);
-          continue; // Skip if id is invalid
-        }
+  //       if (!item.id) {
+  //         console.error(`Invalid id for item: ${JSON.stringify(item)}`);
+  //         continue; // Skip if id is invalid
+  //       }
 
-        try {
-          // Call the API to get the files using id instead of gst_precreditId
-          const filesResponse = await findByGSTPreCreditrId(item.id); // Use item.id instead of gst_precreditId
-          setAttachData(filesResponse.paramObjectsMap.crPreAppVO.attachment);
-          item.files = filesResponse || [];
-          item.filesFetched = true; // Mark as fetched
-        } catch (error) {
-          console.error(`Failed to fetch files for id ${item.id}:`, error);
-          item.files = [];
-          item.filesFetched = false; // Mark as not fetched in case of error
-        }
-      }
+  //       try {
+  //         // Call the API to get the files using id instead of gst_precreditId
+  //         const filesResponse = await findByGSTPreCreditrId(item.id); // Use item.id instead of gst_precreditId
+  //         setAttachData(filesResponse.paramObjectsMap.crPreAppVO.attachment);
+  //         item.files = filesResponse || [];
+  //         item.filesFetched = true; // Mark as fetched
+  //       } catch (error) {
+  //         console.error(`Failed to fetch files for id ${item.id}:`, error);
+  //         item.files = [];
+  //         item.filesFetched = false; // Mark as not fetched in case of error
+  //       }
+  //     }
 
-      // Update the state with the modified data
-      setData(updatedData);
-      console.log("setAttachData", data);
-      hasFetchedRef.current = true; // Set the flag to true after files are fetched
-    };
+  //     // Update the state with the modified data
+  //     setData(updatedData);
+  //     console.log("setAttachData", data);
+  //     hasFetchedRef.current = true; // Set the flag to true after files are fetched
+  //   };
 
-    fetchFilesForEachItem();
-  }, [data]); // Dependency on `data`, will run when data changes/ Dependency on data to fetch files only when data is updated or on page load
+  //   fetchFilesForEachItem();
+  // }, [data]); // Dependency on `data`, will run when data changes/ Dependency on data to fetch files only when data is updated or on page load
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -662,87 +743,161 @@ const CRListingPage = () => {
   //   }
   // };
 
-  const handleDownload = (fileData, fileName) => {
+  // const handleDownload = (fileData, fileName) => {
+  //   try {
+  //     if (!fileData) {
+  //       console.error("No attachment found!");
+  //       return;
+  //     }
+
+  //     let blob;
+  //     let fileType;
+
+  //     // Case 1: If fileData is already a Blob
+  //     if (fileData instanceof Blob) {
+  //       // Check the MIME type of the Blob to determine file type
+  //       fileType = fileData.type || "application/octet-stream"; // Default to binary stream
+  //       blob = fileData;
+  //     }
+  //     // Case 2: If fileData is a Base64 string (ensure Base64 is valid)
+  //     else if (typeof fileData === "string") {
+  //       // PDF (starts with JVBER for PDF)
+  //       if (fileData.startsWith("JVBER")) {
+  //         const byteCharacters = atob(fileData);
+  //         const byteNumbers = new Array(byteCharacters.length);
+  //         for (let i = 0; i < byteCharacters.length; i++) {
+  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //         }
+  //         const byteArray = new Uint8Array(byteNumbers);
+  //         blob = new Blob([byteArray], { type: "application/pdf" });
+  //         fileType = "application/pdf";
+  //         fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+  //       }
+  //       // Word (starts with PK for DOCX)
+  //       else if (fileData.startsWith("UEsDB")) {
+  //         const byteCharacters = atob(fileData);
+  //         const byteNumbers = new Array(byteCharacters.length);
+  //         for (let i = 0; i < byteCharacters.length; i++) {
+  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //         }
+  //         const byteArray = new Uint8Array(byteNumbers);
+  //         blob = new Blob([byteArray], {
+  //           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  //         });
+  //         fileType =
+  //           "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  //         fileName = fileName.endsWith(".docx") ? fileName : `${fileName}.docx`;
+  //       }
+  //       // Plain text (Notepad)
+  //       else {
+  //         const byteCharacters = atob(fileData);
+  //         const byteNumbers = new Array(byteCharacters.length);
+  //         for (let i = 0; i < byteCharacters.length; i++) {
+  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //         }
+  //         const byteArray = new Uint8Array(byteNumbers);
+  //         blob = new Blob([byteArray], { type: "text/plain" });
+  //         fileType = "text/plain";
+  //         fileName = fileName.endsWith(".txt") ? fileName : `${fileName}.txt`;
+  //       }
+  //     }
+  //     // Case 3: If fileData is an ArrayBuffer
+  //     else if (fileData instanceof ArrayBuffer) {
+  //       blob = new Blob([fileData], { type: "application/pdf" }); // Default to PDF if ArrayBuffer is given
+  //       fileType = "application/pdf";
+  //       fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+  //     } else {
+  //       console.error("Unsupported file format:", fileData);
+  //       return;
+  //     }
+
+  //     // Create a URL for the Blob and trigger download
+  //     const url = URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = fileName; // Ensure it downloads with the appropriate file name
+  //     document.body.appendChild(a);
+  //     a.click();
+
+  //     // Cleanup
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Error downloading file:", error);
+  //   }
+  // };
+
+  const handleDownload = (files) => {
     try {
-      if (!fileData) {
-        console.error("No attachment found!");
+      if (!Array.isArray(files) || files.length === 0) {
+        console.error("No attachments found!");
         return;
       }
 
-      let blob;
-      let fileType;
-
-      // Case 1: If fileData is already a Blob
-      if (fileData instanceof Blob) {
-        // Check the MIME type of the Blob to determine file type
-        fileType = fileData.type || "application/octet-stream"; // Default to binary stream
-        blob = fileData;
-      }
-      // Case 2: If fileData is a Base64 string (ensure Base64 is valid)
-      else if (typeof fileData === "string") {
-        // PDF (starts with JVBER for PDF)
-        if (fileData.startsWith("JVBER")) {
-          const byteCharacters = atob(fileData);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+      files.forEach(({ fileData, fileName }, index) => {
+        setTimeout(() => {
+          if (!fileData) {
+            console.error(`No data for file: ${fileName}`);
+            return;
           }
-          const byteArray = new Uint8Array(byteNumbers);
-          blob = new Blob([byteArray], { type: "application/pdf" });
-          fileType = "application/pdf";
-          fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
-        }
-        // Word (starts with PK for DOCX)
-        else if (fileData.startsWith("UEsDB")) {
-          const byteCharacters = atob(fileData);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          blob = new Blob([byteArray], {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          });
-          fileType =
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-          fileName = fileName.endsWith(".docx") ? fileName : `${fileName}.docx`;
-        }
-        // Plain text (Notepad)
-        else {
-          const byteCharacters = atob(fileData);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          blob = new Blob([byteArray], { type: "text/plain" });
-          fileType = "text/plain";
-          fileName = fileName.endsWith(".txt") ? fileName : `${fileName}.txt`;
-        }
-      }
-      // Case 3: If fileData is an ArrayBuffer
-      else if (fileData instanceof ArrayBuffer) {
-        blob = new Blob([fileData], { type: "application/pdf" }); // Default to PDF if ArrayBuffer is given
-        fileType = "application/pdf";
-        fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
-      } else {
-        console.error("Unsupported file format:", fileData);
-        return;
-      }
 
-      // Create a URL for the Blob and trigger download
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName; // Ensure it downloads with the appropriate file name
-      document.body.appendChild(a);
-      a.click();
+          let blob;
+          let fileType;
 
-      // Cleanup
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+          if (fileData instanceof Blob) {
+            fileType = fileData.type || "application/octet-stream";
+            blob = fileData;
+          } else if (typeof fileData === "string") {
+            const byteCharacters = atob(fileData);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+
+            if (fileData.startsWith("JVBER")) {
+              blob = new Blob([byteArray], { type: "application/pdf" });
+              fileType = "application/pdf";
+              fileName = fileName.endsWith(".pdf")
+                ? fileName
+                : `${fileName}.pdf`;
+            } else if (fileData.startsWith("UEsDB")) {
+              blob = new Blob([byteArray], {
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              });
+              fileType =
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+              fileName = fileName.endsWith(".docx")
+                ? fileName
+                : `${fileName}.docx`;
+            } else {
+              blob = new Blob([byteArray], { type: "text/plain" });
+              fileType = "text/plain";
+              fileName = fileName.endsWith(".txt")
+                ? fileName
+                : `${fileName}.txt`;
+            }
+          } else if (fileData instanceof ArrayBuffer) {
+            blob = new Blob([fileData], { type: "application/pdf" });
+            fileType = "application/pdf";
+            fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+          } else {
+            console.error("Unsupported file format:", fileData);
+            return;
+          }
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, index * 500); // Adding a delay of 500ms between downloads
+      });
     } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error("Error downloading files:", error);
     }
   };
 
@@ -858,6 +1013,10 @@ const CRListingPage = () => {
                 borderRadius: "8px",
                 boxShadow: boxShadowStyle, // Apply custom box shadow
                 border: `1px solid ${cardBorderColor}`, // Apply conditional border color
+                // background: "lig",
+
+                // background:
+                //   "linear-gradient(45deg, rgba(0,212,255,1) 0%, rgba(11,3,45,1) 100%)",
               }}
             >
               {loading ? (
@@ -866,338 +1025,572 @@ const CRListingPage = () => {
                 <Row gutter={[12, 12]}>
                   {data.map((item) => (
                     <Col xs={24} sm={12} md={8} key={item.gst_precreditId}>
-                      <div class="note-container">
-                        <div
-                          class="sticky-note sticky-note-one"
-                          contenteditable="false"
-                          style={{ color: "black", colorTextBase: "black" }}
-                          onClick={() => handleCardClick(item)}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "5px",
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.partyName}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.partyCode}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.category}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.salesPersonName}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {/* <Text strong style={{ flex: 1, color: "black" }}>
-                                                 SalesPerson:
-                                               </Text> */}
-                              <Text strong style={{ color: "black" }}>
-                                {/* {item.salespersonName} */}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                                Limit | Days :
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.creditLimit} | {item.creditDays}
-                              </Text>
-                            </div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                                Profoma:
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.profoma}
-                              </Text>
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Invoice No:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.vchNo}
-                            </Text>
+                      <section>
+                        <div class="glass">
+                          <div class="img">
+                            {/* <img src="https://i.imgur.com/GyxmAZO.jpg" alt="" /> */}
                           </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Date:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.vchDt}
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Invoice Amt:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.invAmt
-                              )}
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Cr Note Amt:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.crAmt
-                              )}
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Total Due
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.totDue
-                              )}
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Type:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.pType}
-                            </Text>
-                          </div>
-                          <br />
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Cr Remarks:
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {item.crRemarks}
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Reason:
-                            </Text>
-                          </div>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {item.reason}
-                            </Text>
-                          </div>
-                          <div
-                            style={{
-                              position: "relative",
-                              maxWidth: "90vw",
-                              maxHeight: "90vh",
-                              padding: "10px",
-                              textAlign: "center",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {/* Attachments: */}
-                            </Text>
-                            <br />
-                            <div style={{ marginTop: "10px" }}>
-                              {/* <Button
-                                type="primary"
-                                icon={<DownloadOutlined />}
-                                onClick={() =>
-                                  handleDownload(item.files, item.vchNo)
-                                }
-                              >
-                                Download
-                              </Button> */}
-                              <a
-                                href="#"
-                                class="btn-shine"
-                                onClick={() =>
-                                  handleDownload(item.files, item.vchNo)
-                                }
-                              >
-                                Attachment Download
-                              </a>
-                            </div>
-                          </div>
-
-                          <Space
-                            style={{ marginTop: "10px", marginLeft: "50px" }}
-                          >
-                            {/* <Button
-                                                                             id="celebrateBtn"
-                                                                             type="default"
-                                                                             onClick={(e) => {
-                                                                               e.stopPropagation();
-                                                                               handleApprove(item);
-                                                                               handleCelebrate();
-                                                                             }}
-                                                                             size="small"
-                                                                             style={{
-                                                                               borderColor: "green",
-                                                                               color: "green",
-                                                                               backgroundColor: "transparent",
-                                             
-                                                                               cursor: "pointer",
-                                                                               transition: "transform 0.1s ease",
-                                                                             }}
-                                                                           >
-                                                                             Approve
-                                                                           </Button>
-                                             
-                                                                           <Button
-                                                                             type="default"
-                                                                             danger
-                                                                             onClick={(e) => {
-                                                                               e.stopPropagation();
-                                                                               handleReject(item);
-                                                                             }}
-                                                                             size="small"
-                                                                             style={{
-                                                                               backgroundColor: "transparent",
-                                                                             }}
-                                                                           >
-                                                                             Reject
-                                                                           </Button> */}
-
-                            <button class="Btn1">
-                              <span
-                                class="leftContainer1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleApprove(item);
-                                  handleCelebrate();
+                          <div class="des">
+                            <div class="maincontent">
+                              <div
+                                style={{
+                                  lineheight: "3.3%",
                                 }}
                               >
-                                <span class="like1">Approve</span>
-                              </span>
-                              <span
-                                class="likeCount1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleReject(item);
+                                <div
+                                  style={
+                                    {
+                                      // display: "flex",
+                                      // justifyContent: "space-between",
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    strong
+                                    style={{
+                                      color:
+                                        theme === "dark" ? "black" : "maroon",
+                                      textAlign: "center",
+                                      display: "block", // Make sure it behaves like a block-level element
+                                      width: "100%", // Ensures it spans the available width
+                                      marginLeft: "8px",
+                                      whiteSpace: "normal",
+                                    }}
+                                  >
+                                    {item.partyName}
+                                  </Text>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Text
+                                    strong
+                                    style={{
+                                      color:
+                                        theme === "dark" ? "black" : "maroon",
+                                      textAlign: "center",
+                                      display: "block", // Make sure it behaves like a block-level element
+                                      width: "100%", // Ensures it spans the available width
+                                      marginLeft: "8px",
+                                    }}
+                                  >
+                                    {item.partyCode}
+                                  </Text>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Text
+                                    strong
+                                    style={{
+                                      color:
+                                        theme === "dark" ? "black" : "maroon",
+                                      textAlign: "center",
+                                      display: "block", // Make sure it behaves like a block-level element
+                                      width: "100%", // Ensures it spans the available width
+                                      marginLeft: "8px",
+                                    }}
+                                  >
+                                    {item.category}
+                                  </Text>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Text
+                                    strong
+                                    style={{
+                                      color:
+                                        theme === "dark" ? "black" : "maroon",
+                                      textAlign: "center",
+                                      display: "block", // Make sure it behaves like a block-level element
+                                      width: "100%", // Ensures it spans the available width
+                                      marginLeft: "8px",
+                                    }}
+                                  >
+                                    {item.salesPersonName}
+                                  </Text>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  {/* <Text strong style={{ flex: 1, color: "black" }}>
+                                                                                                            SalesPerson:
+                                                                                                          </Text> */}
+                                  <Text strong style={{ color: "black" }}>
+                                    {/* {item.salespersonName} */}
+                                  </Text>
+                                </div>
+                                {/* 
+                                                            <div
+                                                              style={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                              }}
+                                                            >
+                                                              <Text
+                                                                strong
+                                                                style={{ flex: 1, color: "black" }}
+                                                              >
+                                                                Limit | Days :
+                                                              </Text>
+                                                              <Text strong style={{ color: "black" }}>
+                                                                {item.creditLimit} | {item.creditDays}
+                                                              </Text>
+                                                            </div> */}
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Text
+                                    strong
+                                    style={{
+                                      flex: 1,
+                                      color:
+                                        theme === "dark" ? "white" : "black",
+                                    }}
+                                  >
+                                    Profoma:
+                                  </Text>
+
+                                  <Text
+                                    strong
+                                    style={{
+                                      color:
+                                        theme === "dark" ? "black" : "blue",
+                                    }}
+                                  >
+                                    {item.profoma}
+                                  </Text>
+                                </div>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                Reject
-                              </span>
-                            </button>
-                          </Space>
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Invoice No:
+                                </Text>
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.vchNo}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Date:
+                                </Text>
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.vchDt}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Invoice Amt:
+                                </Text>
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {new Intl.NumberFormat("en-IN").format(
+                                    item.invAmt
+                                  )}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Cr Note Amt:
+                                </Text>
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {new Intl.NumberFormat("en-IN").format(
+                                    item.crAmt
+                                  )}
+                                </Text>
+                              </div>
+
+                              {/* <div
+                                                            style={{
+                                                              display: "flex",
+                                                              justifyContent: "space-between",
+                                                            }}
+                                                          >
+                                                            <Text strong style={{ flex: 1, color: "black" }}>
+                                                              Total Due
+                                                            </Text>
+                                                            <Text strong style={{ color: "blue" }}>
+                                                              {new Intl.NumberFormat("en-IN").format(
+                                                                item.totDue
+                                                              )}
+                                                            </Text>
+                                                          </div> */}
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Type:
+                                </Text>
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.pType}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  P & L Impact:
+                                </Text>
+
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.plImpact}
+                                </Text>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Cr Remarks:
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.crRemarks}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Description:
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.description}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Documents Required:
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.documentsRequired}
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    flex: 1,
+                                    color: theme === "dark" ? "white" : "black",
+                                  }}
+                                >
+                                  Reason:
+                                </Text>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {item.reason}
+                                </Text>
+                              </div>
+                              <div
+                                style={{
+                                  position: "relative",
+                                  maxWidth: "90vw",
+                                  maxHeight: "90vh",
+                                  padding: "10px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {/* Attachments: */}
+                                </Text>
+
+                                <div
+                                  style={{
+                                    marginTop: "10px",
+                                    color: theme === "dark" ? "black" : "blue",
+                                  }}
+                                >
+                                  {/* {item.files && item.files.length > 0 && ( */}
+                                  <a
+                                    href="#"
+                                    className="btn-shine"
+                                    onClick={() =>
+                                      handleDownload(item.files, item.vchNo)
+                                    }
+                                  >
+                                    Attachment Download
+                                  </a>
+                                  {/* )} */}
+                                </div>
+                              </div>
+
+                              <Space
+                                style={{
+                                  marginTop: "5px",
+                                  marginLeft: "50px",
+                                }}
+                              >
+                                {/* <Button
+                                                                                                                                        id="celebrateBtn"
+                                                                                                                                        type="default"
+                                                                                                                                        onClick={(e) => {
+                                                                                                                                          e.stopPropagation();
+                                                                                                                                          handleApprove(item);
+                                                                                                                                          handleCelebrate();
+                                                                                                                                        }}
+                                                                                                                                        size="small"
+                                                                                                                                        style={{
+                                                                                                                                          borderColor: "green",
+                                                                                                                                          color: "green",
+                                                                                                                                          backgroundColor: "transparent",
+                                                                                                        
+                                                                                                                                          cursor: "pointer",
+                                                                                                                                          transition: "transform 0.1s ease",
+                                                                                                                                        }}
+                                                                                                                                      >
+                                                                                                                                        Approve
+                                                                                                                                      </Button>
+                                                                                                        
+                                                                                                                                      <Button
+                                                                                                                                        type="default"
+                                                                                                                                        danger
+                                                                                                                                        onClick={(e) => {
+                                                                                                                                          e.stopPropagation();
+                                                                                                                                          handleReject(item);
+                                                                                                                                        }}
+                                                                                                                                        size="small"
+                                                                                                                                        style={{
+                                                                                                                                          backgroundColor: "transparent",
+                                                                                                                                        }}
+                                                                                                                                      >
+                                                                                                                                        Reject
+                                                                                                                                      </Button> */}
+
+                                <button class="Btn1">
+                                  <span
+                                    class="leftContainer1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleApprove(item);
+                                      handleCelebrate();
+                                    }}
+                                  >
+                                    <span class="like1">Approve</span>
+                                  </span>
+                                  <span
+                                    class="likeCount1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleReject(item);
+                                    }}
+                                  >
+                                    Reject
+                                  </span>
+                                </button>
+                              </Space>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      </section>
                     </Col>
                   ))}
                 </Row>

@@ -3,6 +3,7 @@ import {
   getAllCreditParties,
   getInvoices,
   getUserBranch,
+  getCRReasons,
 } from "../services/api";
 import { notification, Select, Spin, Breadcrumb } from "antd"; // Import Select and Spin from Ant Design
 import axios from "axios";
@@ -25,6 +26,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
 const CNPreApproval = () => {
   const [data, setData] = useState([]);
+  const [reasonData, setReasonData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [partyNames, setPartyNames] = useState([]);
   const [selectedPartyName, setSelectedPartyName] = useState("");
@@ -207,6 +209,25 @@ const CNPreApproval = () => {
   });
 
   // Handle input change
+  // const handleChange = (e) => {
+  //   if (!e.target) {
+  //     console.error("Event target is undefined:", e);
+  //     return;
+  //   }
+
+  //   const { name, value } = e.target;
+
+  //   setFormData((prevData) => {
+  //     let updatedData = { ...prevData, [name]: value };
+
+  //     if (name === "ptype" && value === "Full") {
+  //       updatedData.crAmt = prevData.invAmt || "";
+  //     }
+
+  //     return updatedData;
+  //   });
+  // };
+
   const handleChange = (e) => {
     if (!e.target) {
       console.error("Event target is undefined:", e);
@@ -215,14 +236,34 @@ const CNPreApproval = () => {
 
     const { name, value } = e.target;
 
+    // Initialize error state
+    let errorMessage = "";
+
+    // Handle validation for crAmt to ensure it's greater than 0
+    if (name === "crAmt") {
+      const numericValue = parseFloat(value);
+      if (value && (isNaN(numericValue) || numericValue <= 0)) {
+        errorMessage = "Amount must be greater than 0.";
+      }
+    }
+
+    // Update formData based on the input change
     setFormData((prevData) => {
       let updatedData = { ...prevData, [name]: value };
 
+      // If ptype is "Full", set crAmt to invAmt value
       if (name === "ptype" && value === "Full") {
-        updatedData.crAmt = prevData.invAmt || "";
+        const numericValue = parseFloat(value);
+        if (name === "crAmt") {
+          updatedData.crAmt = prevData.invAmt || "";
+          if (value && (isNaN(numericValue) || numericValue <= 0)) {
+            errorMessage = "Amount must be greater than 0.";
+          }
+        }
       }
 
-      return updatedData;
+      // Include the error message in the form data if validation fails
+      return { ...updatedData, errorMessage };
     });
   };
 
@@ -245,7 +286,21 @@ const CNPreApproval = () => {
   };
 
   const handleCrRemarksChange = (value) => {
-    setCrRemarks(value); // Update crRemarks state
+    setCrRemarks(value);
+    // Find the selected crReason from the reasonData
+    const selectedReason = reasonData.find(
+      (reason) => reason.crReason === value
+    );
+
+    if (selectedReason) {
+      // Set the formData with the selected reason's details
+      setFormData({
+        ...formData,
+        description: selectedReason.description || "",
+        plImpact: selectedReason.plImpact || "",
+        documentsRequired: selectedReason.documentsRequired || "",
+      });
+    }
   };
 
   // Fetch branch names
@@ -282,8 +337,25 @@ const CNPreApproval = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
+    getCRReasons()
+      .then((response) => {
+        console.log(response); // Log to verify data structure
+        setReasonData(response);
+      })
+      .catch(() => {
+        notification.error({
+          message: "Data Fetch Error",
+          description: "Failed to fetch updated data for the listing.",
+        });
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
     if (branchName) {
       fetchData();
+
       // console.log("branchname",branchname,createdBy);
     }
   }, [createdBy, branchName]);
@@ -375,11 +447,25 @@ const CNPreApproval = () => {
       !formData.partyCode ||
       !formData.profoma ||
       !formData.reason ||
-      !formData.crAmt ||
       !ptype ||
       !crRemarks
     ) {
       alert("Please fill in all required fields.");
+      return;
+    }
+
+    if (formData.crAmt <= 0) {
+      alert("Credit Note Amt should be Greater Than Zero");
+      return;
+    }
+
+    if (formData.crAmt > formData.invAmt) {
+      alert("Credit Note Amt should be Equal or Lesser than Inv Amt");
+      return;
+    }
+
+    if (!files || files.length === 0) {
+      alert("Attachment Upload is Mandatory");
       return;
     }
 
@@ -403,6 +489,9 @@ const CNPreApproval = () => {
       reason: formData.reason,
       createdBy: localStorage.getItem("userName"),
       crRemarks: crRemarks,
+      description: formData.description,
+      plImpact: formData.plImpact,
+      documentsRequired: formData.documentsRequired,
     };
 
     try {
@@ -581,6 +670,9 @@ const CNPreApproval = () => {
       crAmt: "",
       reason: "",
       crRemarks: "",
+      Description: "",
+      plImpact: "",
+      documentsRequired: "",
     });
   };
 
@@ -818,9 +910,8 @@ const CNPreApproval = () => {
                     Credit Remarks <span style={{ color: "red" }}>*</span>
                   </label>
                   <Select
-                    id="crremarks-select"
                     value={crRemarks}
-                    onChange={handleCrRemarksChange} // Correct handler
+                    onChange={handleCrRemarksChange}
                     placeholder="Select Remarks"
                     style={{
                       marginBottom: "8px",
@@ -829,29 +920,94 @@ const CNPreApproval = () => {
                     }}
                   >
                     <Option value="">Select Remarks</Option>
-                    <Option value="Rate Mismatch - AIR">
-                      Rate Mismatch - AIR
-                    </Option>
-                    <Option value="Rate Mismatch - SEA">
-                      Rate Mismatch - SEA
-                    </Option>
-                    <Option value="THC - AIR">THC - AIR</Option>
-                    <Option value="THC - SEA">THC - SEA</Option>
-                    <Option value="Short Payment - AIR">
-                      Short Payment - AIR
-                    </Option>
-                    <Option value="Short Payment - SEA">
-                      Short Payment - SEA
-                    </Option>
-                    <Option value="Exchange Rate Issue">
-                      Exchange Rate Issue
-                    </Option>
-                    <Option value="Loading & Unloading">
-                      Loading & Unloading
-                    </Option>
-                    <Option value="Miscellaneous">Miscellaneous</Option>
-                    <Option value="Purchase Order">Purchase Order</Option>
+                    {reasonData.map((item) => (
+                      <Option key={item.crReason} value={item.crReason}>
+                        {item.crReason}
+                      </Option>
+                    ))}
                   </Select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="input-data">
+                  <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                    readOnly
+                    style={{
+                      width: "500px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Description
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="input-data">
+                  <input
+                    type="text"
+                    name="plImpact"
+                    value={formData.plImpact}
+                    onChange={handleChange}
+                    required
+                    readOnly
+                    style={{
+                      width: "100px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "100px",
+                      marginBottom: "8px",
+                      marginLeft: "2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    P & L Impact
+                  </label>
+                </div>
+
+                <div className="input-data">
+                  <input
+                    type="text"
+                    name="documentsRequired"
+                    value={formData.documentsRequired}
+                    onChange={handleChange}
+                    required
+                    readOnly
+                    style={{
+                      width: "400px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Documents Required
+                  </label>
                 </div>
               </div>
 
@@ -1048,6 +1204,7 @@ const CNPreApproval = () => {
                   </label>
                 </div>
               </div>
+
               <div className="form-row">
                 <div className="input-data">
                   <input

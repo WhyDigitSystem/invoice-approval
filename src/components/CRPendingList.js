@@ -295,7 +295,7 @@ const CRPendingList = () => {
         // Check if files are already fetched, if yes, skip fetching
         if (item.filesFetched) continue;
 
-        console.log("Fetching files for id:", item.id); // Assuming id is the correct field
+        // console.log("Fetching files for id:", item.id); // Assuming id is the correct field
 
         if (!item.id) {
           console.error(`Invalid id for item: ${JSON.stringify(item)}`);
@@ -866,75 +866,159 @@ const CRPendingList = () => {
                 <Row gutter={[12, 12]}>
                   {data.map((item) => (
                     <Col xs={24} sm={12} md={8} key={item.gst_precreditId}>
-                      <div class="note-container">
-                        <div
-                          class="sticky-note sticky-note-one"
-                          contenteditable="false"
-                          style={{ color: "black", colorTextBase: "black" }}
-                          onClick={() => handleCardClick(item)}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "5px",
-                            }}
-                          >
+                      <section>
+                        <div class="desing-card">
+                          <div class="box1"></div>
+                          <div class="box2"></div>
+                          <div class="content"></div>
+                          <div class="maincontent">
                             <div
                               style={{
-                                display: "flex",
-                                justifyContent: "space-between",
+                                lineheight: "3.3%",
                               }}
                             >
-                              <Text strong style={{ color: "black" }}>
-                                {item.partyName}
-                              </Text>
-                            </div>
+                              <div
+                                style={
+                                  {
+                                    // display: "flex",
+                                    // justifyContent: "space-between",
+                                  }
+                                }
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: "maroon",
+                                    textAlign: "center",
+                                    display: "block", // Make sure it behaves like a block-level element
+                                    width: "100%", // Ensures it spans the available width
+                                    marginLeft: "8px",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
+                                  {item.partyName}
+                                </Text>
+                              </div>
 
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.partyCode}
-                              </Text>
-                            </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: "maroon",
+                                    textAlign: "center",
+                                    display: "block", // Make sure it behaves like a block-level element
+                                    width: "100%", // Ensures it spans the available width
+                                    marginLeft: "8px",
+                                  }}
+                                >
+                                  {item.partyCode}
+                                </Text>
+                              </div>
 
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.category}
-                              </Text>
-                            </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: "maroon",
+                                    textAlign: "center",
+                                    display: "block", // Make sure it behaves like a block-level element
+                                    width: "100%", // Ensures it spans the available width
+                                    marginLeft: "8px",
+                                  }}
+                                >
+                                  {item.category}
+                                </Text>
+                              </div>
 
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ color: "black" }}>
-                                {item.salesPersonName}
-                              </Text>
-                            </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    color: "maroon",
+                                    textAlign: "center",
+                                    display: "block", // Make sure it behaves like a block-level element
+                                    width: "100%", // Ensures it spans the available width
+                                    marginLeft: "8px",
+                                  }}
+                                >
+                                  {item.salesPersonName}
+                                </Text>
+                              </div>
 
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                {/* <Text strong style={{ flex: 1, color: "black" }}>
+                                                                                          SalesPerson:
+                                                                                        </Text> */}
+                                <Text strong style={{ color: "black" }}>
+                                  {/* {item.salespersonName} */}
+                                </Text>
+                              </div>
+                              {/* 
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "space-between",
+                                            }}
+                                          >
+                                            <Text
+                                              strong
+                                              style={{ flex: 1, color: "black" }}
+                                            >
+                                              Limit | Days :
+                                            </Text>
+                                            <Text strong style={{ color: "black" }}>
+                                              {item.creditLimit} | {item.creditDays}
+                                            </Text>
+                                          </div> */}
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  strong
+                                  style={{ flex: 1, color: "black" }}
+                                >
+                                  Profoma:
+                                </Text>
+                                <Text strong style={{ color: "blue" }}>
+                                  {item.profoma}
+                                </Text>
+                              </div>
+                            </div>
                             <div
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
                               }}
                             >
-                              {/* <Text strong style={{ flex: 1, color: "black" }}>
-                                                 SalesPerson:
-                                               </Text> */}
-                              <Text strong style={{ color: "black" }}>
-                                {/* {item.salespersonName} */}
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Invoice No:
+                              </Text>
+                              <Text strong style={{ color: "blue" }}>
+                                {item.vchNo}
                               </Text>
                             </div>
 
@@ -945,10 +1029,10 @@ const CRPendingList = () => {
                               }}
                             >
                               <Text strong style={{ flex: 1, color: "black" }}>
-                                Limit | Days :
+                                Date:
                               </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.creditLimit} | {item.creditDays}
+                              <Text strong style={{ color: "blue" }}>
+                                {item.vchDt}
                               </Text>
                             </div>
 
@@ -959,245 +1043,248 @@ const CRPendingList = () => {
                               }}
                             >
                               <Text strong style={{ flex: 1, color: "black" }}>
-                                Profoma:
+                                Invoice Amt:
                               </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.profoma}
+                              <Text strong style={{ color: "blue" }}>
+                                {new Intl.NumberFormat("en-IN").format(
+                                  item.invAmt
+                                )}
                               </Text>
                             </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Invoice No:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.vchNo}
-                            </Text>
-                          </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Date:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.vchDt}
-                            </Text>
-                          </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Cr Note Amt:
+                              </Text>
+                              <Text strong style={{ color: "blue" }}>
+                                {new Intl.NumberFormat("en-IN").format(
+                                  item.crAmt
+                                )}
+                              </Text>
+                            </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Invoice Amt:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.invAmt
-                              )}
-                            </Text>
-                          </div>
+                            {/* <div
+                                          style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          <Text strong style={{ flex: 1, color: "black" }}>
+                                            Total Due
+                                          </Text>
+                                          <Text strong style={{ color: "blue" }}>
+                                            {new Intl.NumberFormat("en-IN").format(
+                                              item.totDue
+                                            )}
+                                          </Text>
+                                        </div> */}
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Cr Note Amt:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.crAmt
-                              )}
-                            </Text>
-                          </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Type:
+                              </Text>
+                              <Text strong style={{ color: "blue" }}>
+                                {item.pType}
+                              </Text>
+                            </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Total Due
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {new Intl.NumberFormat("en-IN").format(
-                                item.totDue
-                              )}
-                            </Text>
-                          </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Cr Remarks:
+                              </Text>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Type:
-                            </Text>
-                            <Text strong style={{ color: "black" }}>
-                              {item.pType}
-                            </Text>
-                          </div>
-                          <br />
+                              <Text strong style={{ color: "blue" }}>
+                                {item.crRemarks}
+                              </Text>
+                            </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Cr Remarks:
-                            </Text>
-                          </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                P & L Impact:
+                              </Text>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {item.crRemarks}
-                            </Text>
-                          </div>
+                              <Text strong style={{ color: "blue" }}>
+                                {item.plImpact}
+                              </Text>
+                            </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ flex: 1, color: "black" }}>
-                              Reason:
-                            </Text>
-                          </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Description:
+                              </Text>
+                            </div>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {item.reason}
-                            </Text>
-                          </div>
-                          <div
-                            style={{
-                              position: "relative",
-                              maxWidth: "90vw",
-                              maxHeight: "90vh",
-                              padding: "10px",
-                              textAlign: "center",
-                            }}
-                          >
-                            <Text strong style={{ color: "black" }}>
-                              {/* Attachments: */}
-                            </Text>
-                            <br />
-                            <div style={{ marginTop: "10px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ color: "blue" }}>
+                                {item.description}
+                              </Text>
+                            </div>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Documents Required:
+                              </Text>
+                            </div>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ color: "blue" }}>
+                                {item.documentsRequired}
+                              </Text>
+                            </div>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ flex: 1, color: "black" }}>
+                                Reason:
+                              </Text>
+                            </div>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text strong style={{ color: "blue" }}>
+                                {item.reason}
+                              </Text>
+                            </div>
+                            <div
+                              style={{
+                                position: "relative",
+                                maxWidth: "90vw",
+                                maxHeight: "90vh",
+                                padding: "10px",
+                                textAlign: "center",
+                              }}
+                            >
+                              <Text strong style={{ color: "black" }}>
+                                {/* Attachments: */}
+                              </Text>
+
+                              <div style={{ marginTop: "10px" }}>
+                                {item.files && item.files.length > 0 && (
+                                  <a
+                                    href="#"
+                                    className="btn-shine"
+                                    onClick={() =>
+                                      handleDownload(item.files, item.vchNo)
+                                    }
+                                  >
+                                    Attachment Download
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+
+                            <Space
+                              style={{ marginTop: "5px", marginLeft: "50px" }}
+                            >
                               {/* <Button
-                                type="primary"
-                                icon={<DownloadOutlined />}
-                                onClick={() =>
-                                  handleDownload(item.files, item.vchNo)
-                                }
-                              >
-                                Download
-                              </Button> */}
-                              <a
-                                href="#"
-                                class="btn-shine"
-                                onClick={() =>
-                                  handleDownload(item.files, item.vchNo)
-                                }
-                              >
-                                Attachment Download
-                              </a>
-                            </div>
+                                                                                                                      id="celebrateBtn"
+                                                                                                                      type="default"
+                                                                                                                      onClick={(e) => {
+                                                                                                                        e.stopPropagation();
+                                                                                                                        handleApprove(item);
+                                                                                                                        handleCelebrate();
+                                                                                                                      }}
+                                                                                                                      size="small"
+                                                                                                                      style={{
+                                                                                                                        borderColor: "green",
+                                                                                                                        color: "green",
+                                                                                                                        backgroundColor: "transparent",
+                                                                                      
+                                                                                                                        cursor: "pointer",
+                                                                                                                        transition: "transform 0.1s ease",
+                                                                                                                      }}
+                                                                                                                    >
+                                                                                                                      Approve
+                                                                                                                    </Button>
+                                                                                      
+                                                                                                                    <Button
+                                                                                                                      type="default"
+                                                                                                                      danger
+                                                                                                                      onClick={(e) => {
+                                                                                                                        e.stopPropagation();
+                                                                                                                        handleReject(item);
+                                                                                                                      }}
+                                                                                                                      size="small"
+                                                                                                                      style={{
+                                                                                                                        backgroundColor: "transparent",
+                                                                                                                      }}
+                                                                                                                    >
+                                                                                                                      Reject
+                                                                                                                    </Button> */}
+
+                              <button class="Btn1">
+                                <span
+                                  class="leftContainer1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleApprove(item);
+                                    handleCelebrate();
+                                  }}
+                                >
+                                  <span class="like1">Approve</span>
+                                </span>
+                                <span
+                                  class="likeCount1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReject(item);
+                                  }}
+                                >
+                                  Reject
+                                </span>
+                              </button>
+                            </Space>
                           </div>
-
-                          <Space
-                            style={{ marginTop: "10px", marginLeft: "50px" }}
-                          >
-                            {/* <Button
-                                                                             id="celebrateBtn"
-                                                                             type="default"
-                                                                             onClick={(e) => {
-                                                                               e.stopPropagation();
-                                                                               handleApprove(item);
-                                                                               handleCelebrate();
-                                                                             }}
-                                                                             size="small"
-                                                                             style={{
-                                                                               borderColor: "green",
-                                                                               color: "green",
-                                                                               backgroundColor: "transparent",
-                                             
-                                                                               cursor: "pointer",
-                                                                               transition: "transform 0.1s ease",
-                                                                             }}
-                                                                           >
-                                                                             Approve
-                                                                           </Button>
-                                             
-                                                                           <Button
-                                                                             type="default"
-                                                                             danger
-                                                                             onClick={(e) => {
-                                                                               e.stopPropagation();
-                                                                               handleReject(item);
-                                                                             }}
-                                                                             size="small"
-                                                                             style={{
-                                                                               backgroundColor: "transparent",
-                                                                             }}
-                                                                           >
-                                                                             Reject
-                                                                           </Button> */}
-
-                            <button class="Btn1">
-                              <span
-                                class="leftContainer1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleApprove(item);
-                                  handleCelebrate();
-                                }}
-                              >
-                                <span class="like1">Approve</span>
-                              </span>
-                              <span
-                                class="likeCount1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleReject(item);
-                                }}
-                              >
-                                Reject
-                              </span>
-                            </button>
-                          </Space>
                         </div>
-                      </div>
+                      </section>
                     </Col>
                   ))}
                 </Row>

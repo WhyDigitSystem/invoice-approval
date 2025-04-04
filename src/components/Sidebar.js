@@ -34,7 +34,8 @@ const Sidebar = () => {
 
   // Menu items
   const menuItems = [
-    { text: "Overview", icon: <DashboardIcon />, path: "/overview" },
+    // { text: "Overview", icon: <DashboardIcon />, path: "/overview" },
+    { text: "Dashboard1", icon: <DashboardIcon />, path: "/Dashboard1" },
     { text: "User Creation", icon: <PersonAddIcon />, path: "/userCreation" },
     { text: "Screen", icon: <ScreenShareIcon />, path: "/screen" },
     // { text: "Listing", icon: <ListAltIcon />, path: "/listing" },

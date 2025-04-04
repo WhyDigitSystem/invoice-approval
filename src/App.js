@@ -45,6 +45,7 @@ import HeaderDetail from "./components/HeaderDetail";
 import OrderAccept from "./components/OrderAccept";
 import CRPendingList from "./components/CRPendingList";
 import HDashboard from "./components/HDashboad";
+import Dashboard1 from "./components/Dashboard1";
 
 function App() {
   return (
@@ -97,6 +98,8 @@ function App() {
           <Route path="ExpandingCards" element={<ExpandingCards />} />
           <Route path="TaxInvoicePdf" element={<TaxInvoicePdf />} />
           <Route path="OrderAccept" element={<OrderAccept />} />
+
+          <Route path="Dashboard1" element={<Dashboard1 />} />
 
           <Route path="TaxInvoiceList" element={<TaxInvoiceList />} />
           <Route
