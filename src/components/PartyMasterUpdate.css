@@ -501,7 +501,7 @@ button.success {
   background-color: rgba(255, 255, 255, 0.726);
   border: none;
   border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); Button Shawdow*/
   transition: all 0.3s ease 0s;
   cursor: pointer;
   outline: none;
@@ -532,7 +532,7 @@ button.success {
   background-color: rgba(255, 255, 255, 0.726);
   border: none;
   border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); Button Shawdow*/
   transition: all 0.3s ease 0s;
   cursor: pointer;
   outline: none;

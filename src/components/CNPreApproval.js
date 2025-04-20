@@ -206,6 +206,8 @@ const CNPreApproval = () => {
     reason: "",
     createdBy,
     crRemarks: "",
+    totChargeAmtLc: "",
+    totTaxAmtLc: "",
   });
 
   // Handle input change
@@ -376,6 +378,8 @@ const CNPreApproval = () => {
         vchDt: selectedProfoma.vchDt || "",
         invAmt: selectedProfoma.invAmt || "",
         crAmt: selectedProfoma.invAmt || "",
+        totChargeAmtLc: selectedProfoma.totChargeAmtLc || "",
+        totTaxAmtLc: selectedProfoma.totTaxAmtLc || "",
       });
     }
   };
@@ -492,6 +496,8 @@ const CNPreApproval = () => {
       description: formData.description,
       plImpact: formData.plImpact,
       documentsRequired: formData.documentsRequired,
+      totChargeAmtLc: formData.totChargeAmtLc,
+      totTaxAmtLc: formData.totTaxAmtLc,
     };
 
     try {
@@ -673,6 +679,8 @@ const CNPreApproval = () => {
       Description: "",
       plImpact: "",
       documentsRequired: "",
+      totChargeAmtLc: "",
+      totTaxAmtLc: "",
     });
   };
 
@@ -1149,6 +1157,60 @@ const CNPreApproval = () => {
               </div>
 
               <div className="form-row">
+                <div className="input-data">
+                  <input
+                    type="number"
+                    name="invAmt"
+                    value={formData.totChargeAmtLc}
+                    onChange={handleChange}
+                    required
+                    readOnly
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "-2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "-2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Charge Amt (INR)
+                  </label>
+                </div>
+                <div className="input-data">
+                  <input
+                    type="number"
+                    name="invAmt"
+                    value={formData.totTaxAmtLc}
+                    onChange={handleChange}
+                    required
+                    readOnly
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "-2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                    }}
+                  />
+                  <label
+                    style={{
+                      width: "200px",
+                      marginBottom: "8px",
+                      marginLeft: "-2px",
+                      // color: theme === "dark" ? "white" : "#3498db",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Tax Amt (INR)
+                  </label>
+                </div>
                 <div className="input-data">
                   <input
                     type="number"

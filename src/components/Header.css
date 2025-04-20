@@ -129,3 +129,491 @@
   box-shadow: none;
 }
 /* ----------------------- */
+
+@keyframes progress {
+  0% {
+    --percentage: 0;
+  }
+  100% {
+    --percentage: var(--value);
+  }
+}
+
+@property --percentage {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+[role="progressbar"] {
+  --percentage: var(--value);
+  --primary: #369;
+  --secondary: #adf;
+  --size: 200px;
+  animation: progress 2s 0.5s forwards;
+  width: var(--size);
+  aspect-ratio: 2 / 1;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+[role="progressbar"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(
+    from 0.75turn at 50% 100%,
+    green 90deg,
+    yellow,
+    red 180deg
+  );
+  mask: radial-gradient(at 50% 100%, white 55%, transparent 0);
+  mask-mode: alpha;
+  -webkit-mask: radial-gradient(at 50% 100%, #0000 55%, #000 0);
+  -webkit-mask-mode: alpha;
+  overflow: hidden;
+  border-radius: 50% / 100% 100% 0 0;
+}
+
+[role="progressbar"]::after {
+  content: "";
+  width: 50%;
+  height: 5%;
+  position: absolute;
+  bottom: 2%;
+  left: 8%;
+  background: radial-gradient(
+      circle at 83.33333% 50%,
+      #fff 4%,
+      #000 0 5%,
+      #0000 0
+    ),
+    conic-gradient(
+      at -20% 50%,
+      #0000 88deg,
+      #000 88.25deg 91.75deg,
+      #0000 92deg
+    );
+  transform-origin: 83.33333% 50%;
+  transform: rotate(calc(var(--value) * 180deg / 100));
+}
+.progress-container {
+  position: relative;
+}
+
+.progress-labels {
+  position: absolute;
+  bottom: 0rem;
+  left: 2%;
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: white;
+  pointer-events: none;
+}
+
+.progress-labels span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+/* ----------------------------------- */
+.multi-graph {
+  width: 270px; /* 10% less than 300px */
+  height: 135px; /* 10% less than 150px */
+  position: relative;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-top: -180px;
+  margin-left: 300px;
+}
+
+.multi-graph::before {
+  content: "";
+  width: 270px;
+  height: 135px;
+  border: 45px solid rgba(0, 0, 0, 0.15); /* 10% less than 50px */
+  border-bottom: none;
+  position: absolute;
+  box-sizing: border-box;
+  transform-origin: 50% 0%;
+  border-radius: 270px 270px 0 0;
+  left: 0;
+  top: 0;
+}
+
+.multi-graph .graph {
+  width: 270px;
+  height: 135px;
+  border: 45px solid var(--fill);
+  border-top: none;
+  position: absolute;
+  transform-origin: 50% 0% 0;
+  border-radius: 0 0 270px 270px;
+  left: 0;
+  top: 100%;
+  z-index: 5;
+  animation: fillGraphAnimation 1s ease-in;
+  transform: rotate(calc(1deg * (var(--percentage) * 1.8)));
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.multi-graph .graph::after {
+  content: attr(data-name) " " counter(varible) "%";
+  counter-reset: varible var(--percentage);
+  background: var(--fill);
+  box-sizing: border-box;
+  border-radius: 2px;
+  color: #fff;
+  font-weight: 200;
+  font-size: 12px;
+  height: 20px;
+  padding: 3px 5px;
+  top: 0px;
+  position: absolute;
+  left: 0;
+  transform: rotate(calc(-1deg * var(--percentage) * 1.8)) translate(-27px, 0px);
+  transition: 0.2s ease-in;
+  transform-origin: 0 50% 0;
+  opacity: 0;
+}
+
+.multi-graph .graph:hover::after {
+  opacity: 1;
+  left: 27px;
+}
+
+/* Keyframes remain unchanged */
+@keyframes fillAnimation {
+  0% {
+    transform: rotate(-45deg);
+  }
+  50% {
+    transform: rotate(135deg);
+  }
+}
+
+@keyframes fillGraphAnimation {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+/* ------------------- */
+.highlight {
+  background-image: linear-gradient(to right, #f27121cc, #e94057cc, #8a2387cc);
+  border-radius: 6px;
+  padding: 3px 6px;
+}
+
+/* ----------------------------------------- */
+.cyberpunk-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #30cfd0;
+  border-radius: 5px;
+  background-color: transparent;
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.cyberpunk-checkbox:before {
+  content: "";
+  background-color: #30cfd0;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  transition: all 0.3s ease-in-out;
+}
+
+.cyberpunk-checkbox:checked:before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.cyberpunk-checkbox-label {
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+/* ------------------------------------ */
+.checkbox-container {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -30px;
+  margin-bottom: 30px;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkbox-label {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  border: 2px solid #00ff00;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #00ff00;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Grid background */
+.grid-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 255, 0, 0.1),
+    rgba(0, 255, 0, 0.1) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  animation: grid-shift 1.5s linear infinite paused;
+}
+
+/* Checkmark */
+.checkmark {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #00ff00;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 2;
+}
+
+.checkmark::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 6px;
+  border-left: 3px solid #00ff00;
+  border-bottom: 3px solid #00ff00;
+  transform: translate(-50%, -70%) rotate(-45deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Glitch effects */
+.glitch-overlay-h {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.2),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.glitch-overlay-v {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    0deg,
+    transparent,
+    rgba(0, 255, 0, 0.15),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+/* Binary particles */
+.binary-particles {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.particle {
+  position: absolute;
+  color: #00ff00;
+  font-size: 10px;
+  opacity: 0;
+  animation: particle-rise 1.2s linear infinite;
+}
+
+/* Hover state */
+.checkbox-label:hover {
+  box-shadow: 0 0 20px #00ff00;
+  transform: scale(1.05);
+}
+
+.checkbox-label:hover .glitch-overlay-h {
+  opacity: 1;
+  animation: glitch-h 1s infinite;
+}
+
+.checkbox-label:hover .glitch-overlay-v {
+  opacity: 1;
+  animation: glitch-v 0.8s infinite;
+}
+
+/* Checked state */
+.checkbox-input:checked + .checkbox-label {
+  background: rgba(0, 255, 0, 0.2);
+  border-color: #00ff00;
+  box-shadow: 0 0 25px #00ff00;
+}
+
+.checkbox-input:checked + .checkbox-label .grid-bg {
+  opacity: 0.6;
+  animation-play-state: running;
+}
+
+.checkbox-input:checked + .checkbox-label .checkmark {
+  opacity: 1;
+  transform: rotate(360deg);
+  animation: check-rotate 0.5s ease-in-out;
+}
+
+.checkbox-input:checked + .checkbox-label .checkmark::before {
+  opacity: 1;
+  animation: check-bounce 0.4s ease-in-out 0.1s;
+}
+
+.checkbox-input:checked + .checkbox-label .glitch-overlay-h {
+  opacity: 0.8;
+  animation: glitch-h 0.6s infinite;
+}
+
+.checkbox-input:checked + .checkbox-label .glitch-overlay-v {
+  opacity: 0.8;
+  animation: glitch-v 0.5s infinite;
+}
+
+/* Animations */
+@keyframes grid-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 6px 6px;
+  }
+}
+
+@keyframes glitch-h {
+  0% {
+    transform: translateX(-100%);
+  }
+  20% {
+    transform: translateX(100%) skewX(5deg);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes glitch-v {
+  0% {
+    transform: translateY(-100%);
+  }
+  30% {
+    transform: translateY(100%) skewY(3deg);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes check-rotate {
+  0% {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+@keyframes check-bounce {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -70%) rotate(-45deg) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -70%) rotate(-45deg) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -70%) rotate(-45deg) scale(1);
+  }
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}

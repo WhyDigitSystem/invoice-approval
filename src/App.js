@@ -46,6 +46,8 @@ import OrderAccept from "./components/OrderAccept";
 import CRPendingList from "./components/CRPendingList";
 import HDashboard from "./components/HDashboad";
 import Dashboard1 from "./components/Dashboard1";
+import WHListingPage from "./components/WHListingPage";
+import WHApprovedList from "./components/WHApprovedList";
 
 function App() {
   return (
@@ -71,6 +73,8 @@ function App() {
           <Route path="APAgeing" element={<APAgeing />} />
           <Route path="AddExpense" element={<AddExpense />} />
           <Route path="HDashboard" element={<HDashboard />} />
+          <Route path="WHListing" element={<WHListingPage />} />
+          <Route path="WHApprovedList" element={<WHApprovedList />} />
 
           <Route path="CNPreApproval" element={<CNPreApproval />} />
           <Route path="CRlisting" element={<CRListingPage />} />

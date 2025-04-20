@@ -48,6 +48,7 @@ const ViewExpense = () => {
   const [selectedItem, setSelectedItem] = useState(null); // Modal data
   const [editId, setEditId] = useState(null); // Modal data
   const expenseId = location.state?.expenseId;
+  const [selectedExpenses, setSelectedExpenses] = useState([]);
 
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
@@ -240,42 +241,151 @@ const ViewExpense = () => {
   };
   // Fetch a single expense by ID
 
-  const handleApprove = async (item) => {
+  // const handleApprove = async (item) => {
+  //   try {
+  //     const response = await axios.put(
+  //       `${API_URL}/api/expense/approval1?approval=${"1"}&createdby=${localStorage.getItem(
+  //         "userName"
+  //       )}&id=${editId}&userType=${localStorage.getItem("userType")}`
+  //     );
+
+  //     if (response.data.status === true) {
+  //       const audio = new Audio("/success.wav"); // Replace with your sound file path
+  //       audio.play();
+
+  //       notification.success({
+  //         message: `Expense Claim ${expenseId} Approved`,
+  //         description: `You have successfully approved the Expense Claim ${expenseId}.`,
+  //       });
+
+  //       const expenseVOid = response.data.paramObjectsMap.expenseVO.id;
+
+  //       const expenseAttachments =
+  //         response.data.paramObjectsMap.expenseVO.employeeExpensesAttachmentVO;
+
+  //       const approvedItems = selectedExpenses.filter(
+  //         (item) => item.approve === "T"
+  //       );
+  //       console.log("approvedItems", approvedItems);
+
+  //       const payload = {
+  //         id: expenseAttachments.id,
+  //         approveAmount: item.approveamount,
+  //       };
+
+  //       for (const item of selectedExpenses) {
+  //         const response = await axios.put(
+  //           `${API_URL}/api/expense/approveExp`,
+  //           payload
+  //         );
+
+  //         if (response.data.status === true) {
+  //           const audio = new Audio("/success.wav");
+  //           audio.play();
+
+  //           notification.success({
+  //             message: `Expense Claim ${item.id} Approved`,
+  //             description: `You have successfully approved the Expense Claim ${item.id}.`,
+  //           });
+
+  //           const expenseAttachments =
+  //             response.data.paramObjectsMap.expenseVO
+  //               .employeeExpensesAttachmentVO;
+  //         }
+  //       }
+
+  //       EditExpEmp();
+
+  //       // setIsModalOpen(false); // Uncomment if necessary
+  //     } else {
+  //       notification.error({
+  //         message: `Item ${expenseId} failed`,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error Response:", error.response?.data);
+  //     const errorMessage =
+  //       error.response?.data?.paramObjectsMap?.errorMessage ||
+  //       error.response?.data?.message ||
+  //       "An unexpected error occurred. Please try again.";
+  //     notification.error({
+  //       message: "Error",
+  //       description: errorMessage,
+  //     });
+  //     EditExpEmp();
+  //   }
+  // };
+
+  const handleApprove = async () => {
     try {
-      const response = await axios.put(
-        `${API_URL}/api/expense/approval1?approval=${"1"}&createdby=${localStorage.getItem(
-          "userName"
-        )}&id=${editId}&userType=${localStorage.getItem("userType")}`
+      // First approve the main expense claim
+      const mainApprovalResponse = await axios.put(
+        `${API_URL}/api/expense/approval1`,
+        null,
+        {
+          params: {
+            approval: "1",
+            createdby: localStorage.getItem("userName"),
+            id: editId,
+            userType: localStorage.getItem("userType"),
+          },
+        }
       );
 
-      if (response.data.status === true) {
-        const audio = new Audio("/success.wav"); // Replace with your sound file path
+      if (mainApprovalResponse.data.status === true) {
+        const audio = new Audio("/success.wav");
         audio.play();
 
+        // Prepare attachmentDTO array
+        const attachmentDTO = selectedExpenses.map((item) => ({
+          // eeExpensesAttachmentVO.id
+          amount: 0,
+          approvedAmount: item.approveamount || item.amount,
+          category: null,
+          expDate: null,
+          expense: null,
+          id: item.id, // employ
+
+          // Include any other required fields from your DTO
+        }));
+
+        // Send the array of attachmentDTOs
+        if (attachmentDTO.length > 0) {
+          try {
+            const response = await axios.put(
+              `${API_URL}/api/expense/approveExp`,
+              attachmentDTO, // Send the entire array
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            if (response.data.status === true) {
+              notification.success({
+                message: "Items Approved",
+                description: `${attachmentDTO.length} items approved successfully.`,
+              });
+            }
+          } catch (error) {
+            console.error("Error approving items:", error);
+          }
+        }
+
         notification.success({
-          message: `Expense Claim ${expenseId} Approved`,
-          description: `You have successfully approved the Expense Claim ${expenseId}.`,
+          message: "Approval Complete",
+          description: "Expense claim and items processed successfully.",
         });
 
         EditExpEmp();
-
-        // setIsModalOpen(false); // Uncomment if necessary
-      } else {
-        notification.error({
-          message: `Item ${expenseId} failed`,
-        });
       }
     } catch (error) {
-      console.log("Error Response:", error.response?.data);
-      const errorMessage =
-        error.response?.data?.paramObjectsMap?.errorMessage ||
-        error.response?.data?.message ||
-        "An unexpected error occurred. Please try again.";
+      console.error("Approval error:", error);
       notification.error({
         message: "Error",
-        description: errorMessage,
+        description: error.response?.data?.message || "Approval failed",
       });
-      EditExpEmp();
     }
   };
 
@@ -374,7 +484,7 @@ const ViewExpense = () => {
             <br />
 
             <form>
-              <div
+              {/* <div
                 style={{
                   display: "flex",
                   justifyContent: "flex-start",
@@ -406,8 +516,54 @@ const ViewExpense = () => {
                 <p style={{ fontSize: "1.1rem" }}>{data1.visitFrom}</p>
                 <p style={{ fontSize: "1.1rem", marginRight: "30px" }}>To:</p>
                 <p style={{ fontSize: "1.1rem" }}>{data1.visitTo}</p>
-              </div>
+              </div> */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                  margin: "0 0 20px 60px",
+                  width: "70%",
+                }}
+              >
+                {/* Employee Info Row */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, auto)",
+                    gap: "2px",
+                    alignItems: "left",
+                  }}
+                >
+                  <span style={{ fontWeight: "500", minWidth: "80px" }}>
+                    Employee:
+                  </span>
+                  <span style={{ alignItems: "left" }}>{data1.empName}</span>
+                  <span style={{ fontWeight: "500", minWidth: "50px" }}>
+                    Code:
+                  </span>
+                  <span>{data1.empCode}</span>
+                </div>
 
+                {/* Visit Info Row */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, auto)",
+                    gap: "2px",
+                    alignItems: "center",
+                  }}
+                >
+                  <span style={{ fontWeight: "500", minWidth: "80px" }}>
+                    From:
+                  </span>
+                  <span>{data1.visitFrom}</span>
+                  <span style={{ fontWeight: "500", minWidth: "50px" }}>
+                    To:
+                  </span>
+                  <span>{data1.visitTo}</span>
+                </div>
+              </div>
               <div
                 style={{
                   display: "flex",
@@ -420,10 +576,12 @@ const ViewExpense = () => {
                   <table style={{ width: "100%", tableLayout: "fixed" }}>
                     <thead>
                       <tr>
+                        <th>Action</th>
                         <th>Category</th>
                         <th>Expense</th>
                         <th>Date</th>
                         <th>Amount</th>
+                        <th>App. Amt</th>
                         <th>Attachment</th>
                       </tr>
                     </thead>
@@ -431,10 +589,79 @@ const ViewExpense = () => {
                       {data.length > 0 ? (
                         data.map((expense) => (
                           <tr key={expense.id}>
+                            <td>
+                              <div class="checkbox-wrapper-19">
+                                <input
+                                  id={`cbtest-${expense.id}`}
+                                  type="checkbox"
+                                  name="approve"
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setSelectedExpenses((prev) => [
+                                        ...prev,
+                                        expense,
+                                      ]);
+                                    } else {
+                                      setSelectedExpenses((prev) =>
+                                        prev.filter(
+                                          (item) => item.id !== expense.id
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                                <label
+                                  class="check-box"
+                                  htmlFor={`cbtest-${expense.id}`}
+                                ></label>
+                              </div>
+                            </td>
+
                             <td>{expense.category}</td>
                             <td>{expense.expense}</td>
-                            <td>{expense.expDate}</td>
+                            <td>
+                              {expense.expDate &&
+                                new Date(expense.expDate).toLocaleDateString(
+                                  "en-GB"
+                                )}
+                            </td>
                             <td>{expense.amount}</td>
+                            <td>
+                              <input
+                                type="number"
+                                defaultValue={expense.amount} // Default to original amount
+                                onChange={(e) => {
+                                  // Update the selectedExpenses with modified amount
+                                  setSelectedExpenses((prev) =>
+                                    prev.map((item) =>
+                                      item.id === expense.id
+                                        ? {
+                                            ...item,
+                                            approveamount: e.target.value,
+                                          }
+                                        : item
+                                    )
+                                  );
+                                  // Also update the main data if needed
+                                  setData((prev) =>
+                                    prev.map((item) =>
+                                      item.id === expense.id
+                                        ? {
+                                            ...item,
+                                            approveamount: e.target.value,
+                                          }
+                                        : item
+                                    )
+                                  );
+                                }}
+                                style={{
+                                  width: "80px",
+                                  padding: "4px",
+                                  border: "1px solid #d9d9d9",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                            </td>
                             <td>
                               {/* Render image using base64 string */}
                               <img

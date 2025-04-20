@@ -671,8 +671,8 @@ const AddExpense = () => {
                     </Select.Option>
                     <Select.Option value="Food">Food</Select.Option>
                     <Select.Option value="Transport">Transport</Select.Option>
-                    <Select.Option value="Entertainment">
-                      Entertainment
+                    <Select.Option value="Flight Ticket">
+                      Flight Ticket
                     </Select.Option>
                     <Select.Option value="Other">Other</Select.Option>
                   </Select>
@@ -973,7 +973,7 @@ const AddExpense = () => {
                                 style={{
                                   background:
                                     theme === "dark" ? "white" : "#fff", // White background in dark mode
-                                  color: theme === "dark" ? "white" : "white", // Text color stays black
+                                  color: theme === "dark" ? "white" : "black", // Text color stays black
                                 }}
                                 multiple
                                 onChange={(e) =>

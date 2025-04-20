@@ -23,8 +23,9 @@ import {
   Paper,
 } from "@mui/material";
 import { notification } from "antd";
+import { useWindowSize } from "react-use";
 import axios from "axios";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResetPasswordPopup from "../utils/ResetPassword";
 import idea from "../idea.png";
@@ -33,10 +34,28 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { ArrowDropDown, ArrowDropUp, Clear } from "@mui/icons-material";
 import "./Header.css";
+import confetti from "canvas-confetti";
 import {
   getHaiCustomerDetails,
   getPartyLedgerPartyName,
+  getHaiBranchCustomerDetails,
+  getHaiInvCustomerDetails,
+  getHaiCustomerRankDetails,
+  getHaiProductSummary,
+  getHaiCustomerYearProfit,
 } from "../services/api";
+import GaugeSpeedometer from "./GaugeSpeedometer";
+import { Doughnut } from "react-chartjs-2";
+import DChart from "./DChart";
+import SplitChart from "./SplitChart";
+import Confetti from "react-confetti";
+import TiltCard from "./TiltCard";
+import userpng from "../user.png";
+import logoonly from "../logoonly.png";
+import MonthGraph from "./MonthGraph";
+import Typewriter from "./Typewriter";
+
+const { Text } = Typography;
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
@@ -61,10 +80,10 @@ const SuperPowerModal = ({ open, onClose }) => {
       type: "PRODUCT",
     },
     {
-      name: "Employee",
+      name: "AI",
       description: "View and manage employee information",
       color: "#96C93D",
-      type: "EMPLOYEE",
+      type: "AI",
     },
   ];
 
@@ -76,18 +95,487 @@ const SuperPowerModal = ({ open, onClose }) => {
   const [party, setParty] = useState("");
   const [ptype, setPtype] = useState("");
   const [partyNames, setPartyNames] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(true);
   const [selectedType, setSelectedType] = useState(powers[0].type);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const [totalDue, setTotalDue] = useState(0); // Initialize with 0
   const [selectedParty, setSelectedParty] = useState(null); // Track the selected party
   const [filteredParties, setFilteredParties] = useState([]);
+  const [invdata, setInvData] = useState([]);
+  const [yeardata, setYearData] = useState([]);
+  const [rankinvdata, setRankInvData] = useState([]);
+  const [productData, setProductData] = useState([]);
+  const { width, height } = useWindowSize(); // Automatically adjusts confetti to window size
+  const buttonRef = useRef(null);
+  const [status, setStatus] = useState("idle");
+  const [isYearSelected, setIsYearSelected] = useState(false);
 
-  const customerDetails = cusdata.map((item) => ({
-    name: item.partyCode,
-    description: `Code: ${item.partyName}`,
-    color: "#FF6B6B", // Assign a fixed or dynamic color if needed
-    type: "CUSTOMER",
-  }));
+  const [rawData, setRawData] = useState([]);
+  const [totDue, setTotDue] = useState(0);
+  const [brcusdata, setBrCusData] = useState([]);
+  const textRef = useRef(null);
+  const iconRef = useRef(null);
+  const hasCelebrated = useRef(false);
+  const [yearchartData, setYearChartData] = useState([]);
+
+  const backgroundColors = [
+    "#2b92d8",
+    "#2ab96a",
+    "#e9c061",
+    "#d95d6b",
+    "#9173d8",
+    "#9966FF",
+    "#FF66B2",
+    "#FF6666",
+    "#66FF66",
+    "#66FFFF",
+    "#FF9966",
+    "#FF33FF",
+    "#00FFFF",
+    "#99CCFF",
+    "#CC99FF",
+    "#FFCC99",
+  ];
+
+  const hoverBackgroundColors = [
+    "#2b92d8",
+    "#2ab96a",
+    "#e9c061",
+    "#d95d6b",
+    "#9173d8",
+    "#9966FF",
+    "#FF66B2",
+    "#FF6666",
+    "#66FF66",
+    "#66FFFF",
+    "#FF9966",
+    "#FF33FF",
+    "#00FFFF",
+    "#99CCFF",
+    "#CC99FF",
+    "#FFCC99",
+  ];
+
+  useEffect(() => {
+    console.log("Current productData:", productData);
+  }, [productData]);
+
+  const [periodType, setPeriodType] = useState("month");
+
+  const togglePeriod = () => {
+    setPeriodType((prev) => (prev === "month" ? "year" : "month"));
+  };
+
+  const handleCheckboxChange = () => {
+    const newValue = !isYearSelected;
+    console.log("Toggling checkbox to:", isYearSelected);
+    setIsYearSelected(newValue);
+  };
+
+  // const customerDetails = cusdata.flatMap((item) => [
+  //   {
+  //     name: (
+  //       <>
+  //         Category: <br /> {item.category}
+  //         <br />
+  //         Credit Days / Limit
+  //         <br />
+  //         {item.creditDays} / {item.creditLimit.toLocaleString("en-IN")}
+  //       </>
+  //     ),
+  //     description: `Credit Days / Limit: ${item.creditDays} / ${item.creditLimit}`,
+  //     color: "#4ECDC4",
+  //     type: "VENDOR",
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         Ctrl Office: <br /> {item.ctrlOffice}
+  //         <br />
+  //         SalesPerson
+  //         <br />
+  //         {item.salesPersonName}
+  //       </>
+  //     ),
+  //     description: `Salesperson: ${item.salesPersonName}`,
+  //     color: "#96C93D",
+  //     type: "EMPLOYEE",
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         On Year:
+  //         <br />
+  //         {item.onYear}
+  //         <br />
+  //         Total Due: <br /> {item.totDue.toLocaleString("en-IN")}
+  //         <br />
+  //       </>
+  //     ),
+  //     description: `Category: ${item.category}, Ctrl Office: ${item.ctrlOffice}, On Year: ${item.onYear}`,
+  //     color: "#45B7D1",
+  //     type: "PRODUCT",
+  //   },
+  // ]);
+
+  const uniqueCusData =
+    selectedType === "PRODUCT"
+      ? [
+          ...new Map(
+            productData.map((item) => {
+              const key = JSON.stringify({
+                jobs: item.jobs,
+                openJobs: item.openJobs,
+                closedJobs: item.closedJobs,
+                salesPersonName: item.salesPersonName ?? null,
+              });
+              return [key, item];
+            })
+          ).values(),
+        ]
+      : [
+          ...new Map(
+            cusdata.map((item) => {
+              const key = JSON.stringify({
+                category: item.category,
+                creditDays: item.creditDays,
+                creditLimit: item.creditLimit,
+                ctrlOffice: item.ctrlOffice,
+                salesPersonName: item.salesPersonName,
+                onYear: item.onYear,
+              });
+              return [key, item];
+            })
+          ).values(),
+        ];
+  console.log("uniqueCusData", uniqueCusData);
+
+  // Handle window resize
+
+  // Show confetti only if rank is 1, and stop it after 5 seconds
+
+  // const customerDetails = uniqueCusData.flatMap((item) => [
+  //   {
+  //     name: (
+  //       <>
+  //         On Year
+  //         <br />
+  //         Rank
+  //         <br />
+  //         Credit Days
+  //         <br />
+  //         Limit
+  //         <br />
+  //         SalesPerson
+  //         <br />
+  //       </>
+  //     ),
+  //     description: (
+  //       <>
+  //         {item.onYear} <br /> {0} <br /> {item.creditDays} <br />
+  //         {item.creditLimit.toLocaleString("en-IN")}
+  //         <br />
+  //         {item.salesPersonName}
+  //       </>
+  //     ),
+  //     color: "#4ECDC4",
+  //     type: "VENDOR",
+  //   },
+  //   // {
+  //   //   name: (
+  //   //     <>
+  //   //       Ctrl Office: <br /> {item.ctrlOffice}
+  //   //       <br />
+  //   //       SalesPerson
+  //   //       <br />
+  //   //       {item.salesPersonName}
+  //   //     </>
+  //   //   ),
+  //   //   description: `Salesperson: ${item.salesPersonName}`,
+  //   //   color: "#96C93D",
+  //   //   type: "EMPLOYEE",
+  //   // },
+  //   {
+  //     name: (
+  //       <>
+  //         Invoice
+  //         <br />
+  //         Credit Note
+  //         <br />
+  //         Collection
+  //         <br />
+  //         Service
+  //       </>
+  //     ),
+  //     description: (
+  //       <>
+  //         {0} <br /> {0} <br /> {0} <br />
+  //         {0}
+  //       </>
+  //     ),
+  //     color: "#45B7D1",
+  //     type: "PRODUCT",
+  //   },
+  // ]);
+
+  // const customerDetails = uniqueCusData.flatMap((item) => {
+
+  //   const getAmount = (screen) => {
+  //     const entry = invdata.find(
+  //       (inv) => inv.screen === screen && inv.partyCode === item.partyCode
+  //     );
+  //     return entry
+  //       ? (Number(entry.amt) / 100000).toFixed(0).toLocaleString("en-IN") + " L"
+  //       : "0";
+  //   };
+
+  //   return [
+  //     {
+  //       name: (
+  //         <>
+  //           On Board
+  //           <br />
+  //           Rank
+  //           <br />
+  //           Credit Days
+  //           <br />
+  //           Limit
+  //         </>
+  //       ),
+  //       description: (
+  //         <>
+  //           {item.onYear} <br /> {0} <br /> {item.creditDays} <br />
+  //           {item.creditLimit.toLocaleString("en-IN")}
+  //         </>
+  //       ),
+  //       color: "#4ECDC4",
+  //       type: "VENDOR",
+  //     },
+  //     {
+  //       name: (
+  //         <>
+  //           Invoice
+  //           <br />
+  //           Credit Note
+  //           <br />
+  //           Collection
+  //           <br />
+  //           Service
+  //         </>
+  //       ),
+  //       description: (
+  //         <>
+  //           {getAmount("Invoice")} <br />
+  //           {getAmount("Credit Note")} <br />
+  //           {getAmount("Receipt")} <br />
+  //           {getAmount("Service")}
+  //         </>
+  //       ),
+  //       color: "#45B7D1",
+  //       type: "PRODUCT",
+  //     },
+  //   ];
+  // });
+
+  const topRankCustomer = rankinvdata.find((rank) => rank.r === 1);
+  useEffect(() => {
+    if (topRankCustomer) {
+      setShowConfetti(true);
+
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [topRankCustomer]);
+
+  const customerDetails = uniqueCusData.flatMap((item) => {
+    const getAmount = (screen) => {
+      const entry = invdata.find(
+        (inv) => inv.screen === screen && inv.partyCode === item.partyCode
+      );
+      return entry
+        ? (Number(entry.amt) / 100000).toFixed(0).toLocaleString("en-IN") + " L"
+        : "0";
+    };
+
+    const rankEntry = rankinvdata.find(
+      (rank) => rank.customer === item.partyName
+    );
+
+    // Only define product-related functions when needed
+    let getProductCount;
+    if (selectedType === "PRODUCT") {
+      getProductCount = (label) => {
+        if (!productData || !Array.isArray(productData)) {
+          console.warn("Product data not available");
+          return 0;
+        }
+        const entry = productData.find((prod) => prod.jobs === label);
+        console.log(`Looking for ${label}, found:`, entry);
+        return entry ? entry.count : 0;
+      };
+    }
+
+    return [
+      // About section - for CUSTOMER or VENDOR
+      (selectedType === "CUSTOMER" || selectedType === "VENDOR") && {
+        name: (
+          <>
+            <strong style={{ marginLeft: "100px" }}>About</strong>
+            <br />
+            On Board
+            <br />
+            Code
+            <br />
+            Credit Days
+            <br />
+            Limit
+          </>
+        ),
+        description: (
+          <>
+            {}
+            <br />
+            {item.onYear} <br /> {item.partyCode || 0} <br /> {item.creditDays}{" "}
+            <br />₹
+            {(item.creditLimit / 100000).toFixed(2).toLocaleString("en-IN") +
+              " L"}
+          </>
+        ),
+        color: "#4ECDC4",
+        type: "VENDOR",
+      },
+
+      // Product Summary - only for PRODUCT type
+      selectedType === "PRODUCT" && {
+        name: (
+          <>
+            <strong style={{ marginLeft: "70px" }}>Summary</strong>
+            <br />
+            Total Jobs
+            <br />
+            Open Jobs
+            <br />
+            Closed Jobs
+          </>
+        ),
+        description: (
+          <>
+            {}
+            <br />
+            {item.jobs} <br />
+            {item.openJobs} <br />
+            {item.closedJobs}
+          </>
+        ),
+        color: "#FFA726",
+        type: "PRODUCT",
+      },
+
+      // Recent section - CUSTOMER specific
+      selectedType === "CUSTOMER" && {
+        name: (
+          <>
+            <strong style={{ marginLeft: "100px" }}>Recent</strong>
+            <br />
+            Invoice
+            <br />
+            Credit Note
+            <br />
+            Collection
+            <br />
+            Service
+          </>
+        ),
+        description: (
+          <>
+            {}
+            <br />₹{getAmount("Invoice")} <br />₹{getAmount("Credit Note")}{" "}
+            <br />₹{getAmount("Receipt")} <br />
+            {getAmount("Service")}
+          </>
+        ),
+        color: "#45B7D1",
+        type: "PRODUCT",
+      },
+
+      // Recent section - VENDOR specific
+      selectedType === "VENDOR" && {
+        name: (
+          <>
+            <strong style={{ marginLeft: "100px" }}>Recent</strong>
+            <br />
+            Cost Invoice
+            <br />
+            Debit Note
+            <br />
+            Payment
+            <br />
+            Service
+          </>
+        ),
+        description: (
+          <>
+            {}
+            <br />₹{getAmount("Cost Invoice")} <br />₹{getAmount("Debit Note")}{" "}
+            <br />₹{getAmount("Payment")} <br />
+            {getAmount("Service")}
+          </>
+        ),
+        color: "#45B7D1",
+        type: "PRODUCT",
+      },
+
+      // Analytics section - CUSTOMER specific
+      (selectedType === "CUSTOMER" || selectedType === "PRODUCT") && {
+        name: (
+          <>
+            <strong style={{ marginLeft: "70px" }}>Last Month</strong>
+            <br />
+            Rank
+            <br />
+            Jobs
+            <br />
+            Income
+            <br />
+            {selectedType != "PRODUCT" && "Profit"}
+          </>
+        ),
+        description: (
+          <>
+            {}
+            <br />
+            <span className={rankEntry?.r === 1 ? "highlight" : ""}>
+              {rankEntry?.r || 0}
+            </span>{" "}
+            {rankEntry?.r === 1 && showConfetti && (
+              <Confetti width={width} height={height} />
+            )}
+            <br />
+            {rankEntry?.totJob} <br />₹
+            {(rankEntry?.income / 100000)?.toFixed(0).toLocaleString("en-IN") ||
+              "0"}{" "}
+            L <br />
+            {selectedType !== "PRODUCT" && (
+              <>
+                ₹
+                {(rankEntry?.profit / 100000)
+                  ?.toFixed(0)
+                  .toLocaleString("en-IN") || "0"}{" "}
+                L
+              </>
+            )}
+          </>
+        ),
+        color: "#FF6B6B",
+        type: "ANALYTICS",
+      },
+    ].filter(Boolean); // This removes any falsey values (including null/undefined)
+  });
+
+  console.log("customerDetails", customerDetails);
 
   const handleClearSelection = () => {
     setSelectedParty(null);
@@ -175,46 +663,326 @@ const SuperPowerModal = ({ open, onClose }) => {
     }
   }, [searchTerm, partyNames]);
 
-  const fetchData = (selectedValue) => {
+  // const fetchData = (selectedValue) => {
+  //   setLoading(true);
+
+  //   getHaiCustomerDetails(selectedValue)
+  //     .then((response) => {
+  //       // Set data state with the updated data (result + grand total)
+  //       setCusData(response);
+
+  //       // totalDue = response.paramObjectsMap.gethaiCustomerDetails.totDue || 0;
+
+  //       setLoading(false);
+  //     })
+  //     .catch(() => {
+  //       notification.error({
+  //         message: "Data Fetch Error",
+  //         description: "Failed to fetch updated data for the GET HAI.",
+  //       });
+  //       setLoading(true);
+
+  //       getHaiBranchCustomerDetails(selectedValue)
+  //         .then((response) => {
+  //           setBrCusData(response);
+  //           console.log("brCusData", brcusdata);
+  //           setLoading(false);
+  //         })
+  //         .catch(() => {
+  //           notification.error({
+  //             message: "Data Fetch Error",
+  //             description:
+  //               "Failed to fetch updated data for the GET HAI (Branch).",
+  //           });
+  //           setLoading(false);
+  //         });
+
+  //       setLoading(false);
+  //     });
+  // };
+
+  const fetchData = (selectedValue, selectedType) => {
     setLoading(true);
 
-    getHaiCustomerDetails(selectedValue)
+    getHaiCustomerDetails(selectedValue, selectedType)
       .then((response) => {
-        // Set data state with the updated data (result + grand total)
-        setCusData(response);
-        setLoading(false);
+        if (response) {
+          setCusData(response);
+          setLoading(false); // ✅ Important to end loading on success
+        } else {
+          throw new Error("Empty response"); // force fallback
+        }
       })
       .catch(() => {
         notification.error({
           message: "Data Fetch Error",
-          description: "Failed to fetch updated data for the listing.",
+          description:
+            "Failed to fetch data from GET HAI. Trying branch-level...",
         });
-        setLoading(false);
+        setLoading(false); // ✅ Important to end loading on success
+        // ✅ Now trigger fallback
       });
   };
 
+  const fetchData1 = async (selectedValue, selectedType) => {
+    setLoading(true);
+    try {
+      const response = await getHaiBranchCustomerDetails(
+        selectedValue,
+        selectedType
+      );
+      setBrCusData(response);
+      console.log("Branch API Response:", brcusdata); // Debug log
+
+      // Check if response has data
+      if (
+        response &&
+        response.paramObjectsMap &&
+        response.paramObjectsMap.gethaiBranchCustomerDetails
+      ) {
+        setBrCusData(response.paramObjectsMap.gethaiBranchCustomerDetails);
+      } else {
+        console.warn("No branch data found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch branch customer data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchData2 = async (selectedValue, selectedType) => {
+    setLoading(true);
+    try {
+      const response = await getHaiInvCustomerDetails(
+        selectedValue,
+        selectedType
+      );
+      setInvData(response);
+      console.log("Branch API Response:", invdata); // Debug log
+
+      // Check if response has data
+      if (
+        response &&
+        response.paramObjectsMap &&
+        response.paramObjectsMap.gethaiInvCustomerDetails
+      ) {
+        setInvData(response.paramObjectsMap.gethaiInvCustomerDetails);
+      } else {
+        console.warn("No branch data found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch branch customer data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchData3 = async (selectedValue, selectedType) => {
+    setLoading(true);
+    try {
+      const response = await getHaiCustomerRankDetails(
+        selectedValue,
+        selectedType
+      );
+      setRankInvData(response);
+      console.log("Branch API Response rankinvdata:", rankinvdata); // Debug log
+
+      // Check if response has data
+      if (
+        response &&
+        response.paramObjectsMap &&
+        response.paramObjectsMap.gethaiCustomerRankDetails
+      ) {
+        setInvData(response.paramObjectsMap.gethaiCustomerRankDetails);
+      } else {
+        console.warn("No branch data found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch branch customer data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchData4 = async (selectedValue) => {
+    setLoading(true);
+    try {
+      const response = await getHaiProductSummary(selectedValue);
+      console.log("API Response:", response); // Debug the full response
+
+      // Extract the array from the nested structure
+      const productSummary = response;
+
+      // console.log("Extracted product data:", productSummary); // Debug extracted data
+      setProductData(productSummary);
+      console.log("Extracted productData:", productData); // Debug extracted data
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch product data",
+      });
+      setProductData([]); // Reset to empty array on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchData5 = async (selectedValue, selectedType) => {
+    setLoading(true);
+    try {
+      const response = await getHaiCustomerYearProfit(
+        selectedValue,
+        selectedType
+      );
+      setYearData(response);
+      console.log("Branch API Response Year Data:", yeardata); // Debug log
+
+      // Check if response has data
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch branch customer data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const monthMap = {
+    apr: "Apr",
+    may: "May",
+    jun: "Jun",
+    jul: "Jul",
+    aug: "Aug",
+    sep: "Sep",
+    oct: "Oct",
+    nov: "Nov",
+    dec: "Dec",
+    jan: "Jan",
+    feb: "Feb",
+    mar: "Mar",
+  };
+
+  const convertToChartData = (yearDataArray = [], year = "2024") => {
+    const result = [];
+
+    // Handle case where data might be empty or invalid
+    if (!Array.isArray(yearDataArray) || yearDataArray.length === 0) {
+      console.warn("Invalid or empty yearDataArray:", yearDataArray);
+      return result;
+    }
+
+    // Get the first object from the array (assuming that's what you want)
+    const yearDataObj = yearDataArray[0];
+
+    Object.keys(monthMap).forEach((key) => {
+      // Convert key to lowercase to match your API response (e.g., "apr" vs "APR")
+      const lowercaseKey = key.toLowerCase();
+      const rawValue = yearDataObj[lowercaseKey] ?? 0;
+      const valueInLacs = (rawValue / 100000).toFixed(0);
+      const valueNum = parseFloat(valueInLacs);
+
+      result.push({
+        value: valueNum,
+        height: `${Math.min(
+          Math.max(Math.round((valueNum / 100) * 100), 0),
+          100
+        )}%`,
+        caption: `${monthMap[key]}`,
+      });
+    });
+
+    return result;
+  };
+  useEffect(() => {
+    if (yeardata) {
+      // Check if yeardata exists and has data
+      const convertedData = convertToChartData(yeardata); // Pass yeardata to the function
+      setYearChartData(convertedData);
+      console.log("yearchartData:", convertedData); // Log the converted data directly
+    }
+  }, [yeardata]);
+
+  const chartData1a = {
+    total: 64,
+    wedges: [
+      { id: "a", color: "#4FC1E9", value: 10 },
+      { id: "b", color: "#A0D468", value: 16 },
+      { id: "c", color: "#ED5565", value: 24 },
+      { id: "d", color: "#AC92EC", value: 14 },
+    ],
+  };
+
+  // const chartData = {
+  //   total: brcusdata?.reduce((sum, item) => sum + (item.totDue || 0), 0) || 0,
+  //   wedges:
+  //     brcusdata?.map((item, index) => ({
+  //       id: item.branchCode || `branch-${index}`,
+  //       color: ["#4FC1E9", "#A0D468", "#ED5565", "#AC92EC"][index % 4],
+  //       value: item.totDue || 0,
+  //     })) || [],
+  // };
+
+  const [data1, setData1] = useState({
+    total: 0,
+    wedges: [],
+  });
+  useEffect(() => {
+    const newData = {
+      total:
+        brcusdata
+          ?.reduce((sum, item) => sum + item.totDue / 100000, 0)
+          .toFixed(0) || 0,
+
+      wedges:
+        brcusdata
+          ?.map((item, index) => ({
+            id: item.branchCode || `branch-${index}`,
+            color: ["#4FC1E9", "#A0D468", "#ED5565", "#AC92EC"][index % 4],
+            value: (item.totDue / 100000).toFixed(0) || 0,
+          }))
+          .sort((a, b) => b.value - a.value) || [], // ✅ sort descending || [],
+    };
+
+    setData1(newData);
+    console.log("chardata1", data1);
+  }, [brcusdata]);
+
+  useEffect(() => {
+    console.log("brcusdata updated:", brcusdata);
+  }, [brcusdata]);
+
+  useEffect(() => {
+    console.log("data1 updated:", data1);
+  }, [data1]);
+
   const updatePower = (index) => {
     setCurrentPower(index);
-
-    // Create particles animation
-    // const newParticles = [];
-    // for (let i = 0; i < 15; i++) {
-    //   setTimeout(() => {
-    //     const particle = {
-    //       id: Date.now() + i,
-    //       x: Math.random() * 100,
-    //       y: Math.random() * 100,
-    //       color: powers[index].color,
-    //     };
-    //     newParticles.push(particle);
-    //     setParticles((prev) => [...prev, particle]);
-
-    //     setTimeout(() => {
-    //       setParticles((prev) => prev.filter((p) => p.id !== particle.id));
-    //     }, 1500);
-    //   }, i * 50);
-    // }
   };
+
+  const chartData = [
+    { title: "Tokyo", value: 120, color: "#2C3E50" },
+    { title: "San Francisco", value: 80, color: "#FC4349" },
+    { title: "New York", value: 70, color: "#6DBCDB" },
+    { title: "London", value: 50, color: "#F7E248" },
+    { title: "Sydney", value: 40, color: "#D7DADB" },
+    { title: "Berlin", value: 20, color: "#FFF" },
+  ];
 
   const handleTypeChange = (value) => {
     setPtype(value); // Update the Type state
@@ -238,6 +1006,48 @@ const SuperPowerModal = ({ open, onClose }) => {
       });
   };
 
+  const colors = [
+    "#0669AD",
+    "#E62A39",
+    "#FEDA3E",
+    "#4CAF50",
+    "#FF9800",
+    "#FF66B2",
+    "#FF6666",
+    "#66FF66",
+    "#66FFFF",
+    "#FF9966",
+    "#FF33FF",
+    "#00FFFF",
+    "#99CCFF",
+    "#CC99FF",
+    "#FFCC99",
+  ];
+  const multiGraphData = brcusdata
+    .slice() // optional: to avoid mutating original array
+    .sort((a, b) => b.totDue - a.totDue) // sort descending
+    .map((item, index) => ({
+      name: item.branchCode,
+      percentage: Number((item.totDue / 100000).toFixed(0)) || 0,
+      fill: colors[index % colors.length],
+      due: item.totDue,
+    }));
+
+  console.log("multiGraphData", multiGraphData);
+
+  let currentAngle = 0;
+  const graphData = multiGraphData.map((item) => {
+    const angle = item.percentage * 1.8; // Each percentage = 1.8 deg (180 total)
+    const startAngle = currentAngle;
+    currentAngle += angle;
+
+    return {
+      ...item,
+      startAngle,
+      angle,
+    };
+  });
+
   return (
     <Dialog
       open={open}
@@ -251,6 +1061,7 @@ const SuperPowerModal = ({ open, onClose }) => {
           backdropFilter: "blur(10px)",
           borderRadius: "20px",
           overflow: "hidden",
+          maxHeight: "100vh",
         },
       }}
     >
@@ -287,13 +1098,16 @@ const SuperPowerModal = ({ open, onClose }) => {
             marginBottom: "2rem",
             gap: "0.7rem",
             flexWrap: "wrap",
-            marginLeft: "-370px",
+            marginLeft: "-330px",
           }}
         >
           {powers.map((power, index) => (
             <Box
               key={index}
-              onClick={() => updatePower(index)}
+              onClick={() => {
+                updatePower(index);
+                setSelectedType(power.type); // Sets the selected type (e.g., "VENDOR")
+              }}
               sx={{
                 flex: 1,
                 minWidth: "30px",
@@ -342,6 +1156,7 @@ const SuperPowerModal = ({ open, onClose }) => {
               </Typography>
             </Box>
           ))}
+
           {/* <div
             class="form__group field"
             style={{ marginRight: "-300px", marginTop: "20px" }}
@@ -367,6 +1182,7 @@ const SuperPowerModal = ({ open, onClose }) => {
               width: "300px",
               backgroundColor: "transparent",
               color: "white",
+              zIndex: 1000,
             }}
           >
             <div
@@ -387,7 +1203,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                 }}
                 placeholder={`Search ${powers[currentPower].name}...`}
                 style={{
-                  width: "100%",
+                  width: "125%",
                   padding: "10px 16px",
                   border: "1px solid #e0e0e0",
                   borderRadius: "4px",
@@ -407,8 +1223,9 @@ const SuperPowerModal = ({ open, onClose }) => {
                     top: "calc(100% + 5px)",
                     left: 0,
                     right: 0,
-                    maxHeight: "300px",
+                    maxHeight: "100px",
                     overflowY: "auto",
+                    width: "300px",
                     backgroundColor: "transparent",
                     border: "1px solid #e0e0e0000000",
                     borderRadius: "4px",
@@ -421,7 +1238,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                       style={{
                         padding: "12px",
                         textAlign: "center",
-                        color: "#666",
+                        color: "white",
                       }}
                     >
                       Loading...
@@ -438,7 +1255,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                         <div
                           key={`party-${index}`}
                           style={{
-                            padding: "12px 16px",
+                            padding: "0px 16px",
                             color: "#333",
                             cursor: "pointer",
                             borderBottom: "1px solid #f0f0f0",
@@ -446,14 +1263,19 @@ const SuperPowerModal = ({ open, onClose }) => {
                             backgroundColor:
                               selectedParty === party ? "#f5f5f5" : "white",
                             ":hover": {
-                              backgroundColor: "#f5f5  f5",
+                              backgroundColor: "#f5f5f5",
                             },
                           }}
                           onClick={() => {
                             const selectedValue = party.subledgerName || party;
                             setSearchTerm(selectedValue);
                             setSelectedParty(party);
-                            fetchData(selectedValue);
+                            fetchData(selectedValue, selectedType);
+                            fetchData1(selectedValue, selectedType);
+                            fetchData2(selectedValue, selectedType);
+                            fetchData3(selectedValue, selectedType);
+                            fetchData4(selectedValue);
+                            fetchData5(selectedValue, selectedType);
                             setShowDropdown(false); // Close dropdown after selection
                           }}
                         >
@@ -466,6 +1288,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                         padding: "12px 16px",
                         color: "#666",
                         fontStyle: "italic",
+                        fontSize: "14px",
                       }}
                     >
                       No results found for "{searchTerm}"
@@ -503,13 +1326,13 @@ const SuperPowerModal = ({ open, onClose }) => {
               opacity: 0.8,
               marginBottom: "2rem",
               fontFamily: "'Raleway', sans-serif",
-              fontWeight: 300,
+              fontWeight: 200,
             }}
           >
             {/* Discover Your Ultimate Power */}
           </Typography>
 
-          <Box
+          {/* <Box
             sx={{
               position: "relative",
               marginBottom: "2rem",
@@ -541,7 +1364,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                 />
               ))}
             </Box>
-          </Box>
+          </Box> */}
 
           <Box
             sx={{
@@ -552,35 +1375,28 @@ const SuperPowerModal = ({ open, onClose }) => {
               flexWrap: "wrap",
             }}
           >
-            {powers.map((power, index) => (
+            {customerDetails.map((power, index) => (
               <Box
                 key={index}
-                onClick={() => updatePower(index)}
                 sx={{
                   flex: 1,
                   minWidth: "90px",
-                  maxWidth: "130px",
+                  // maxWidth: "400px",
+                  maxWidth: "250px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   gap: "0.5rem",
-                  opacity: currentPower === index ? 1 : 0.6,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
                   padding: "0.7rem",
                   borderRadius: "12px",
                   background: "rgba(255, 255, 255, 0.1)",
-                  border:
-                    currentPower === index
-                      ? "1px solid rgba(255, 255, 255, 0.3)"
-                      : "1px solid transparent",
-                  backdropFilter: "blur(5px)",
-                  boxShadow:
-                    currentPower === index
-                      ? "0 8px 15px rgba(255, 255, 255, 0.1)"
-                      : "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  backdropFilter:
+                    showDropdown || searchTerm ? "none" : "blur(5px)",
+                  boxShadow: "0 8px 15px rgba(255, 255, 255, 0.1)",
+                  opacity: 1,
+                  transition: "all 0.3s ease",
                   "&:hover": {
-                    opacity: 1,
                     transform: "scale(1.05)",
                     borderColor: "rgba(255, 255, 255, 0.3)",
                     background: "rgba(255, 255, 255, 0.15)",
@@ -588,7 +1404,7 @@ const SuperPowerModal = ({ open, onClose }) => {
                 }}
               >
                 <Typography sx={{ fontSize: "1.6rem" }}>
-                  {getPowerEmoji(index)}
+                  {/* {getPowerEmoji(index)} */}
                 </Typography>
                 <Typography
                   sx={{
@@ -596,45 +1412,236 @@ const SuperPowerModal = ({ open, onClose }) => {
                     textAlign: "center",
                     fontWeight: 500,
                     color: "white",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}
                 >
-                  {power.name}
+                  <span style={{ textAlign: "left" }}>{power.name}</span>
+                  <span style={{ textAlign: "right" }}>
+                    {power.description}
+                  </span>
                 </Typography>
               </Box>
             ))}
           </Box>
-          <Box
-            sx={{
-              padding: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              borderRadius: "15px",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              backdropFilter: "blur(5px)",
-            }}
-          >
-            <Typography
-              variant="h4"
+
+          {/* {multiGraphData[0].name && ( */}
+          {customerDetails.length > 0 && (
+            <Box
               sx={{
-                marginBottom: "1rem",
-                background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-                fontFamily: "'Playfair Display', serif",
+                padding: "1.5rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "15px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backdropFilter:
+                  showDropdown || searchTerm ? "none" : "blur(5px)",
+                height: "250px",
               }}
             >
-              {powers[currentPower].name}
-            </Typography>
-            <Typography
+              <Typography
+                variant="h4"
+                sx={{
+                  marginBottom: "1rem",
+                  background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                  fontFamily: "'Playfair Display', serif",
+                }}
+              >
+                {/* {powers[currentPower].name} */}
+              </Typography>
+              <Typography
+                sx={{
+                  color: "white",
+                  opacity: 0.9,
+                  lineHeight: 1.6,
+                }}
+              >
+                {/* <label
+                  className="cyberpunk-checkbox-label"
+                  style={{
+                    marginTop: "-30px",
+                    marginBottom: "30px",
+                    fontSize: "14px",
+                    width: "100px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    className="cyberpunk-checkbox"
+                    checked={isYearSelected}
+                    onChange={handleCheckboxChange}
+                    // onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+                  />
+                  Year Profit
+                </label> */}
+
+                <div class="checkbox-container">
+                  <input
+                    class="checkbox-input"
+                    id="hacker-checkbox"
+                    type="checkbox"
+                    checked={isYearSelected}
+                    onChange={handleCheckboxChange}
+                  />
+                  <label class="checkbox-label" for="hacker-checkbox">
+                    <span class="checkmark"></span>
+                    <div class="grid-bg"></div>
+                    <div class="glitch-overlay-h"></div>
+                    <div class="glitch-overlay-v"></div>
+                    <div class="binary-particles">
+                      <span
+                        style={{ left: "10%", animationDelay: "-0s" }}
+                        class="particle"
+                      >
+                        1
+                      </span>
+                      <span
+                        style={{ left: "30%", animationDelay: "-0.2s" }}
+                        class="particle"
+                      >
+                        0
+                      </span>
+                      <span
+                        style={{ left: "50%", animationDelay: "-0.4s" }}
+                        class="particle"
+                      >
+                        1
+                      </span>
+                      <span
+                        style={{ left: "70%", animationDelay: "-0.6s" }}
+                        class="particle"
+                      >
+                        0
+                      </span>
+                      <span
+                        style={{ left: "90%", animationDelay: "-0.8s" }}
+                        class="particle"
+                      >
+                        1
+                      </span>
+                    </div>
+                  </label>
+                </div>
+                <div
+                  style={{
+                    marginTop: "-60px",
+                    marginLeft: "-580px",
+                    marginBottom: "40px",
+                  }}
+                >
+                  Year Profit
+                </div>
+
+                {/* {powers[currentPower].description} */}
+                {/* {multiGraphData[0].name && ( */}
+                {customerDetails.length > 0 && !isYearSelected && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "80px", // Increase this value as needed
+                      marginTop: "1px",
+                    }}
+                  >
+                    <GaugeSpeedometer
+                      // value={(cusdata[0].totDue / 100000).toFixed(0)}
+                      value={
+                        data1.wedges.reduce(
+                          (sum, wedge) => sum + wedge.value * 100000,
+                          0
+                        ) / 100000
+                      }
+                      // display={`L - Due`}
+                      display={
+                        selectedType === "CUSTOMER" || selectedType === "VENDOR"
+                          ? "L - Due"
+                          : "L - Profit"
+                      }
+                    />
+                  </div>
+                )}
+                {!isYearSelected && (
+                  <SplitChart
+                    multiGraphData={multiGraphData}
+                    display={
+                      selectedType === "CUSTOMER"
+                        ? uniqueCusData[0]?.salesPersonName
+                        : null
+                    }
+                    selectedType={selectedType}
+                  />
+                )}
+
+                {isYearSelected && (
+                  <div>
+                    <MonthGraph yearchartData={yearchartData} />
+                  </div>
+                )}
+
+                {/* <TiltCard /> */}
+                {/* <div className="data-summary">
+                  {multiGraphData.map((item, index) => (
+                    <div key={index} style={{ color: item.fill }}>
+                      {item.name}: {item.percentage}
+                    </div>
+                  ))}
+                </div> */}
+                {/* <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "80px", // Increase this value as needed
+                  marginTop: "-150px",
+                  marginLeft: "550px",
+                }}
+              >
+                {cusdata[0]?.totDue && (
+                  <GaugeSpeedometer
+                    value={(cusdata[0].totDue / 100000).toFixed(0)}
+                    display={`L - OS`}
+                  />
+                )}
+              </div> */}
+              </Typography>
+            </Box>
+          )}
+
+          {selectedType == "AI" && (
+            <Box
               sx={{
-                color: "white",
-                opacity: 0.9,
-                lineHeight: 1.6,
+                padding: "1.5rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "15px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backdropFilter:
+                  showDropdown || searchTerm ? "none" : "blur(5px)",
+                height: "250px",
               }}
             >
-              {powers[currentPower].description}
-            </Typography>
-          </Box>
+              <Typography
+                variant="h4"
+                sx={{
+                  marginBottom: "1rem",
+                  background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                  fontFamily: "'Playfair Display', serif",
+                }}
+              >
+                {/* {powers[currentPower].name} */}
+              </Typography>
+
+              <Typewriter />
+            </Box>
+          )}
         </Box>
       </DialogContent>
       <DialogActions
@@ -661,7 +1668,7 @@ const SuperPowerModal = ({ open, onClose }) => {
 };
 
 const getPowerEmoji = (index) => {
-  const emojis = ["💪", "⚡", "🧠", "🔮", "💫", "🦅", "👻"];
+  const emojis = ["💫", "⚡", "🧠", "🔮", "💪", "🦅", "👻"];
   return emojis[index];
 };
 
@@ -671,6 +1678,7 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [time, setTime] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
+  const [user, setUser] = useState(localStorage.getItem("userName"));
 
   const hiddenPaths = ["/login", "/register", "/authenticate"];
 
@@ -711,6 +1719,7 @@ const Header = () => {
     return null;
   }
 
+  console.log("user", user);
   const handleLogout = async () => {
     try {
       const response = await axios.post(
@@ -773,38 +1782,57 @@ const Header = () => {
               color: "#ffffff",
             }}
           >
-            UNIWORLD
+            <img
+              src={logoonly}
+              width="50px"
+              height="30px"
+              alt="Idea"
+              style={{ cursor: "pointer" }}
+            />
+            <div
+              style={{
+                fontSize: "14px",
+                marginLeft: "50px",
+                marginTop: "-30px",
+              }}
+            >
+              {" "}
+              Uniworld <br />
+              Logistics
+            </div>
           </Typography>
 
           <p style={{ fontSize: "18px", fontWeight: "bold" }}>
             {formattedDate} - {formattedTime}
           </p>
 
-          <IconButton
-            onClick={handleOpenModal}
-            sx={{
-              marginX: 3,
-              "&:hover": {
-                transform: "scale(1.1)",
-                transition: "transform 0.3s ease",
-              },
-            }}
-          >
-            <img
-              src={idea}
-              width="40px"
-              height="40px"
-              alt="Idea"
-              style={{ cursor: "pointer" }}
-            />
-          </IconButton>
+          {user === "admin" && (
+            <IconButton
+              onClick={handleOpenModal}
+              sx={{
+                marginX: 3,
+                "&:hover": {
+                  transform: "scale(1.1)",
+                  transition: "transform 0.3s ease",
+                },
+              }}
+            >
+              <img
+                src={idea}
+                width="40px"
+                height="40px"
+                alt="Idea"
+                style={{ cursor: "pointer" }}
+              />
+            </IconButton>
+          )}
 
           <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
             <Avatar
               sx={{ marginRight: 1 }}
               alt="User"
-              src="/static/images/avatar/1.jpg"
-              onClick={handlePopoverOpen}
+              src={userpng}
+              // onClick={handlePopoverOpen}
               style={{ cursor: "pointer" }}
             />
 
@@ -821,8 +1849,6 @@ const Header = () => {
               Welcome!!! &nbsp; {localStorage.getItem("nickName")}
             </Typography>
           </Box>
-
-          <ResetPasswordPopup />
 
           <Popover
             open={open}
@@ -850,19 +1876,32 @@ const Header = () => {
             </List>
           </Popover>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<LogoutIcon />}
-            onClick={handleLogout}
-            sx={{
-              textTransform: "none",
-              backgroundColor: "#f44336",
-              "&:hover": { backgroundColor: "#d32f2f" },
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            Logout
-          </Button>
+            <div>
+              <ResetPasswordPopup />
+            </div>
+            <div style={{ paddingLeft: "10px" }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<LogoutIcon />}
+                onClick={handleLogout}
+                sx={{
+                  textTransform: "none",
+                  backgroundColor: "#f44336",
+                  "&:hover": { backgroundColor: "#d32f2f" },
+                }}
+              >
+                Logout
+              </Button>
+            </div>
+          </div>
         </Toolbar>
       </AppBar>
 

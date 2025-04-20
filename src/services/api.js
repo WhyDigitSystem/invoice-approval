@@ -110,6 +110,50 @@ export const getTTListingData = async () => {
   }
 };
 
+export const getWHListingData = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/WHInvoiceApproval/getPendingDetails?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          expenceId: item.docId,
+          name: item.partyName,
+          amount: item.totalInvAmtLc,
+          currency: "INR", // Assuming it's always INR; adjust if needed.
+          docId: item.docId,
+          docDate: item.docDate,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit,
+          outStanding: item.outStanding,
+          id: item.WHInvoiceHdrId,
+          eligiSlab: item.eligiSlab,
+          slabRemarks: item.slabRemarks,
+          exceedDays: item.exceedDays,
+          unApproveAmt: item.unApproveAmt,
+          category: item.category,
+          controllingOffice: item.controllingOffice,
+          osBeyond: item.osBeyond,
+          excessCredit: item.excessCredit,
+          salespersonName: item.salespersonName,
+          branchCode: item.branchCode,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
 export const getCRListingData = async () => {
   try {
     const response = await axios.get(
@@ -363,6 +407,53 @@ export const getTTInvDetailsApprove1 = async () => {
   }
 };
 
+export const getWHInvDetailsApprove1 = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/WHInvoiceApproval/getWHInvDetailsApprove1?userType=${localStorage.getItem(
+        "userType"
+      )}&userName=${localStorage.getItem("userName")}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.approvedApprovalDetails1
+    ) {
+      return response.data.paramObjectsMap.approvedApprovalDetails1.map(
+        (item) => ({
+          expenceId: item.docId,
+          name: item.partyName,
+          amount: item.totalInvAmtLc,
+          currency: "INR", // Assuming it's always INR; adjust if needed.
+          docId: item.docId,
+          docDate: item.docDate,
+          creditDays: item.creditDays,
+          creditLimit: item.creditLimit,
+          outStanding: item.outStanding,
+          id: item.WHInvoiceHdrId,
+          approved1on: item.approve1on,
+          approved2on: item.approve2on,
+          approved3on: item.approve3on,
+          eligiSlab: item.eligiSlab,
+          slabRemarks: item.slabRemarks,
+          exceedDays: item.exceedDays,
+          unApproveAmt: item.unApproveAmt,
+          category: item.category,
+          controllingOffice: item.controllingOffice,
+          osBeyond: item.osBeyond,
+          excessCredit: item.excessCredit,
+          salespersonName: item.salespersonName,
+          branchCode: item.branchCode,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching listing data:", error);
+    throw error;
+  }
+};
+
 export const getInvDetailsApprove1 = async () => {
   try {
     const response = await axios.get(
@@ -549,6 +640,38 @@ export const getApprove1ChartDb = async () => {
         cnApprove: item.cnApprove,
         cnUnApprove: item.cnUnApprove,
       }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getHaiCustomerRankDetails = async (pName, pType) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiCustomerRankDetails?pName=${pName}&pType=${pType}
+      `
+    );
+
+    // Ensure that the response contains the expected structure
+    if (
+      response.data &&
+      response.data.paramObjectsMap?.gethaiCustomerRankDetails
+    ) {
+      return response.data.paramObjectsMap.gethaiCustomerRankDetails.map(
+        (item) => ({
+          customer: item.customer,
+          mon: item.mon,
+          totJob: item.totJob,
+          income: item.income,
+          profit: item.profit,
+          r: item.r,
+        })
+      );
     } else {
       throw new Error("DB not found or API error");
     }
@@ -836,26 +959,155 @@ export const getPartyLedgerPartyName = async (pType) => {
   }
 };
 
-export const getHaiCustomerDetails = async (pName) => {
+export const getHaiBranchCustomerDetails = async (pName, pType) => {
   try {
     // Corrected the endpoint URL and closing braces issue
     const response = await axios.get(
-      `${API_URL}/api/InvoiceApproval/getHaiCustomerDetails?pName=${pName}`
+      `${API_URL}/api/InvoiceApproval/getHaiBranchCustomerDetails?pName=${pName}&pType=${pType}`
     );
 
     // Ensure that the response contains the expected structure
-    if (response.data && response.data.paramObjectsMap?.plParties) {
-      return response.data.paramObjectsMap.plParties.map((item) => ({
+    if (
+      response.data &&
+      response.data.paramObjectsMap?.gethaiBranchCustomerDetails
+    ) {
+      return response.data.paramObjectsMap.gethaiBranchCustomerDetails.map(
+        (item) => ({
+          partyName: item.partyName,
+          partyCode: item.partyCode,
+          onYear: item.onYear,
+          category: item.category,
+          creditLimit: item.creditLimit,
+          creditDays: item.creditDays,
+          salesPersonName: item.salesPersonName,
+          ctrlOffice: item.ctrlOffice,
+          totDue: item.totDue,
+          branchCode: item.branchCode,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Party data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getHaiCustomerDetails = async (pName, pType) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiCustomerDetails?pName=${pName}&pType=${pType}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.gethaiCustomerDetails) {
+      return response.data.paramObjectsMap.gethaiCustomerDetails.map(
+        (item) => ({
+          partyName: item.partyName,
+          partyCode: item.partyCode,
+          onYear: item.onYear,
+          category: item.category,
+          creditLimit: item.creditLimit,
+          creditDays: item.creditDays,
+          salesPersonName: item.salesPersonName,
+          ctrlOffice: item.ctrlOffice,
+          totDue: item.totDue,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Party data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getHaiProductSummary = async (product) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiProductSummary?product=${product}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.gethaiProductSummary) {
+      return response.data.paramObjectsMap.gethaiProductSummary.map((item) => ({
+        jobs: item.jobs,
+        openJobs: item.openJobs,
+        closedJobs: item.closedJobs,
         partyName: item.partyName,
-        partyCode: item.partyCode,
-        onYear: item.onYear,
-        category: item.category,
-        creditLimit: item.creditLimit,
-        creditDays: item.creditDays,
-        salesPersonName: item.salesPersonName,
-        ctrlOffice: item.ctrlOffice,
-        totDue: item.totDue,
+        salesPersonName: item.salesPersonName || null,
       }));
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Party data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getHaiInvCustomerDetails = async (pName, pType) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiInvCustomerDetails?pName=${pName}&pType=${pType}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (
+      response.data &&
+      response.data.paramObjectsMap?.gethaiInvCustomerDetails
+    ) {
+      return response.data.paramObjectsMap.gethaiInvCustomerDetails.map(
+        (item) => ({
+          screen: item.screen,
+          crdOn: item.crdOn,
+          amt: item.amt,
+          partyCode: item.partyCode,
+        })
+      );
+    } else {
+      throw new Error("Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching Party data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getHaiCustomerYearProfit = async (pName, pType) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getHaiCustomerYearProfit?pName=${pName}&pType=${pType}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (
+      response.data &&
+      response.data.paramObjectsMap?.gethaiCustomerYearProfit
+    ) {
+      return response.data.paramObjectsMap.gethaiCustomerYearProfit.map(
+        (item) => ({
+          customer: item.customer,
+          apr: item.apr,
+          may: item.may,
+          jun: item.jun,
+          jul: item.jul,
+          aug: item.aug,
+          sep: item.sep,
+          oct: item.oct,
+          nov: item.nov,
+          dec: item.dec,
+          jan: item.jan,
+          feb: item.feb,
+          mar: item.mar,
+        })
+      );
     } else {
       throw new Error("Data not found or API error");
     }
@@ -2178,6 +2430,8 @@ export const getInvoices = async (userName, branchName) => {
           ? new Date(item.vchdt).toLocaleDateString("en-GB")
           : "",
         invAmt: item.totinvamtLc,
+        totChargeAmtLc: item.totChargeAmtLc,
+        totTaxAmtLc: item.totTaxAmtLc,
       }));
     } else {
       throw new Error("MIS Data not found or API error");

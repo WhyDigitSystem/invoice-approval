@@ -35,6 +35,8 @@ const clientReportData = [
   // { name: "Policy Amendment" },
   { name: "TT Listing" },
   { name: "TT Approved List" },
+  { name: "WH Listing" },
+  { name: "WH Approved List" },
 ];
 
 const routes = {
@@ -51,6 +53,9 @@ const routes = {
   // "Policy Amendment": "/PartyMasterUpdate",
   "TT Listing": "/TTlisting",
   "TT Approved List": "/TTApprovedList",
+
+  "WH Listing": "/WHlisting",
+  "WH Approved List": "/WHApprovedList",
 };
 
 const Transactions = () => {

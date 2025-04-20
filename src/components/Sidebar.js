@@ -136,34 +136,59 @@ const Sidebar = () => {
                 sx={{
                   marginBottom: 1,
                   borderRadius: "12px",
-                  color:
-                    location.pathname === item.path ? "#000000" : "#FFFFFF",
-                  backgroundColor:
-                    location.pathname === item.path ? "#FCE212" : "transparent",
-                  boxShadow:
-                    location.pathname === item.path
-                      ? "0px 4px 8px rgba(0, 0, 0, 0.2)"
-                      : "none",
+                  color: "#FFFFFF", // Always white text
+                  backgroundColor: "transparent", // No background color
+                  boxShadow: "none", // No shadow
                   transition: "all 0.3s ease-in-out",
                   "&:hover": {
-                    backgroundColor: "#FCE212",
-                    transform: "scale(1.05)",
-                    color: "#000000",
+                    backgroundColor: "transparent", // No background on hover
+                    color: "#FFFFFF", // Keep text white (will be overridden by child elements)
+                    "& .MuiListItemIcon-root": {
+                      color: "#FCE212", // Yellow icon on hover
+                    },
+                    "& .MuiTypography-root": {
+                      color: "#FCE212", // Yellow text on hover
+                    },
                   },
+                  // Active (selected) state styles
+                  ...(location.pathname === item.path && {
+                    "& .MuiListItemIcon-root": {
+                      color: "#FCE212", // Yellow icon when active
+                    },
+                    "& .MuiTypography-root": {
+                      color: "#FCE212", // Yellow text when active
+                    },
+                  }),
+                  flexDirection: open ? "row" : "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  px: open ? 2 : 1,
+                  py: open ? 1 : 1.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: open ? 40 : "auto",
-                    color:
-                      location.pathname === item.path ? "#000000" : "#FFFFFF",
-                    "&:hover": {
-                      color: "#000000",
-                    },
+                    color: "#FFFFFF", // Default white icon
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
+                {!open && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: "0.65rem",
+                      fontWeight: "500",
+                      color: "#FFFFFF",
+                      textAlign: "center",
+                      lineHeight: 1.2,
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    {item.text.split(" ")[0]}
+                  </Typography>
+                )}
                 {open && (
                   <ListItemText
                     primary={item.text}
@@ -171,13 +196,8 @@ const Sidebar = () => {
                       "& .MuiTypography-root": {
                         fontSize: "1rem",
                         fontWeight: "500",
-                        color:
-                          location.pathname === item.path
-                            ? "#000000"
-                            : "#FFFFFF",
-                        "&:hover": {
-                          color: "#000000",
-                        },
+                        color: "#FFFFFF",
+                        transition: "all 0.3s ease-in-out",
                       },
                     }}
                   />
