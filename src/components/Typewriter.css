@@ -1,7 +1,9 @@
-body {
-  font-family: "Waiting for the Sunrise", cursive;
-  font-size: 30px;
-  letter-spacing: 6px;
-  font-weight: bold;
-  color: white;
+@keyframes blink {
+  from,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }

@@ -60,7 +60,7 @@
 
 .card p {
   margin: 0 0 30px 0;
-  font-size: 16px;
+  /* font-size: 16px; */
 }
 
 @media (min-height: 600px) {

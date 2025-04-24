@@ -1,0 +1,563 @@
+.orange {
+  color: #ff7a01;
+}
+
+.form-container {
+  max-width: 880px;
+  margin: 30px;
+  background-color: #001925;
+  padding: 30px;
+  border-left: 5px solid #ff7a01;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 20px),
+    calc(100% - 20px) 100%,
+    0 100%
+  );
+}
+
+.heading {
+  display: block;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.form-container .form .input {
+  /* color: #87a4b6; */
+  color: white;
+  width: 100%;
+  background-color: #002733;
+  border: none;
+  outline: none;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  border-left: 1px solid transparent;
+}
+
+.form-container .form .input:focus {
+  border-left: 5px solid #ff7a01;
+}
+
+.form-container .form .textarea {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background-color: #013747;
+  /* color: #ff7a01; */
+  color: white;
+  font-weight: bold;
+  resize: none;
+  max-height: 150px;
+  margin-bottom: 20px;
+  border-left: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-container .form .textarea:focus {
+  border-left: 5px solid #ff7a01;
+}
+
+.form-container .form .button-container {
+  display: flex;
+  gap: 10px;
+}
+
+.form-container .form .button-container .send-button {
+  flex-basis: 70%;
+  background: #ff7a01;
+  padding: 10px;
+  color: #001925;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+  margin-top: 250px;
+}
+
+.form-container .form .button-container .send-button:hover {
+  background: transparent;
+  border: 1px solid #ff7a01;
+  color: #ff7a01;
+}
+
+.form-container .form .button-container .reset-button-container {
+  filter: drop-shadow(1px 1px 0px #ff7a01);
+  flex-basis: 30%;
+}
+
+.form-container .form .button-container .reset-button-container .reset-button {
+  position: relative;
+  text-align: center;
+  padding: 10px;
+  color: #ff7a01;
+  font-weight: bold;
+  background: #001925;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%
+  );
+  transition: all 0.2s ease-in-out;
+  margin-top: 250px;
+}
+
+.form-container
+  .form
+  .button-container
+  .reset-button-container
+  .reset-button:hover {
+  background: #ff7a01;
+  color: #001925;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 30px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  background-color: #002733;
+  color: #ff7a01;
+  border: 1px solid #ff7a01;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.send-button,
+.reset-button {
+  cursor: pointer; /* 👈 This makes it show the hand icon */
+}
+
+.tabs button:hover {
+  background-color: #ff7a01;
+  color: #001925;
+}
+
+.tabs button.active {
+  background-color: #ff7a01;
+  color: #001925;
+}
+
+/* -------------------- */
+/* 
+.aa_h2 {
+  font: 10 1rem/1 Roboto;
+  text-transform: uppercase;
+} */
+table {
+  background: #fff;
+}
+table,
+thead,
+tbody,
+tfoot,
+tr,
+td,
+th {
+  text-align: center;
+  margin: auto;
+  border: 1px solid #dedede;
+
+  /* padding: 1rem; */
+  /* width: 10%; */
+  line-height: 0.7;
+}
+.table {
+  display: table;
+  width: 50%;
+}
+.tr {
+  display: table-row;
+}
+.thead {
+  display: table-header-group;
+}
+.tbody {
+  display: table-row-group;
+}
+.tfoot {
+  display: table-footer-group;
+}
+.col {
+  display: table-column;
+}
+.colgroup {
+  display: table-column-group;
+}
+.td,
+.th {
+  display: table-cell;
+  width: 50%;
+}
+.caption {
+  display: table-caption;
+}
+
+/* .table,
+.thead,
+.tbody,
+.tfoot,
+.tr,
+.td,
+.th {
+  text-align: center;
+  margin: auto;
+  padding: 0rem;
+}
+.table {
+  background: #fff;
+  margin: auto;
+  border: none;
+  padding: 0;
+  margin-bottom: 5rem;
+} */
+
+/* .th {
+  font-weight: 400;
+  border: 1px solid #dedede;
+  &:nth-child(odd) {
+    border-right: none;
+  }
+}
+.td {
+  font-weight: 100;
+  border: 1px solid #dedede;
+  border-top: none;
+  &:nth-child(odd) {
+    border-right: none;
+  }
+} */
+
+.aa_htmlTable1 {
+  background: #002733;
+  padding: 1rem;
+  display: table;
+  width: 62%;
+  height: 3vh;
+  vertical-align: middle;
+  /* background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+  background: linear-gradient(to right, #25c481, #25b7c4); */
+}
+
+.aa_htmlTable2 {
+  background: #002733;
+  padding: 1rem;
+  display: table;
+  width: 92%;
+  height: 3vh;
+  vertical-align: middle;
+  /* background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+  background: linear-gradient(to right, #25c481, #25b7c4); */
+}
+.aa_css {
+  background: skyblue;
+  padding: 5rem;
+  display: table;
+  width: 100%;
+  height: 100vh;
+  vertical-align: middle;
+}
+
+.ahmadawais {
+  display: table;
+  width: 100%;
+  font: 100 1.2rem/2 Roboto;
+  margin: 5rem auto;
+}
+
+.twitter {
+  position: fixed;
+  display: block;
+  right: 12px;
+  bottom: 12px;
+  svg {
+    width: 32px;
+    height: 32px;
+    fill: #1da1f2;
+  }
+}
+/* ---------------------------------- */
+
+/* Existing styles remain the same, add these new styles */
+
+/* Table Styles */
+.ticket-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #002733;
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.ticket-table th {
+  background-color: #001925;
+  color: #ff7a01;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 2px solid #ff7a01;
+}
+
+.ticket-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #013747;
+}
+
+.ticket-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ticket-table tr:hover {
+  background-color: #013747;
+}
+
+/* Form Elements in Table */
+.ticket-table select,
+.ticket-table input[type="date"],
+.ticket-table input[type="text"] {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #013747;
+  background-color: #002733;
+  color: white;
+  width: 100%;
+}
+
+.ticket-table select:focus,
+.ticket-table input:focus {
+  outline: none;
+  border-color: #ff7a01;
+}
+
+/* Action Buttons */
+.action-button {
+  background-color: #ff7a01;
+  color: #001925;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.action-button:hover {
+  background-color: #e56d00;
+}
+
+.download-link {
+  color: #ff7a01;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.download-link:hover {
+  color: #ff9a3c;
+  text-decoration: underline;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-pending {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.status-going-on {
+  background-color: #2196f3;
+  color: #fff;
+}
+
+.status-completed {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .ticket-table {
+    display: block;
+  }
+
+  .ticket-table thead {
+    display: none;
+  }
+
+  .ticket-table tr {
+    display: block;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ff7a01;
+  }
+
+  .ticket-table td {
+    display: block;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border-bottom: 1px solid #013747;
+  }
+
+  .ticket-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    font-weight: bold;
+    text-align: left;
+    color: #ff7a01;
+  }
+}
+
+/* --------------------------- */
+
+/* Combined Tab Styles */
+.tab-group {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #002733;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: transparent;
+  color: #ff7a01;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  text-align: center;
+}
+
+.tab-button:not(:last-child) {
+  border-right: 1px solid #013747;
+}
+
+.tab-button.active {
+  background-color: #ff7a01;
+  color: #001925;
+}
+
+.tab-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #001925;
+}
+
+/* Content area styling */
+.tab-content {
+  background-color: #002733;
+  padding: 30px;
+  border-radius: 6px;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove the old tab styles */
+.tabs {
+  display: none;
+}
+
+/* --------------------------- */
+/* Pagination controls */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  gap: 15px;
+  background-color: #001925; /* Orange background */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.pagination-button {
+  padding: 8px 15px;
+  background-color: #001925; /* Orange background */
+  color: white; /* White text */
+  border: 1px solid white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #e67300; /* Darker orange on hover */
+}
+
+.pagination-button:disabled {
+  background-color: #ffb366; /* Lighter orange when disabled */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.page-info {
+  color: white;
+  font-weight: bold;
+}
+
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+}
+
+.rows-per-page select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid white;
+  background-color: #ff7b00; /* Orange background */
+  color: white;
+  cursor: pointer;
+}
+
+.rows-per-page select option {
+  background-color: #ff7b00;
+  color: white;
+}
+
+.rows-per-page span {
+  font-weight: bold;
+}

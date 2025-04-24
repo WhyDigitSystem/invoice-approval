@@ -1575,6 +1575,37 @@ export const findByGSTPreCreditrId = async (id) => {
   }
 };
 
+export const findByTicketById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/Ticket/findByTicketById?id=${id}`
+    );
+
+    // Ensure response structure exists before accessing properties
+    if (
+      response.data?.status &&
+      response.data?.paramObjectsMap?.ticketVO?.ticketAttachmentVO
+    ) {
+      // Extract multiple attachments safely
+      const attachments =
+        response.data.paramObjectsMap.ticketVO.ticketAttachmentVO.map(
+          (att, index) => ({
+            fileData: att?.attachment || "", // Avoid issues if `attachment` is missing
+            fileName: `attachment_${att?.id || index}`, // Assign a meaningful name
+          })
+        );
+
+      return { ...response, attachments };
+    } else {
+      console.warn("No attachments found for the given ID:", id);
+      return { ...response, attachments: [] }; // Return empty array if no attachments exist
+    }
+  } catch (error) {
+    console.error(`Failed to fetch files for id ${id}:`, error);
+    throw error;
+  }
+};
+
 export const getIRNJobInfo = async (jobNo) => {
   try {
     const response = await axios.get(
@@ -1798,6 +1829,36 @@ export const getIRNDetailsList = async (branchCode) => {
           ? new Date(item.documentDate).toLocaleDateString("en-GB")
           : " ",
       }));
+    } else {
+      throw new Error("PL Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching PL data:", error);
+    throw error;
+  }
+};
+
+export const getTicketReport = async (userName) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/Ticket/getTicketReport?userName=${userName}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          gst_ticketId: item.gst_ticketId,
+          title: item.title,
+          description: item.description,
+          assignTo: item.assignTo,
+          status: item.status,
+          solvedOn: item.solvedOn,
+          sovledBy: item.sovledBy,
+          createdOn: item.createdOn,
+        })
+      );
     } else {
       throw new Error("PL Data not found or API error");
     }

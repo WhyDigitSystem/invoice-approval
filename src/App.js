@@ -1,4 +1,4 @@
-import React from "react";
+import { React } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Approved2List from "./components/Approved2List";
 import ApprovedList from "./components/ApprovedList";
@@ -48,75 +48,92 @@ import HDashboard from "./components/HDashboad";
 import Dashboard1 from "./components/Dashboard1";
 import WHListingPage from "./components/WHListingPage";
 import WHApprovedList from "./components/WHApprovedList";
+import Ticket from "./components/Ticket";
+import { useState } from "react";
 
 function App() {
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setIsSelected((prev) => !prev);
+  };
+
   return (
-    <Router future={{ v7_relativeSplatPath: true }}>
-      {" "}
-      {/* Add future flag */}
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<Dashboard />}>
-          <Route path="overview" element={<Overview />} />
-          <Route path="approvedlist" element={<ApprovedList />} />
-          <Route path="TTapprovedlist" element={<TTApprovedList />} />
-          <Route path="authenticate" element={<ConfirmationPage />} />
-          <Route path="listing" element={<ListingPage />} />
-          <Route path="TTlisting" element={<TTListingPage />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="screen" element={<Screen />} />
-          <Route path="userCreation" element={<UserCreation />} />
-          <Route path="approved2list" element={<Approved2List />} />
-          <Route path="MIS" element={<MIS />} />
-          <Route path="HeaderDetail" element={<HeaderDetail />} />
-          <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
-          <Route path="APAgeing" element={<APAgeing />} />
-          <Route path="AddExpense" element={<AddExpense />} />
-          <Route path="HDashboard" element={<HDashboard />} />
-          <Route path="WHListing" element={<WHListingPage />} />
-          <Route path="WHApprovedList" element={<WHApprovedList />} />
+    <>
+      <Router future={{ v7_relativeSplatPath: true }}>
+        {" "}
+        {/* Add future flag */}
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Dashboard />}>
+            <Route path="overview" element={<Overview />} />
+            <Route path="approvedlist" element={<ApprovedList />} />
+            <Route path="TTapprovedlist" element={<TTApprovedList />} />
+            <Route path="authenticate" element={<ConfirmationPage />} />
+            <Route path="listing" element={<ListingPage />} />
+            <Route path="TTlisting" element={<TTListingPage />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="screen" element={<Screen />} />
+            <Route path="userCreation" element={<UserCreation />} />
+            <Route path="approved2list" element={<Approved2List />} />
+            <Route path="MIS" element={<MIS />} />
+            <Route path="HeaderDetail" element={<HeaderDetail />} />
+            <Route path="partyMasterUpdate" element={<PartyMasterUpdate />} />
+            <Route path="APAgeing" element={<APAgeing />} />
+            <Route path="AddExpense" element={<AddExpense />} />
+            <Route path="HDashboard" element={<HDashboard />} />
+            <Route path="WHListing" element={<WHListingPage />} />
+            <Route path="WHApprovedList" element={<WHApprovedList />} />
 
-          <Route path="CNPreApproval" element={<CNPreApproval />} />
-          <Route path="CRlisting" element={<CRListingPage />} />
-          <Route path="CRPendingList" element={<CRPendingList />} />
-          <Route path="CRApprovedList" element={<CRApprovedList />} />
+            <Route path="CNPreApproval" element={<CNPreApproval />} />
+            <Route path="CRlisting" element={<CRListingPage />} />
+            <Route path="CRPendingList" element={<CRPendingList />} />
+            <Route path="CRApprovedList" element={<CRApprovedList />} />
 
-          <Route path="CRApprovedList2" element={<CRApprovedList2 />} />
-          <Route path="ExpenseList" element={<ExpenseList />} />
-          <Route path="ViewExpense" element={<ViewExpense />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="test" element={<Test />} />
+            <Route path="CRApprovedList2" element={<CRApprovedList2 />} />
+            <Route path="ExpenseList" element={<ExpenseList />} />
+            <Route path="ViewExpense" element={<ViewExpense />} />
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="test" element={<Test />} />
 
-          <Route path="/access-denied" component={AccessDenied} />
-          <Route path="/DayBookBranchWise" element={<DayBookBranchWise />} />
-          <Route path="ARAgeing" element={<ARAgeing />} />
-          <Route path="ARAgeingOS" element={<ARAgeingOS />} />
-          <Route path="APAgeingOS" element={<APAgeingOS />} />
-          <Route path="PartyLedger" element={<PartyLedger />} />
-          <Route path="LedgerReport" element={<LedgerReport />} />
-          <Route path="GSTR1Filling" element={<GSTR1Filling />} />
-          <Route path="ProfitAndLoss" element={<ProfitAndLoss />} />
-          <Route path="JobCard" element={<JobCard />} />
-          <Route path="JobCostSheetDetails" element={<JobCostSheetDetails />} />
-          <Route path="JobCostSheetSummary" element={<JobCostSheetSummary />} />
-          <Route path="ExpandingCards" element={<ExpandingCards />} />
-          <Route path="TaxInvoicePdf" element={<TaxInvoicePdf />} />
-          <Route path="OrderAccept" element={<OrderAccept />} />
+            <Route path="/access-denied" component={AccessDenied} />
+            <Route path="/DayBookBranchWise" element={<DayBookBranchWise />} />
+            <Route path="ARAgeing" element={<ARAgeing />} />
+            <Route path="ARAgeingOS" element={<ARAgeingOS />} />
+            <Route path="APAgeingOS" element={<APAgeingOS />} />
+            <Route path="PartyLedger" element={<PartyLedger />} />
+            <Route path="LedgerReport" element={<LedgerReport />} />
+            <Route path="GSTR1Filling" element={<GSTR1Filling />} />
+            <Route path="ProfitAndLoss" element={<ProfitAndLoss />} />
+            <Route path="/ticket" element={<Ticket />} />
+            <Route path="JobCard" element={<JobCard />} />
+            <Route
+              path="JobCostSheetDetails"
+              element={<JobCostSheetDetails />}
+            />
+            <Route
+              path="JobCostSheetSummary"
+              element={<JobCostSheetSummary />}
+            />
+            <Route path="ExpandingCards" element={<ExpandingCards />} />
+            <Route path="TaxInvoicePdf" element={<TaxInvoicePdf />} />
+            <Route path="OrderAccept" element={<OrderAccept />} />
 
-          <Route path="Dashboard1" element={<Dashboard1 />} />
+            <Route path="Dashboard1" element={<Dashboard1 />} />
 
-          <Route path="TaxInvoiceList" element={<TaxInvoiceList />} />
+            <Route path="TaxInvoiceList" element={<TaxInvoiceList />} />
+            <Route
+              path="/TaxInvoicePdf/:documentNumber"
+              element={<TaxInvoicePdf />}
+            />
+          </Route>
           <Route
-            path="/TaxInvoicePdf/:documentNumber"
-            element={<TaxInvoicePdf />}
+            path="TaxInvoiceCommonTable"
+            element={<TaxInvoiceCommonTable />}
           />
-        </Route>
-        <Route
-          path="TaxInvoiceCommonTable"
-          element={<TaxInvoiceCommonTable />}
-        />
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </>
   );
 }
 

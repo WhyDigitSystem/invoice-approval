@@ -1,67 +1,109 @@
 import { useEffect, useState } from "react";
 import "./Typewriter.css";
 
-const Typewriter = () => {
-  const [text, setText] = useState("");
+const Typewriter = ({
+  uniqueCusData,
+  selectedParty,
+  rankinvdata,
+  brcusdata,
+}) => {
+  const [displayText, setDisplayText] = useState("");
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const lines = [
-    "There are only 10 types of people in the world:",
-    "Those who understand binary, and those who don't",
-  ];
-  const typingSpeed = 100; // ms delay between characters
-  const scrollAt = 20; // start scrolling after this many lines
-  const lineDelay = 500; // ms delay between lines
+  // Reset typing when selectedParty changes
+  useEffect(() => {
+    setDisplayText("");
+    setCurrentLineIndex(0);
+    setCurrentCharIndex(0);
+    setIsTyping(false);
+  }, [selectedParty]);
 
   useEffect(() => {
-    const type = () => {
-      // Display all completed lines
-      let content = "";
-      const startRow = Math.max(0, currentLineIndex - scrollAt);
+    if (!selectedParty) {
+      setDisplayText("Select a customer to get AI insights");
+      return;
+    }
 
-      for (let i = startRow; i < currentLineIndex; i++) {
-        content += lines[i] + "<br />";
-      }
+    // Prepare lines with current data
+    const lines = [
+      "Analyzing Customer Profile",
+      "────────────────────",
+      `• Customer Name: ${selectedParty.subledgerName || selectedParty}`,
+      `• On Board: ${uniqueCusData[0]?.onYear || "N/A"}`,
+      `• Credit Days: ${uniqueCusData[0]?.creditDays || "N/A"}`,
+      `• Credit Limit: ₹${
+        uniqueCusData[0]?.creditLimit
+          ? (uniqueCusData[0].creditLimit / 100000).toFixed(2) + " L"
+          : "N/A"
+      }`,
+      `• Sales Person: ${uniqueCusData[0]?.salesPersonName || "N/A"}`,
+      "",
+      "Generating insights...",
+      "─────────────────",
+      // "",
+      //   "Detailed Analysis:",
+      //   "────────────────────",
+      `• Last Month Rank: ${rankinvdata[0]?.r || "N/A"}`,
+      `• Total Due: ₹${
+        uniqueCusData[0]?.totDue
+          ? (uniqueCusData[0].totDue / 100000).toFixed(0) + " L"
+          : "N/A"
+      }`,
+      `• Branch Performance: ${brcusdata.length} branches`,
+    ];
 
-      // Add current line with typed characters
-      const currentLine = lines[currentLineIndex];
-      content += currentLine.substring(0, currentCharIndex) + "_";
+    setIsTyping(true);
+    let timeout;
 
-      setText(content);
+    const typeNextCharacter = () => {
+      if (currentLineIndex < lines.length) {
+        const currentLine = lines[currentLineIndex];
 
-      // Check if we've finished the current line
-      if (currentCharIndex === currentLine.length) {
-        // Move to next line if available
-        if (currentLineIndex < lines.length - 1) {
-          setTimeout(() => {
-            setCurrentLineIndex((prev) => prev + 1);
-            setCurrentCharIndex(0);
-          }, lineDelay);
+        if (currentCharIndex < currentLine.length) {
+          setDisplayText((prev) => prev + currentLine.charAt(currentCharIndex));
+          setCurrentCharIndex((prev) => prev + 1);
+        } else {
+          setDisplayText((prev) => prev + "\n");
+          setCurrentLineIndex((prev) => prev + 1);
+          setCurrentCharIndex(0);
         }
       } else {
-        // Continue typing current line
-        setTimeout(() => {
-          setCurrentCharIndex((prev) => prev + 1);
-        }, typingSpeed);
+        setIsTyping(false);
       }
     };
 
-    type();
-  }, [currentLineIndex, currentCharIndex]);
+    timeout = setTimeout(typeNextCharacter, 100);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [
+    selectedParty,
+    uniqueCusData,
+    rankinvdata,
+    brcusdata,
+    currentLineIndex,
+    currentCharIndex,
+  ]);
 
   return (
     <div
-      id="typedtext"
       style={{
-        fontFamily: "'Waiting for the Sunrise', cursive",
-        fontSize: "18px",
-        letterSpacing: "6px",
-        // fontWeight: "bold",
         color: "white",
+        fontFamily: "'Waiting for the Sunrise', cursive",
+        fontSize: "14px",
+        letterSpacing: "6px",
+        whiteSpace: "pre-wrap",
+        minHeight: "200px",
       }}
-      dangerouslySetInnerHTML={{ __html: text }}
-    />
+    >
+      {displayText}
+      {isTyping && (
+        <span style={{ animation: "blink 1s step-end infinite" }}>|</span>
+      )}
+    </div>
   );
 };
 

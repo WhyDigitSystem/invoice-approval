@@ -4,7 +4,10 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
-import VerifiedIcon from "@mui/icons-material/Verified";
+import TvIcon from "@mui/icons-material/Tv";
+import GridViewIcon from "@mui/icons-material/GridView";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+
 import {
   Box,
   Drawer,
@@ -37,15 +40,16 @@ const Sidebar = () => {
     // { text: "Overview", icon: <DashboardIcon />, path: "/overview" },
     { text: "Dashboard1", icon: <DashboardIcon />, path: "/Dashboard1" },
     { text: "User Creation", icon: <PersonAddIcon />, path: "/userCreation" },
-    { text: "Screen", icon: <ScreenShareIcon />, path: "/screen" },
+    { text: "Screen", icon: <TvIcon />, path: "/screen" },
     // { text: "Listing", icon: <ListAltIcon />, path: "/listing" },
     // { text: "Approved List", icon: <VerifiedIcon />, path: "/ApprovedList" },
     // { text: "CN Listing", icon: <ListAltIcon />, path: "/CRlisting" },
     // { text: "CN Approved List", icon: <VerifiedIcon />, path: "/CRApprovedList" },
     // { text: "Approved2 List", icon: <VerifiedIcon />, path: "/Approved2List" },
     // { text: "MIS", icon: <VerifiedIcon />, path: "/MIS" },
-    { text: "Transactions", icon: <ScreenShareIcon />, path: "/transactions" },
+    { text: "Transactions", icon: <GridViewIcon />, path: "/transactions" },
     { text: "Reports", icon: <BarChartIcon />, path: "/reports" },
+    { text: "Ticket", icon: <ReceiptIcon />, path: "/ticket" },
   ];
 
   // Retrieve screens from localStorage
