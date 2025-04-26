@@ -37,46 +37,32 @@ const Sidebar = () => {
 
   // Menu items
   const menuItems = [
-    // { text: "Overview", icon: <DashboardIcon />, path: "/overview" },
     { text: "Dashboard1", icon: <DashboardIcon />, path: "/Dashboard1" },
     { text: "User Creation", icon: <PersonAddIcon />, path: "/userCreation" },
     { text: "Screen", icon: <TvIcon />, path: "/screen" },
-    // { text: "Listing", icon: <ListAltIcon />, path: "/listing" },
-    // { text: "Approved List", icon: <VerifiedIcon />, path: "/ApprovedList" },
-    // { text: "CN Listing", icon: <ListAltIcon />, path: "/CRlisting" },
-    // { text: "CN Approved List", icon: <VerifiedIcon />, path: "/CRApprovedList" },
-    // { text: "Approved2 List", icon: <VerifiedIcon />, path: "/Approved2List" },
-    // { text: "MIS", icon: <VerifiedIcon />, path: "/MIS" },
     { text: "Transactions", icon: <GridViewIcon />, path: "/transactions" },
     { text: "Reports", icon: <BarChartIcon />, path: "/reports" },
     { text: "Ticket", icon: <ReceiptIcon />, path: "/ticket" },
   ];
 
-  // Retrieve screens from localStorage
   const responseScreens = localStorage.getItem("responseScreens");
-  // let allowedScreens = [];
   let parsedScreens = [];
 
   try {
     if (responseScreens) {
       parsedScreens = JSON.parse(responseScreens);
-      // allowedScreens = parsedScreens.map((screen) => screen.screenName);
     }
   } catch (error) {
     console.error("Error parsing responseScreens:", error);
   }
 
-  // Filter menu items based on allowedScreens
   const filteredMenuItems = menuItems.filter((menu) =>
     parsedScreens.includes(menu.text.toUpperCase())
   );
 
-  console.log("menuItems", menuItems);
-  console.log("filteredMenuItems", filteredMenuItems);
-
   return (
-    <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#FCE212" }}>
-      {/* Toggle Button */}
+    <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#000" }}>
+      {/* Toggle Button with Neon Effect */}
       <IconButton
         onClick={toggleDrawer}
         sx={{
@@ -84,16 +70,20 @@ const Sidebar = () => {
           top: 13,
           left: open ? 10 : 10,
           zIndex: 1201,
-          backgroundColor: "#FCE212",
-          color: "#ffffff",
+          backgroundColor: "#000",
+          color: "#00FFFF",
           borderRadius: "50%",
           transition: "all 0.3s ease-in-out",
+          boxShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF",
+          "&:hover": {
+            boxShadow: "0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF",
+          },
         }}
       >
-        {open ? <MenuIcon /> : <MenuIcon />}
+        <MenuIcon />
       </IconButton>
 
-      {/* Sidebar Drawer */}
+      {/* Sidebar Drawer with Neon Border */}
       <Drawer
         variant="permanent"
         open={open}
@@ -103,10 +93,11 @@ const Sidebar = () => {
           "& .MuiDrawer-paper": {
             width: open ? drawerWidth : 80,
             boxSizing: "border-box",
-            background: "#212F3C",
+            background: "#000",
             color: "#FFFFFF",
             transition: "width 0.3s ease-in-out",
-            borderRight: "none",
+            borderRight: "1px solid #00FFFF",
+            // boxShadow: "0 0 10px #FCE212, 0 0 20px rgba(252, 226, 18, 0.5)",
           },
         }}
       >
@@ -122,7 +113,8 @@ const Sidebar = () => {
               variant="h6"
               sx={{
                 fontWeight: "bold",
-                color: "#FFFFFF",
+                color: "#00FFFF",
+                textShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF",
               }}
             >
               Dashboard
@@ -140,27 +132,31 @@ const Sidebar = () => {
                 sx={{
                   marginBottom: 1,
                   borderRadius: "12px",
-                  color: "#FFFFFF", // Always white text
-                  backgroundColor: "transparent", // No background color
-                  boxShadow: "none", // No shadow
+                  color: "#FFFFFF",
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
                   transition: "all 0.3s ease-in-out",
                   "&:hover": {
-                    backgroundColor: "transparent", // No background on hover
-                    color: "#FFFFFF", // Keep text white (will be overridden by child elements)
+                    backgroundColor: "rgba(0, 92, 92, 0.1)",
                     "& .MuiListItemIcon-root": {
-                      color: "#FCE212", // Yellow icon on hover
+                      color: "#00FFFF",
+                      filter: "drop-shadow(0 0 5px #00FFFF)",
                     },
                     "& .MuiTypography-root": {
-                      color: "#FCE212", // Yellow text on hover
+                      color: "#00FFFF",
+                      textShadow: "0 0 5px #00FFFF",
                     },
                   },
-                  // Active (selected) state styles
                   ...(location.pathname === item.path && {
+                    backgroundColor: "rgba(252, 226, 18, 0.1)",
+                    // boxShadow:"0 0 5px #FCE212, 0 0 10px rgba(252, 226, 18, 0.5)",
                     "& .MuiListItemIcon-root": {
-                      color: "#FCE212", // Yellow icon when active
+                      color: "#00FFFF",
+                      filter: "drop-shadow(0 0 5px #0FF)",
                     },
                     "& .MuiTypography-root": {
-                      color: "#FCE212", // Yellow text when active
+                      color: "#00FFFF",
+                      textShadow: "0 0 5px #0FF",
                     },
                   }),
                   flexDirection: open ? "row" : "column",
@@ -173,7 +169,8 @@ const Sidebar = () => {
                 <ListItemIcon
                   sx={{
                     minWidth: open ? 40 : "auto",
-                    color: "#FFFFFF", // Default white icon
+                    color: "#FFFFFF",
+                    transition: "all 0.3s ease-in-out",
                   }}
                 >
                   {item.icon}

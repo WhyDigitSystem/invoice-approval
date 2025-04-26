@@ -21,6 +21,7 @@ const Ticket = () => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [currentFiles, setCurrentFiles] = useState([]);
+  const [yourDataArray, setYourDataArray] = useState("");
 
   const [pagination, setPagination] = useState({
     current: 1,
@@ -157,11 +158,11 @@ const Ticket = () => {
     setData(updatedData);
   };
 
-  const handleSolvedOnChange = (index, value) => {
-    const updated = [...data];
-    updated[index].solvedOn = value;
-    setData(updated);
-  };
+  // const handleSolvedOnChange = (index, value) => {
+  //   const updated = [...data];
+  //   updated[index].solvedOn = value;
+  //   setData(updated);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,6 +209,21 @@ const Ticket = () => {
         duration: 3,
       });
     }
+  };
+
+  // Update the handleSolvedOnChange function to properly handle date changes
+
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    const [day, month, year] = dateStr.split("-");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatDateToSolvedOn = (inputDate) => {
+    const [year, month, day] = inputDate.split("-");
+    const now = new Date();
+    const time = now.toTimeString().split(" ")[0]; // current HH:mm:ss
+    return `${day}-${month}-${year} ${time}`;
   };
 
   const getPaginatedData = () => {
@@ -271,13 +287,14 @@ const Ticket = () => {
     try {
       const response = await axios.put(
         `${API_URL}/api/Ticket/approval1`,
-        null,
+        null, // No body
         {
           params: {
             id: gst_ticketId,
             approval: 1,
             createdby: localStorage.getItem("userName"),
             status: item.status,
+            solvedon: item.solvedOn,
           },
         }
       );
@@ -288,7 +305,7 @@ const Ticket = () => {
           description: `Ticket "${item.title}" updated successfully.`,
           duration: 2,
         });
-        fetchData();
+        fetchData(); // Refresh data
       } else {
         throw new Error("Update failed");
       }
@@ -300,6 +317,90 @@ const Ticket = () => {
         duration: 3,
       });
     }
+  };
+
+  // const handleUpdateTicket = async (item, gst_ticketId) => {
+  //   try {
+  //     // Format the parameters as query string
+  //     const params = new URLSearchParams();
+  //     params.append("id", gst_ticketId);
+  //     params.append("approval", 1);
+  //     params.append("createdby", localStorage.getItem("userName"));
+  //     params.append("status", item.status);
+
+  //     // Format solvedOn date (date only, no time)
+  //     let solvedOnDate = "";
+  //     if (item.solvedOn) {
+  //       // Extract just the date part (DD-MM-YYYY)
+  //       solvedOnDate = item.solvedOn.split(" ")[0];
+  //     } else {
+  //       // Use current date if not set
+  //       const today = new Date();
+  //       const day = String(today.getDate()).padStart(2, "0");
+  //       const month = String(today.getMonth() + 1).padStart(2, "0");
+  //       const year = today.getFullYear();
+  //       solvedOnDate = `${day}-${month}-${year}`;
+  //     }
+
+  //     params.append("solvedon", solvedOnDate);
+
+  //     const requestUrl = `${API_URL}/api/Ticket/approval1?${params.toString()}`;
+  //     console.log("Sending request to:", requestUrl); // For debugging
+
+  //     const response = await axios.put(
+  //       requestUrl,
+  //       null, // No request body needed for query parameters
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       notification.success({
+  //         message: "Success",
+  //         description: `Ticket "${item.title}" updated successfully.`,
+  //         duration: 2,
+  //       });
+  //       fetchData();
+  //     } else {
+  //       throw new Error("Update failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Update Error:", error);
+  //     notification.error({
+  //       message: "Error",
+  //       description:
+  //         error.response?.data?.message || "Failed to update ticket status.",
+  //       duration: 3,
+  //     });
+  //   }
+  // };
+
+  const handleSolvedOnChange = (index, newDate) => {
+    const updated = [...data];
+
+    if (newDate) {
+      try {
+        // Validate the date
+        const dateObj = new Date(newDate);
+        if (isNaN(dateObj.getTime())) {
+          throw new Error("Invalid date");
+        }
+
+        // Convert from YYYY-MM-DD to DD-MM-YYYY
+        const [year, month, day] = newDate.split("-");
+        updated[index].solvedOn = `${day}-${month}-${year}`;
+      } catch (error) {
+        console.error("Invalid date:", error);
+        // Handle error (maybe show notification to user)
+      }
+    } else {
+      updated[index].solvedOn = ""; // or null if preferred
+    }
+
+    setData(updated);
   };
 
   const handlePreview = (files, fileIndex = 0) => {
@@ -372,13 +473,6 @@ const Ticket = () => {
     const prevIndex =
       (currentFileIndex - 1 + currentFiles.length) % currentFiles.length;
     handlePreview(currentFiles, prevIndex);
-  };
-
-  const formatDateForInput = (dateStr) => {
-    if (!dateStr) return "";
-    const [datePart] = dateStr.split(" ");
-    const [day, month, year] = datePart.split("-");
-    return `${year}-${month}-${day}`;
   };
 
   const handleSolvedByChange = (index, value) => {
@@ -620,8 +714,9 @@ const Ticket = () => {
                       <input
                         type="date"
                         value={
-                          item.solvedOn ||
-                          new Date().toISOString().split("T")[0]
+                          item.solvedOn
+                            ? formatDateForInput(item.solvedOn)
+                            : new Date().toISOString().split("T")[0]
                         }
                         onChange={(e) =>
                           handleSolvedOnChange(index, e.target.value)

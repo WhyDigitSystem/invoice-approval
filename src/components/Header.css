@@ -838,6 +838,7 @@
 .button444:not(.active):hover {
   background: linear-gradient(60deg, #018b92, #03e9f4);
   animation: flicker 3s linear infinite;
+  color: black;
 }
 
 .active {
@@ -903,3 +904,198 @@
 }
 
 /* ------------------------------- */
+/* Google Font Import */
+@import url("https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap");
+
+/* Circle Animation */
+@keyframes circle-animation {
+  from {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0;
+  }
+  71% {
+    opacity: 1;
+  }
+  81% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0;
+  }
+  83% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 0;
+  }
+  87% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Tokyo Tower Animation */
+/* Base Animation */
+@keyframes base {
+  from {
+    opacity: 0;
+  }
+  2% {
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes arch {
+  from {
+    opacity: 0;
+  }
+  4% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes base-spire {
+  from {
+    opacity: 0;
+  }
+  6% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Decks Animation */
+@keyframes main-deck {
+  from {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0;
+  }
+  11% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes top-deck {
+  from {
+    opacity: 0;
+  }
+  23% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Spire Animation */
+@keyframes spire {
+  from {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0;
+  }
+  19% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Antenna Animation */
+@keyframes antenna {
+  from {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0;
+  }
+  26% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Tokyo Text Animation */
+@keyframes tokyo-text {
+  from {
+    opacity: 0;
+  }
+  29% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flicker {
+  from {
+    opacity: 0;
+  }
+  37% {
+    opacity: 1;
+  }
+  39% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  52% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  77% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}

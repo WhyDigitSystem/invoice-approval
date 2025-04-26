@@ -189,7 +189,7 @@ const LoginPage = () => {
         notification.error({
           message: "Error",
           description:
-            "You are already logged in on another device. Please log out from the other device",
+            "You are already logged in on another device or Your Account is InActive",
           duration: 10, // Time in seconds for the toast to stay visible
         });
       }

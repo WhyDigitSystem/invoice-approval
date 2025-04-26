@@ -240,6 +240,33 @@ const Header = () => {
               >
                 HAI
               </a>
+              {/* <div class="containerHAI">
+                <div class="circle"></div>
+                <div class="tokyo-tower">
+                  <div class="antenna"></div>
+                  <div class="main-deck"></div>
+                  <div class="top-deck"></div>
+                  <div class="spire-shadow">
+                    <div class="spire-border"></div>
+                    <div class="spire-inset"></div>
+                    <div class="spire"></div>
+                  </div>
+                  <div class="base-spire-shadow">
+                    <div class="base-spire-border"></div>
+                    <div class="base-spire-inset"></div>
+                    <div class="base-spire"></div>
+                  </div>
+                  <div class="arch"></div>
+                  <div class="base"></div>
+                </div>
+                <div class="tokyo-text">
+                  <span>T</span>
+                  <span class="flicker">O</span>
+                  <span>K</span>
+                  <span>Y</span>
+                  <span class="flicker">O</span>
+                </div>
+              </div> */}
             </IconButton>
           )}
 
