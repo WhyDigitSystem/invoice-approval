@@ -3,7 +3,7 @@
 }
 
 .form-container {
-  max-width: 880px;
+  max-width: 900px;
   margin: 30px;
   background-color: #001925;
   padding: 30px;
@@ -305,6 +305,7 @@ th {
   border-collapse: collapse;
   background-color: #002733;
   color: white;
+  font-size: 14px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -313,7 +314,7 @@ th {
   color: #ff7a01;
   padding: 12px 15px;
   text-align: left;
-  font-weight: bold;
+  /* font-weight: bold; */
   border-bottom: 2px solid #ff7a01;
 }
 

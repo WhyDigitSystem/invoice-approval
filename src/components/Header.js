@@ -240,6 +240,12 @@ const Header = () => {
               >
                 HAI
               </a>
+
+              {/* <div class="neon-wrapper">
+                <span class="txt">hai</span>
+                <span class="gradient"></span>
+                <span class="dodge"></span>
+              </div> */}
               {/* <div class="containerHAI">
                 <div class="circle"></div>
                 <div class="tokyo-tower">
