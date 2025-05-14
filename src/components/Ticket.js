@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Ticket.css";
 import axios from "axios";
 import { notification, Modal } from "antd";
-import { getTicketReport, findByTicketById } from "../services/api";
+import {
+  getTicketReport,
+  findByTicketById,
+  getAdminNote,
+  getUserNote,
+} from "../services/api";
+import NotificationBell from "./NotificationBell";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
@@ -22,10 +28,12 @@ const Ticket = () => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [currentFiles, setCurrentFiles] = useState([]);
   const [yourDataArray, setYourDataArray] = useState("");
+  const [adminNote, setAdminNote] = useState("");
+  const [userNote, setUserNote] = useState("");
 
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 3,
     total: 0,
   });
 
@@ -166,6 +174,15 @@ const Ticket = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.title || !form.message) {
+      notification.error({
+        message: "Validation Error",
+        description: "Title and description are required fields.",
+        duration: 3,
+      });
+      return; // Exit the function if validation fails
+    }
 
     const payload = {
       title: form.title,

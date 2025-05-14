@@ -43,6 +43,8 @@ import {
   getHaiCustomerRankDetails,
   getHaiProductSummary,
   getHaiCustomerYearProfit,
+  getAdminNote,
+  getUserNote,
 } from "../services/api";
 import GaugeSpeedometer from "./GaugeSpeedometer";
 import { Doughnut } from "react-chartjs-2";
@@ -59,6 +61,9 @@ import aibrain1 from "../aibrain1.png";
 import SuperPowerModal from "./SuperPowerModal";
 import HAILogo from "../HAILogo.png";
 import Ticket from "./Ticket";
+import NotificationBell from "./NotificationBell";
+import AnalogClock from "./AnalogClock";
+import OrbParticles from "./OrbParticles";
 
 const { Text } = Typography;
 
@@ -208,10 +213,10 @@ const Header = () => {
           </Typography>
 
           <p style={{ fontSize: "18px", fontWeight: "bold" }}>
-            {formattedDate} - {formattedTime}
+            {formattedDate}- {formattedTime}
           </p>
 
-          {user === "admin" && (
+          {/* {user === "admin" && (
             <IconButton
               onClick={() => setModalOpen(true)}
               sx={{
@@ -221,32 +226,40 @@ const Header = () => {
                   transition: "transform 0.3s ease",
                 },
               }}
-            >
-              {/* <img
+            > */}
+          {/* <img
                 src={idea}
                 width="40px"
                 height="40px"
                 alt="Idea"
                 style={{ cursor: "pointer" }}
               /> */}
-              {/* <button class="glowing-btn">
+          {/* <button class="glowing-btn">
                 <span class="glowing-txt">
                   H<span class="faulty-letter">A</span>I
                 </span>
               </button> */}
-              <a
+          {/* <a
                 class="button444 button-big"
                 // style={{ height: "20px", width: "30px", alignItems: "center" }}
               >
                 HAI
-              </a>
+              </a> */}
 
-              {/* <div class="neon-wrapper">
+          {/* <div id="container666 button444 button-big">
+                <p id="text">HAI</p>     
+                <p id="shadow">
+                  <span id="glow">H</span>
+                  <span id="blink">AI</span>
+                </p>
+              </div> */}
+          {/* <AnalogClock /> */}
+          {/* <div class="neon-wrapper">
                 <span class="txt">hai</span>
                 <span class="gradient"></span>
                 <span class="dodge"></span>
               </div> */}
-              {/* <div class="containerHAI">
+          {/* <div class="containerHAI">
                 <div class="circle"></div>
                 <div class="tokyo-tower">
                   <div class="antenna"></div>
@@ -273,8 +286,8 @@ const Header = () => {
                   <span class="flicker">O</span>
                 </div>
               </div> */}
-            </IconButton>
-          )}
+          {/* </IconButton>
+          )} */}
 
           <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
             <Avatar
@@ -292,10 +305,11 @@ const Header = () => {
                 color: "#ffffff",
                 fontWeight: "bold",
               }}
-              onClick={handlePopoverOpen}
+              // onClick={handlePopoverOpen}
               style={{ cursor: "pointer" }}
             >
-              Welcome!!! &nbsp; {localStorage.getItem("nickName")}
+              Welcome!!!
+              {localStorage.getItem("nickName")}
             </Typography>
           </Box>
 
@@ -332,6 +346,9 @@ const Header = () => {
               alignItems: "center",
             }}
           >
+            <div style={{ marginRight: "-20px" }}>
+              <NotificationBell />
+            </div>
             <div>
               <ResetPasswordPopup />
             </div>

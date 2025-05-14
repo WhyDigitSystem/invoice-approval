@@ -510,6 +510,7 @@ th {
   background-color: #001925; /* Orange background */
   padding: 10px;
   border-radius: 5px;
+  font-size: 5px;
 }
 
 .pagination-button {
@@ -561,4 +562,56 @@ th {
 
 .rows-per-page span {
   font-weight: bold;
+}
+/* ------------------------------- */
+
+.notification-bell {
+  position: relative;
+  margin-right: 20px;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 350px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.notification-description {
+  color: #666;
+  font-size: 14px;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
 }

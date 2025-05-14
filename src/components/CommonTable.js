@@ -277,7 +277,13 @@ const CommonTable = ({ columns, data }) => {
               />
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
               <Typography variant="body1">Rows per page:</Typography>
               <FormControl
                 variant="outlined"
