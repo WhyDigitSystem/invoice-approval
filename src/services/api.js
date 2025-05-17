@@ -1454,6 +1454,64 @@ export const getAllOpenJobs = async (branchName) => {
   }
 };
 
+export const getJobFullDetails = async (jobNo) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/InvoiceApproval/getJobFullDetails?jobNo=${jobNo}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.getJobFullDetails
+    ) {
+      return response.data.paramObjectsMap.getJobFullDetails.map((item) => ({
+        product: item.product,
+        jobno: item.jobno,
+        jobdt: item.jobdt
+          ? new Date(item.jobdt).toLocaleDateString("en-GB")
+          : " ",
+        "Master No": item.mno,
+        "Master Dt": item.mdt
+          ? new Date(item.mdt).toLocaleDateString("en-GB")
+          : " ",
+        freight: item.freight,
+        "House No": item.hno,
+        "House Dt": item.hdt
+          ? new Date(item.hdt).toLocaleDateString("en-GB")
+          : " ",
+
+        "Direct Shipment": item.direct === "T" ? "Yes" : "No",
+        Customer: item.customer,
+        category: item.category,
+        Salesperson: item.salesperson,
+        "Control Branch": item.cbranch,
+        Partner: item.partner,
+        Carrier: item.carrier,
+        "Master chwt": item.mchwt,
+        "House pkgs": item.hpkgs,
+        "House grwt": item.hgrwt,
+        "House chwt": item.hchwt,
+        Teus: item.teus,
+        CBM: item.cbm,
+        "Master Pol": item.mpol,
+        "House Pod": item.hpod,
+        "Master PolCountry": item.mpolcountry,
+        "House PodCountry": item.hpodcountry,
+        "Operation Closedon": item.opsclosedon
+          ? new Date(item.opsclosedon).toLocaleDateString("en-GB")
+          : " ",
+        Closeddt: item.closeddt
+          ? new Date(item.closeddt).toLocaleDateString("en-GB")
+          : " ",
+      }));
+    } else {
+      throw new Error("PL Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching PL data:", error);
+    throw error;
+  }
+};
+
 export const getJobCostDetails = async (branchName, jobNo) => {
   try {
     const response = await axios.get(
@@ -1857,6 +1915,67 @@ export const getTicketReport = async (userName) => {
           solvedOn: item.solvedOn,
           sovledBy: item.sovledBy,
           createdOn: item.createdOn,
+        })
+      );
+    } else {
+      throw new Error("PL Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching PL data:", error);
+    throw error;
+  }
+};
+
+export const getUserNote = async (userName) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/Ticket/getUserNote?userName=${userName}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          gst_ticketId: item.gst_ticketId,
+          title: item.title,
+          description: item.description,
+          assignTo: item.assignTo,
+          status: item.status,
+          solvedOn: item.solvedOn,
+          sovledBy: item.sovledBy,
+          createdOn: item.createdOn,
+        })
+      );
+    } else {
+      throw new Error("PL Data not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching PL data:", error);
+    throw error;
+  }
+};
+
+export const getAdminNote = async (userName) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/Ticket/getAdminNote?userName=${userName}`
+    ); // Replace `/your-api-endpoint` with the actual endpoint path
+    if (
+      response.data.status &&
+      response.data.paramObjectsMap?.pendingApprovalDetails
+    ) {
+      return response.data.paramObjectsMap.pendingApprovalDetails.map(
+        (item) => ({
+          gst_ticketId: item.gst_ticketId,
+          title: item.title,
+          description: item.description,
+          assignTo: item.assignTo,
+          status: item.status,
+          solvedOn: item.solvedOn,
+          sovledBy: item.sovledBy,
+          createdOn: item.createdOn,
+          createdBy: item.createdBy,
         })
       );
     } else {
