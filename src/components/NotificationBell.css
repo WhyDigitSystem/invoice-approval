@@ -1,21 +1,21 @@
-.notification-container1 {
+.notification-container {
   position: relative;
   display: inline-block;
   margin-right: 20px;
 }
 
-.notification-badge1 {
+.notification-badge {
   cursor: pointer;
   margin-right: 20px;
   margin-top: 10px;
 }
 
-.notification-icon-trigger1 {
+.notification-icon-trigger {
   font-size: 24px;
   vertical-align: middle;
 }
 
-.notification-dropdown1 {
+.notification-dropdown {
   position: absolute;
   right: 0;
   top: 100%;
@@ -27,7 +27,7 @@
   overflow: hidden;
 }
 
-.notification-header1 {
+.notification-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,29 +36,29 @@
   background: #f9f9f9;
 }
 
-.notification-header1 h3 {
+.notification-header h3 {
   margin: 0;
   font-size: 16px;
   color: #333;
 }
 
-.notification-close-btn1 {
+.notification-close-btn {
   color: #999;
 }
 
-.notification-content1 {
+.notification-content {
   max-height: 400px;
   overflow-y: auto;
 }
 
-.notification-loading1,
-.notification-empty1 {
+.notification-loading,
+.notification-empty {
   text-align: center;
   padding: 16px;
   color: #999;
 }
 
-.notification-item1 {
+.notification-item {
   display: flex;
   align-items: flex-start;
   padding: 12px 16px;
@@ -66,37 +66,37 @@
   transition: background 0.3s;
 }
 
-.notification-item1:hover {
+.notification-item:hover {
   background: #f5f5f5;
 }
 
-.notification-item-icon1 {
+.notification-item-icon {
   flex-shrink: 0;
   margin-right: 12px;
   margin-top: 2px;
 }
 
-.notification-item-content1 {
+.notification-item-content {
   flex-grow: 1;
 }
 
-.notification-item-title1 {
+.notification-item-title {
   font-weight: 500;
   color: #333;
   margin-bottom: 4px;
 }
 
-.notification-item-description1 {
+.notification-item-description {
   color: #666;
   font-size: 14px;
 }
 
-.notification-item-close1 {
+.notification-item-close {
   color: #999;
   margin-left: 8px;
 }
 
-.notification-wrapper1 {
+.notification-wrapper {
   position: relative;
   display: inline-block;
   margin-right: 20px;
@@ -104,14 +104,14 @@
 
 /* Keep all the existing bell button styles from previous implementation */
 
-.toast-list1 {
+.toast-list {
   position: fixed;
   bottom: 1em;
   right: 1em;
   z-index: 1000;
 }
 
-.toast1 {
+.toast {
   min-width: 20em;
   max-width: 40em;
   margin-bottom: 1em;
@@ -119,12 +119,12 @@
   animation: appear 0.5s ease-out;
 }
 
-.toast__image1,
-.toast-info1 {
+.toast__image,
+.toast-info {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-.toast__image1 {
+.toast__image {
   align-self: center;
   width: 50px;
   height: 50px;
@@ -134,7 +134,7 @@
   object-fit: cover;
 }
 
-.toast-info1 {
+.toast-info {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -146,30 +146,30 @@
   color: #fff;
 }
 
-.toast-info--error1 {
+.toast-info--error {
   background: #d31 !important;
 }
 
-.toast-info__title1 {
+.toast-info__title {
   margin-bottom: 0.1em;
   font-weight: 500;
 }
 
-.toast-info__message1 {
+.toast-info__message {
   font-size: 0.8em;
   margin: 0.1em 0;
   opacity: 0.75;
   flex-grow: 1;
 }
 
-.toast-info__data1 {
+.toast-info__data {
   font-size: 0.5em;
   text-align: right;
   /* opacity: 0.5; */
   margin-bottom: 0.5em;
 }
 
-.toast-info__timer1 {
+.toast-info__timer {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -180,7 +180,7 @@
   transform-origin: left;
 }
 
-.toast__dismiss1 {
+.toast__dismiss {
   align-self: center;
   font-size: 1.5em;
   margin: 0.25em;
@@ -189,7 +189,7 @@
   justify-content: center;
 }
 
-.cancel-button1 {
+.cancel-button {
   cursor: pointer;
   user-select: none;
   opacity: 0.25;
@@ -201,7 +201,7 @@
   transition: opacity 0.2s ease;
 }
 
-.cancel-button1:hover {
+.cancel-button:hover {
   opacity: 0.75;
 }
 
@@ -226,7 +226,7 @@
 }
 
 @media screen and (max-width: 700px) {
-  .toast-list1 {
+  .toast-list {
     position: fixed;
     bottom: 0;
     right: 0;
@@ -235,7 +235,7 @@
     padding: 1em;
   }
 
-  .toast1 {
+  .toast {
     max-width: 100%;
     margin-bottom: 0.5em;
   }

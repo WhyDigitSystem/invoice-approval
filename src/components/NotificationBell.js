@@ -36,35 +36,31 @@ const NotificationBell = () => {
       // ),
       description: (
         <div key={item.gst_ticketId}>
-          <img
-            src={userpng}
-            alt="User"
-            style={{
-              width: "24px",
-              height: "24px",
-              borderRadius: "50%", // Optional: keeps it circular if that was your intention
-            }}
-          />
           <div>
-            {/* <div>
+            {/* <div >
               {item.createdBy} - {formatTimeAgo(item.createdOn)}
             </div> */}
-            <div>{item.title}</div>
-            <div>{item.description}</div>
+            <div style={{ color: "maroon", fontWeight: "bold" }}>
+              {item.title}
+            </div>
+            <div style={{ color: "darkblue", fontWeight: "bold" }}>
+              {item.description}
+            </div>
           </div>
           <div>
-            <span
+            {/* <span
+              className="cancel-button"
               tabIndex="0"
               onClick={() => dismissNotification(item.gst_ticketId)}
             >
-              {/* <CloseOutlined
+              <CloseOutlined
                 style={{
                   color: "black",
                   fontSize: "16px",
                   fontWeight: "bold",
                 }}
-              /> */}
-            </span>
+              />
+            </span> */}
           </div>
         </div>
       ),
@@ -84,7 +80,8 @@ const NotificationBell = () => {
       // style: {
       //   width: 350,
       //   borderRadius: 8,
-      //   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      //   boxShadow: "none",
+      //   background: "transparent",
       // },
     });
   };
@@ -195,18 +192,18 @@ const NotificationBell = () => {
   };
 
   return (
-    <div className="notification-container1">
+    <div className="notification-container">
       <Badge
         count={notifications.length}
         overflowCount={9}
-        className="notification-badge1"
+        className="notification-badge"
         style={{
           backgroundColor: isAdmin ? "#ff4d4f" : "#1890ff",
         }}
         onClick={() => setVisible(!visible)}
       >
         <BellOutlined
-          className="notification-icon-trigger1"
+          className="notification-icon-trigger"
           style={{
             color: isAdmin ? "#ff4d4f" : "#1890ff",
           }}
@@ -214,35 +211,35 @@ const NotificationBell = () => {
       </Badge>
 
       {visible && (
-        <div className="toast-list1">
+        <div className="toast-list">
           {loading ? (
-            <div className="toast1">
-              <div className="toast-info1">
-                <div className="toast-info__title1">
+            <div className="toast">
+              <div className="toast-info">
+                <div className="toast-info__title">
                   Loading notifications...
                 </div>
               </div>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="toast1">
-              <div className="toast-info1">
-                <div className="toast-info__title1">No new notifications</div>
+            <div className="toast">
+              <div className="toast-info">
+                <div className="toast-info__title">No new notifications</div>
               </div>
             </div>
           ) : (
             notifications.map((item) => (
-              <div className="toast1" key={item.gst_ticketId}>
-                <img className="toast__image1" src={userpng} alt="" />
-                <div className="toast-info1">
-                  <div className="toast-info__data1">
+              <div className="toast" key={item.gst_ticketId}>
+                <img className="toast__image" src={userpng} alt="" />
+                <div className="toast-info">
+                  <div className="toast-info__data">
                     {item.createdBy} - {formatTimeAgo(item.createdOn)}
                   </div>
-                  <div className="toast-info__title1">{item.title}</div>
-                  <div className="toast-info__message1">{item.description}</div>
+                  <div className="toast-info__title">{item.title}</div>
+                  <div className="toast-info__message">{item.description}</div>
                 </div>
-                <div className="toast__dismiss1">
+                <div className="toast__dismiss">
                   <span
-                    className="cancel-button1"
+                    className="cancel-button"
                     tabIndex="0"
                     onClick={() => dismissNotification(item.gst_ticketId)}
                   >
