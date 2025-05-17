@@ -1,108 +1,297 @@
-.container {
-  width: 1000px;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
+/* --------------------------- */
 
-.container .card {
-  position: relative;
-}
-
-.container .card .face {
-  width: 300px;
-  height: 200px;
-  transition: 0.4s;
-}
-
-.container .card .face.face1 {
-  position: relative;
-  background: #333;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  z-index: 1;
-  transform: translateY(100px);
-}
-
-.container .card:hover .face.face1 {
-  transform: translateY(0);
-  /* box-shadow:
-      inset 0 0 60px whitesmoke,
-      inset 20px 0 80px #f0f,
-      inset -20px 0 80px #0ff,
-      inset 20px 0 300px #f0f,
-      inset -20px 0 300px #0ff,
-      0 0 50px #fff,
-      -10px 0 80px #f0f,
-      10px 0 80px #0ff; */
-}
-
-.container .card .face.face1 .content {
-  text-align: center;
-  color: white;
-}
-
-.container .card:hover .face.face1 .content {
-  opacity: 1;
-}
-
-.container .card .face.face1 .content i {
-  font-size: 3em;
-  color: white;
-  display: inline-block;
-}
-
-.container .card .face.face1 .content h3 {
-  font-size: 1em;
-  color: white;
-  text-align: center;
-}
-
-.container .card .face.face1 .content a {
-  transition: 0.5s;
-}
-
-.container .card .face.face2 {
-  position: relative;
-  background: whitesmoke;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-  transform: translateY(-100px);
-}
-
-.container .card:hover .face.face2 {
-  transform: translateY(0);
-}
-
-.container .card .face.face2 .content p,
-a {
-  font-size: 10pt;
+/* Global Reset */
+/* * {
   margin: 0;
   padding: 0;
-  color: #333;
-}
-
-.container .card .face.face2 .content a {
-  text-decoration: none;
-  color: black;
   box-sizing: border-box;
-  outline: 1px dashed #333;
+} */
+
+/* Main Layout */
+.body-wrapper {
+  height: 100vh;
+  background-color: #11282a;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Particle Orbit Background */
+.background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 530px;
+  width: 430px;
+  z-index: 1;
+}
+
+/* Login Form Styling */
+.glass-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 400px;
+  width: 340px;
+  padding: 20px;
+  background: rgba(250, 250, 250, 0.15);
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px 50px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 5;
+}
+
+.glass-form h3 {
+  color: #fff;
+  padding: 10px 0;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.glass-form label {
+  display: block;
+  margin-top: 20px;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.glass-form input {
+  width: 100%;
+  height: 40px;
+  margin-top: 5px;
   padding: 10px;
-  margin: 15px 0 0;
-  display: inline-block;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffffdb;
+  border-radius: 5px;
+  border: none;
+  transition: background-color 0.4s;
 }
 
-.container .card .face.face2 .content a:hover {
-  background: #333;
-  color: whitesmoke;
-  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+.glass-form input:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* -------------------------------- */
+.glass-form input::placeholder {
+  color: #ffffffdb;
+  font-size: 0.9rem;
+}
+
+.glass-form button {
+  width: 100%;
+  height: 40px;
+  margin: 40px 0 0;
+  background-color: #ffffffc2;
+  color: #000;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.4s;
+}
+
+.glass-form button:hover {
+  background-color: #ffffff;
+}
+
+/* Bubble Animation */
+.wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: rise 10s infinite;
+}
+
+.bubble:nth-child(1) {
+  width: 40px;
+  height: 40px;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.bubble:nth-child(2) {
+  width: 60px;
+  height: 60px;
+  left: 30%;
+  animation-delay: 1s;
+}
+
+.bubble:nth-child(3) {
+  width: 50px;
+  height: 50px;
+  left: 50%;
+  animation-delay: 2s;
+}
+
+.bubble:nth-child(4) {
+  width: 70px;
+  height: 70px;
+  left: 70%;
+  animation-delay: 3s;
+}
+
+.bubble:nth-child(5) {
+  width: 30px;
+  height: 30px;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+.bubble:nth-child(6) {
+  width: 80px;
+  height: 80px;
+  left: 40%;
+  animation-delay: 5s;
+}
+
+.bubble:nth-child(7) {
+  width: 20px;
+  height: 20px;
+  left: 60%;
+  animation-delay: 6s;
+}
+
+.bubble:nth-child(8) {
+  width: 90px;
+  height: 90px;
+  left: 80%;
+  animation-delay: 7s;
+}
+
+.bubble:nth-child(9) {
+  width: 50px;
+  height: 50px;
+  left: 15%;
+  animation-delay: 8s;
+}
+
+.bubble:nth-child(10) {
+  width: 60px;
+  height: 60px;
+  left: 85%;
+  animation-delay: 9s;
+}
+
+@keyframes rise {
+  to {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .glass-form {
+    width: 90%;
+    height: auto;
+    border-radius: 20px;
+  }
+
+  .glass-form h3 {
+    font-size: 1.5rem;
+  }
+
+  .glass-form label {
+    font-size: 1rem;
+  }
+
+  .glass-form input {
+    font-size: 0.9rem;
+  }
+
+  .glass-form button {
+    font-size: 1rem;
+    margin-top: 20px;
+  }
+
+  .background {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-form {
+    padding: 15px;
+  }
+
+  .glass-form h3 {
+    font-size: 1.2rem;
+  }
+
+  .glass-form label {
+    font-size: 0.9rem;
+  }
+
+  .glass-form input {
+    font-size: 0.85rem;
+  }
+
+  .glass-form button {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-form {
+    width: 90%;
+    height: auto;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .logo-container img {
+    width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+  }
+
+  .glass-form h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+
+  .glass-form label {
+    font-size: 1rem;
+    margin-top: 15px;
+  }
+
+  .glass-form input {
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  .glass-form button {
+    height: 38px;
+    font-size: 1rem;
+    margin-top: 25px;
+  }
+
+  .background {
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .bubble {
+    opacity: 0.3;
+    /* Make bubbles lighter on mobile to avoid distraction */
+  }
+}
