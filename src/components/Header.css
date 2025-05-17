@@ -1399,3 +1399,57 @@
 } */
 
 /* ----------------- */
+/*GENERAL*/
+
+.hai {
+  position: absolute;
+  left: 18%;
+  top: 28%;
+  width: 100px;
+  transform: translate(-50%, -50%);
+  /* border: 5px solid #ffbd50; */
+  padding: 1px;
+  border-radius: 60px;
+  /* box-shadow: 0px 0px 20px #ff3300; */
+}
+
+h2 {
+  font-size: 23px;
+  font-family: "Exo 2", sans-serif;
+  font-weight: 4;
+  color: #ffbd50;
+  text-shadow: 0px 0px 20px #ff3300;
+}
+
+h2 span:first-child {
+  animation: spark 1.5s infinite;
+}
+
+h2 span:nth-child(2) {
+  animation: spark 2.5s infinite;
+}
+
+/*ANIMATION*/
+
+@keyframes spark {
+  0% {
+    text-shadow: none;
+    color: #666;
+  }
+  40% {
+    text-shadow: none;
+    color: #666;
+  }
+  45% {
+    text-shadow: 0px 0px 40px #ff3300;
+    color: #ffbd50;
+  }
+  50% {
+    text-shadow: none;
+    color: #666;
+  }
+  80% {
+    text-shadow: 0px 0px 40px #ff3300;
+    color: #ffbd50;
+  }
+}

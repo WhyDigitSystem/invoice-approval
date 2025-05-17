@@ -216,7 +216,7 @@ const Header = () => {
             {formattedDate}- {formattedTime}
           </p>
 
-          {/* {user === "admin" && (
+          {user === "admin" && (
             <IconButton
               onClick={() => setModalOpen(true)}
               sx={{
@@ -226,40 +226,47 @@ const Header = () => {
                   transition: "transform 0.3s ease",
                 },
               }}
-            > */}
-          {/* <img
+            >
+              {/* <img
                 src={idea}
                 width="40px"
                 height="40px"
                 alt="Idea"
                 style={{ cursor: "pointer" }}
               /> */}
-          {/* <button class="glowing-btn">
+              {/* <button class="glowing-btn">
                 <span class="glowing-txt">
                   H<span class="faulty-letter">A</span>I
                 </span>
               </button> */}
-          {/* <a
+              {/* <a
                 class="button444 button-big"
                 // style={{ height: "20px", width: "30px", alignItems: "center" }}
               >
                 HAI
               </a> */}
 
-          {/* <div id="container666 button444 button-big">
+              <div id="container666 button444 button-big">
                 <p id="text">HAI</p>     
                 <p id="shadow">
                   <span id="glow">H</span>
                   <span id="blink">AI</span>
                 </p>
+              </div>
+              {/* <div className="hai">
+                <h2>
+                  H<span>A</span>
+                  <span>I</span>
+                  <i class="fa fa-hand-o-right"></i>
+                </h2>
               </div> */}
-          {/* <AnalogClock /> */}
-          {/* <div class="neon-wrapper">
+              {/* <AnalogClock /> */}
+              {/* <div class="neon-wrapper">
                 <span class="txt">hai</span>
                 <span class="gradient"></span>
                 <span class="dodge"></span>
               </div> */}
-          {/* <div class="containerHAI">
+              {/* <div class="containerHAI">
                 <div class="circle"></div>
                 <div class="tokyo-tower">
                   <div class="antenna"></div>
@@ -286,9 +293,8 @@ const Header = () => {
                   <span class="flicker">O</span>
                 </div>
               </div> */}
-          {/* </IconButton>
-          )} */}
-
+            </IconButton>
+          )}
           <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
             <Avatar
               sx={{ marginRight: 1 }}
