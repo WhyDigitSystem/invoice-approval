@@ -29,6 +29,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResetPasswordPopup from "../utils/ResetPassword";
 import idea from "../idea.png";
+import UWLNL2 from "../UWLNL2.png";
+import UWLNL3 from "../UWLNL3.png";
 import { gsap } from "gsap";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
@@ -64,7 +66,8 @@ import Ticket from "./Ticket";
 import NotificationBell from "./NotificationBell";
 import AnalogClock from "./AnalogClock";
 import OrbParticles from "./OrbParticles";
-
+import { useMediaQuery } from "@mui/material";
+import UWLLOGON from "../UWLLOGON.png";
 const { Text } = Typography;
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
@@ -81,6 +84,67 @@ const Header = () => {
   const [time, setTime] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState(localStorage.getItem("userName"));
+  const isMobile = useMediaQuery("(max-width:600px)");
+
+  const [isActive, setIsActive] = useState(true);
+
+  const [data, setData] = useState(null);
+
+  const checkUserActiveStatus = async (username) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/api/Ticket/getUserActiveStatus?userName=${username}`
+      );
+      const resData = await response.json();
+      const isActive =
+        resData?.paramObjectsMap?.getUserActiveStatus?.[0]?.is_active;
+
+      console.log("User is_active:", isActive);
+
+      if (isActive === 0) {
+        handleLogout(); // 👈 Trigger logout if inactive
+      }
+    } catch (error) {
+      console.error("Error checking user status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      checkUserActiveStatus(user); // initial call immediately
+
+      const interval = setInterval(() => {
+        checkUserActiveStatus(user); // every 2 minutes
+      }, 2 * 60 * 1000); // 2 minutes = 120000 ms
+
+      return () => clearInterval(interval); // cleanup on unmount
+    }
+  }, [user]);
+
+  // const checkUserActiveStatus = async (user) => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8091/api/Ticket/getUserActiveStatus?userName=${user}`
+  //     );
+  //     const resData = await response.json(); // rename to avoid conflict
+  //     console.log("Full response:", resData);
+
+  //     const isActive =
+  //       resData?.paramObjectsMap?.getUserActiveStatus?.[0]?.is_active;
+  //     console.log("Is Active:", isActive);
+
+  //     setData(isActive); // ✅ set to your state
+  //     console.log("userdata", data);
+  //   } catch (error) {
+  //     console.error("Error checking user status:", error);
+  //     return false;
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   checkUserActiveStatus(user);
+
+  // }, []);
 
   // Only render SuperPowerModal when needed
   const renderSuperPowerModal = () => {
@@ -131,6 +195,10 @@ const Header = () => {
 
   // console.log("user", user);
   const handleLogout = async () => {
+    // Clear user data and tokens
+
+    // Navigate to login with isMobile state
+
     try {
       const response = await axios.post(
         `${API_URL}/api/auth/logout?userName=${localStorage.getItem(
@@ -187,18 +255,49 @@ const Header = () => {
               flexGrow: 1,
               marginLeft: 7,
               fontFamily: "'Poppins', sans-serif",
-              fontWeight: "bold",
+              // fontWeight: "bold",
               letterSpacing: "2px",
               color: "#ffffff",
             }}
           >
-            <img
+            {/* <img
               src={logoonly}
               width="50px"
               height="30px"
               alt="Idea"
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+              }}
+            /> */}
+            <img
+              src={UWLNL3}
+              width="160px"
+              height="50px"
+              alt="Idea"
+              style={{
+                // cursor: "pointer",
+                marginTop: "-20px",
+              }}
             />
+            {/* <div style={{ position: "relative" }}>
+              <img
+                src={UWLNL3}
+                alt="Watermark"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  opacity: 2.05,
+                  width: "200px",
+                  height: "auto",
+                  zIndex: 0,
+                  pointerEvents: "none",
+                  marginLeft: "-180px",
+                }}
+              />
+            </div> */}
+
             <div
               style={{
                 fontSize: "14px",
@@ -207,16 +306,48 @@ const Header = () => {
               }}
             >
               {" "}
-              Uniworld <br />
-              Logistics
+              {/* Uniworld <br />
+              Logistics */}
             </div>
           </Typography>
-
-          <p style={{ fontSize: "18px", fontWeight: "bold" }}>
+          {/* <p style={{ fontSize: "18px", fontWeight: "bold" }}>
             {formattedDate}- {formattedTime}
-          </p>
+          </p> */}
+          {!isMobile && (
+            // <p
+            //   style={{
+            //     fontSize: "16px",
 
-          {user === "admin" && (
+            //     // fontWeight: "bold",
+            //     marginRight: "10px",
+            //   }}
+            // >
+            //   {formattedDate} - {formattedTime}
+            // </p>
+
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{
+                textTransform: "none",
+                cursor: "default",
+                marginRight: 0.001,
+
+                // color: "#00FFFF",
+                // backgroundColor: "#f44336",
+                backgroundColor: "transparent",
+                fontFamily: "'Orbitron', sans-serif",
+                color: "#00FFFF",
+                // boxShadow: "0 0 10px #00FFFF, 0 0 20px #00FFFF",
+                // "&:hover": { backgroundColor: "#d32f2f" },
+
+                width: "bold",
+              }}
+            >
+              {formattedDate} - {formattedTime}
+            </Button>
+          )}
+          {/* {user === "admin" && (
             <IconButton
               onClick={() => setModalOpen(true)}
               sx={{
@@ -226,47 +357,39 @@ const Header = () => {
                   transition: "transform 0.3s ease",
                 },
               }}
-            >
-              {/* <img
+            > */}{" "}
+          {/* <img
                 src={idea}
                 width="40px"
                 height="40px"
                 alt="Idea"
                 style={{ cursor: "pointer" }}
               /> */}
-              {/* <button class="glowing-btn">
+          {/* <button class="glowing-btn">
                 <span class="glowing-txt">
                   H<span class="faulty-letter">A</span>I
                 </span>
               </button> */}
-              {/* <a
+          {/* <a
                 class="button444 button-big"
                 // style={{ height: "20px", width: "30px", alignItems: "center" }}
               >
                 HAI
               </a> */}
-
-              <div id="container666 button444 button-big">
-                <p id="text">HAI</p>     
-                <p id="shadow">
-                  <span id="glow">H</span>
-                  <span id="blink">AI</span>
-                </p>
-              </div>
-              {/* <div className="hai">
+          {/* <div className="hai">
                 <h2>
                   H<span>A</span>
                   <span>I</span>
                   <i class="fa fa-hand-o-right"></i>
                 </h2>
               </div> */}
-              {/* <AnalogClock /> */}
-              {/* <div class="neon-wrapper">
+          {/* <AnalogClock /> */}
+          {/* <div class="neon-wrapper">
                 <span class="txt">hai</span>
                 <span class="gradient"></span>
                 <span class="dodge"></span>
               </div> */}
-              {/* <div class="containerHAI">
+          {/* <div class="containerHAI">
                 <div class="circle"></div>
                 <div class="tokyo-tower">
                   <div class="antenna"></div>
@@ -293,32 +416,69 @@ const Header = () => {
                   <span class="flicker">O</span>
                 </div>
               </div> */}
-            </IconButton>
+          {/* <div
+                id="container666 button444 button-big"
+                style={{
+                  marginLeft: "50px",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                }}
+                onClick={() => setModalOpen(true)}
+              >
+                <p id="text">HAI</p>     
+                <p id="shadow">
+                  <span id="glow">H</span>
+                  <span id="blink">AI</span>
+                </p>
+              </div> */}
+          {/* </IconButton>
+          )} */}
+          {!isMobile && (
+            <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
+              <Avatar
+                sx={{ marginRight: 1, height: "30px", width: "30px" }}
+                alt="User"
+                src={userpng}
+                // onClick={handlePopoverOpen}
+                // style={{ cursor: "pointer" }}
+              />
+
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  // fontWeight: "bold",
+                }}
+                // onClick={handlePopoverOpen}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ marginLeft: "-15px" }}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{
+                      textTransform: "none",
+                      cursor: "default",
+
+                      // color: "#00FFFF",
+                      // backgroundColor: "#f44336",
+                      backgroundColor: "transparent",
+                      // "&:hover": { backgroundColor: "#d32f2f" },
+
+                      width: "bold",
+                    }}
+                  >
+                    Welcome!!! {localStorage.getItem("nickName")}
+                  </Button>
+                </div>
+                {/* Welcome!!! */}
+              </Typography>
+            </Box>
           )}
-          <Box sx={{ display: "flex", alignItems: "center", marginRight: 2 }}>
-            <Avatar
-              sx={{ marginRight: 1 }}
-              alt="User"
-              src={userpng}
-              // onClick={handlePopoverOpen}
-              style={{ cursor: "pointer" }}
-            />
-
-            <Typography
-              variant="body1"
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                color: "#ffffff",
-                fontWeight: "bold",
-              }}
-              // onClick={handlePopoverOpen}
-              style={{ cursor: "pointer" }}
-            >
-              Welcome!!!
-              {localStorage.getItem("nickName")}
-            </Typography>
-          </Box>
-
           <Popover
             open={open}
             anchorEl={anchorEl}
@@ -344,12 +504,12 @@ const Header = () => {
               </ListItem>
             </List>
           </Popover>
-
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              backgroundColor: "transparent",
             }}
           >
             <div style={{ marginRight: "-20px" }}>
@@ -366,8 +526,14 @@ const Header = () => {
                 onClick={handleLogout}
                 sx={{
                   textTransform: "none",
-                  backgroundColor: "#f44336",
-                  "&:hover": { backgroundColor: "#d32f2f" },
+                  // color: "#00FFFF",
+                  // backgroundColor: "#f44336",
+                  backgroundColor: "transparent",
+                  // "&:hover": { backgroundColor: "#d32f2f" },
+                  "&:hover": {
+                    boxShadow: "0 0 10px #00FFFF, 0 0 20px #00FFFF",
+                  },
+                  width: "bold",
                 }}
               >
                 Logout

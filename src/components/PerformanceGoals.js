@@ -524,7 +524,7 @@ const PerformanceGoals = () => {
           <div
             className="form-headerSG"
             style={{
-              background: "linear-gradient(135deg, #6C63FF 0%, #42EADD 100%)",
+              // background: "linear-gradient(135deg, #6C63FF 0%, #42EADD 100%)",
               // background: "linear-gradient(135deg, #4A148C, #6200EA)",
               padding: "1px",
               color: "white",

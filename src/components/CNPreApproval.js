@@ -257,7 +257,7 @@ const CNPreApproval = () => {
       if (name === "ptype" && value === "Full") {
         const numericValue = parseFloat(value);
         if (name === "crAmt") {
-          updatedData.crAmt = prevData.invAmt || "";
+          updatedData.crAmt = prevData.totChargeAmtLc || "";
           if (value && (isNaN(numericValue) || numericValue <= 0)) {
             errorMessage = "Amount must be greater than 0.";
           }
@@ -280,7 +280,7 @@ const CNPreApproval = () => {
       let updatedData = { ...prevData };
 
       if (value === "Full") {
-        updatedData.crAmt = prevData.invAmt || ""; // Set crAmt to invAmt if Full is selected
+        updatedData.crAmt = prevData.totChargeAmtLc || ""; // Set crAmt to invAmt if Full is selected
       }
 
       return updatedData;
@@ -377,7 +377,7 @@ const CNPreApproval = () => {
         vchNo: selectedProfoma.vchNo || "",
         vchDt: selectedProfoma.vchDt || "",
         invAmt: selectedProfoma.invAmt || "",
-        crAmt: selectedProfoma.invAmt || "",
+        crAmt: selectedProfoma.totChargeAmtLc || "",
         totChargeAmtLc: selectedProfoma.totChargeAmtLc || "",
         totTaxAmtLc: selectedProfoma.totTaxAmtLc || "",
       });
@@ -463,8 +463,8 @@ const CNPreApproval = () => {
       return;
     }
 
-    if (formData.crAmt > formData.invAmt) {
-      alert("Credit Note Amt should be Equal or Lesser than Inv Amt");
+    if (Number(formData.crAmt) > Number(formData.totChargeAmtLc)) {
+      alert("Credit Note Amt should be Equal or Lesser than ChargeAmt Amt");
       return;
     }
 
@@ -537,128 +537,6 @@ const CNPreApproval = () => {
       alert("An error occurred while saving.");
     }
   };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (
-  //     !formData.partyCode ||
-  //     !formData.profoma ||
-  //     !formData.reason ||
-  //     !formData.crAmt ||
-  //     !ptype ||
-  //     !crRemarks
-  //   ) {
-  //     alert("Please fill in all required fields.");
-  //     return;
-  //   }
-
-  //   // Format the vchDt field
-
-  //   const formattedVchDt = formatDate(formData.vchDt);
-
-  //   if (!formattedVchDt) {
-  //     alert("Please enter a valid date.");
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     branchName: branchName,
-  //     partyCode: formData.partyCode,
-  //     partyName: formData.partyName,
-  //     profoma: formData.profoma,
-  //     vchNo: formData.vchNo,
-  //     vchDt: formattedVchDt,
-  //     ptype: ptype,
-  //     invAmt: formData.invAmt,
-  //     crAmt: formData.crAmt,
-  //     reason: formData.reason,
-  //     createdBy: localStorage.getItem("userName"),
-  //     crRemarks: crRemarks,
-  //   };
-
-  //   try {
-  //     const response = await axios.put(
-  //       `${API_URL}/api/crpreapp/updateCRPreApp`,
-  //       payload
-  //     );
-
-  //     if (response.status === 200 || response.status === 201) {
-  //       notification.success({
-  //         message: "Success",
-  //         description: "The party information has been successfully updated.",
-  //         duration: 3,
-  //       });
-
-  //       if (
-  //         response.status === 200 ||
-  //         (response.status === 201 && response.data.statusFlag === "Ok")
-  //       ) {
-  //         const crPreAppVOid = response.data.paramObjectsMap.crPreAppVO.id;
-
-  //         const formDataPayload = new FormData();
-  //         formDataPayload.append("data", JSON.stringify(payload));
-
-  //         files.forEach((file, index) => {
-  //           formDataPayload.append(`files`, file);
-  //           formDataPayload.append("crPreAppid", crPreAppVOid); // Append the corresponding expenseId
-  //         });
-
-  //         const formupdateData {
-  //           id: crPreAppVOid,
-  //           files: files
-  //         }
-
-  //         console.log("formData", formData);
-
-  //         // If there are files to upload, proceed with the API call
-
-  //         console.log("Uploading Files for CN...");
-
-  //         try {
-  //           // Send the image upload request with multiple files in a single API call
-  //           const uploadResponse = await axios.put(
-  //             `${API_URL}/api/crpreapp/uploadfile`,
-  //             formDataPayload,
-  //             {
-  //               headers: {
-  //                 "Content-Type": "multipart/form-data", // Required for file upload
-  //               },
-  //             }
-  //           );
-
-  //           if (uploadResponse.status === 200) {
-  //             console.log(
-  //               "Images uploaded successfully for the respective expense IDs."
-  //             );
-  //             // handleCelebrate();
-  //             // handleClear();
-  //           } else {
-  //             console.log("Failed to upload images.");
-  //           }
-  //         } catch (error) {
-  //           console.error("Error uploading images for the expenses:", error);
-  //         }
-  //       } else {
-  //         console.log("Failed to create expenses.");
-  //       }
-
-  //       // startConfetti();
-  //       // handleClear();
-  //       // setTimeout(() => {
-  //       //   window.location.reload();
-  //       // }, 2000);
-  //     } else {
-  //       notification.error({
-  //         message: "Error",
-  //         description: "Failed to update the party information.",
-  //         duration: 3,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving data:", error);
-  //     alert("An error occurred while saving.");
-  //   }
-  // };
 
   const handleButtonClick = (e) => {
     handleSubmit(e);
@@ -717,7 +595,7 @@ const CNPreApproval = () => {
                 // boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
               }}
             >
-              Pre Credit Note Approval
+              Pre Credit Note
             </div>
 
             <br />
@@ -817,7 +695,7 @@ const CNPreApproval = () => {
                     }}
                     className="label-customer"
                   >
-                    Profoma <span style={{ color: "red" }}>*</span>
+                    OriginBill<span style={{ color: "red" }}>*</span>
                   </label>
                   <Select
                     id="profoma-select"
@@ -839,7 +717,7 @@ const CNPreApproval = () => {
                       loading ? <Spin size="small" /> : "No results found"
                     }
                   >
-                    <Option value="">Select Profoma</Option>
+                    <Option value="">Select OriginBill</Option>
                     {profoms && profoms.length > 0 ? (
                       profoms.map((inv) => (
                         <Option key={inv.profoma} value={inv.profoma}>
@@ -847,7 +725,7 @@ const CNPreApproval = () => {
                         </Option>
                       ))
                     ) : (
-                      <Option value="">No Profoma available</Option>
+                      <Option value="">No OriginBill available</Option>
                     )}
                   </Select>
                 </div>

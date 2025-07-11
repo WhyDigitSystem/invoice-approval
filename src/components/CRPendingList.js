@@ -19,6 +19,9 @@ import {
   Space,
   Spin,
   Typography,
+  Modal,
+  Popconfirm,
+  message,
 } from "antd";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
@@ -45,6 +48,9 @@ const CRPendingList = () => {
   const [emailFlag, setEmailFlag] = useState(false);
   const [emailFlag2, setEmailFlag2] = useState(false);
   const [emailData, setEmailData] = useState([]);
+  const [rejectRemarks, setRejectRemarks] = useState("");
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
+  const [itemToReject, setItemToReject] = useState(null);
   const [userType, setUserType] = useState(localStorage.getItem("userType"));
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [filter, setFilter] = useState({
@@ -64,6 +70,10 @@ const CRPendingList = () => {
 
   const currentHour = new Date().getHours();
   const hasFetchedRef = useRef(false);
+
+  useEffect(() => {
+    setIsRejectModalVisible(false); // reset modal visibility on page load
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -422,12 +432,14 @@ const CRPendingList = () => {
     }
   }, [theme]);
 
-  const handleApprove = async (item) => {
+  const handleApprove = async (item, remarks) => {
     try {
       const response = await axios.put(
         `${API_URL}/api/crpreapp/approval2?approval=${"2"}&createdby=${localStorage.getItem(
           "userName"
-        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem("userType")}`
+        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem(
+          "userType"
+        )}&remarks=${remarks || ""}`
       );
 
       if (response.data.status === true) {
@@ -460,12 +472,14 @@ const CRPendingList = () => {
     }
   };
 
-  const handleReject = async (item) => {
+  const handleReject = async (item, remarks) => {
     try {
       const response = await axios.put(
-        `${API_URL}/api/crpreapp/approval1?approval=${"0"}&createdby=${localStorage.getItem(
+        `${API_URL}/api/crpreapp/approval2?approval=${"0"}&createdby=${localStorage.getItem(
           "userName"
-        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem("userType")}`
+        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem(
+          "userType"
+        )}&remarks=${remarks || ""}`
       );
 
       if (response.data.status === true) {
@@ -497,7 +511,7 @@ const CRPendingList = () => {
   };
 
   const approvedList = () => {
-    navigate("/CRApprovedList"); // Navigate to the approved list page
+    navigate("/CRStatus"); // Navigate to the approved list page
   };
 
   const handleCardClick = (item) => {
@@ -1247,7 +1261,7 @@ const CRPendingList = () => {
                                     color: theme === "dark" ? "white" : "black",
                                   }}
                                 >
-                                  Invoice Amt:
+                                  Inv Charge Amt:
                                 </Text>
                                 <Text
                                   strong
@@ -1256,7 +1270,7 @@ const CRPendingList = () => {
                                   }}
                                 >
                                   {new Intl.NumberFormat("en-IN").format(
-                                    item.invAmt
+                                    item.totchargeamtlc
                                   )}
                                 </Text>
                               </div>
@@ -1274,7 +1288,7 @@ const CRPendingList = () => {
                                     color: theme === "dark" ? "white" : "black",
                                   }}
                                 >
-                                  Cr Note Amt:
+                                  CN Charge Amt:
                                 </Text>
                                 <Text
                                   strong
@@ -1580,12 +1594,44 @@ const CRPendingList = () => {
                                     class="likeCount1"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleReject(item);
+                                      // handleReject(item);
+                                      setItemToReject(item);
+                                      setIsRejectModalVisible(true);
                                     }}
                                   >
                                     Reject
                                   </span>
                                 </button>
+                                <Modal
+                                  title="Rejection Remarks"
+                                  visible={isRejectModalVisible}
+                                  onOk={() => {
+                                    if (rejectRemarks.trim() === "") {
+                                      message.warning(
+                                        "Please enter rejection remarks"
+                                      );
+                                      return;
+                                    }
+                                    handleReject(itemToReject, rejectRemarks);
+                                    setIsRejectModalVisible(false); // ✅ close modal
+                                    setRejectRemarks(""); // ✅ reset remarks
+                                  }}
+                                  onCancel={() => {
+                                    setIsRejectModalVisible(false);
+                                    setRejectRemarks("");
+                                  }}
+                                  okText="Confirm Reject"
+                                  cancelText="Cancel"
+                                >
+                                  <Input.TextArea
+                                    rows={4}
+                                    placeholder="Enter rejection remarks..."
+                                    value={rejectRemarks}
+                                    onChange={(e) =>
+                                      setRejectRemarks(e.target.value)
+                                    }
+                                  />
+                                </Modal>
                               </Space>
                             </div>
                           </div>

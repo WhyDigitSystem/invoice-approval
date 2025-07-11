@@ -1401,37 +1401,37 @@
 /* ----------------- */
 /*GENERAL*/
 
-.hai {
+/* .hai {
   position: absolute;
   left: 18%;
   top: 28%;
   width: 100px;
   transform: translate(-50%, -50%);
   /* border: 5px solid #ffbd50; */
-  padding: 1px;
-  border-radius: 60px;
-  /* box-shadow: 0px 0px 20px #ff3300; */
-}
+/* padding: 1px;
+  border-radius: 60px; */
+/* box-shadow: 0px 0px 20px #ff3300; */
+/* } */
 
-h2 {
+/* h2 {
   font-size: 23px;
   font-family: "Exo 2", sans-serif;
   font-weight: 4;
   color: #ffbd50;
   text-shadow: 0px 0px 20px #ff3300;
-}
+} */
 
-h2 span:first-child {
+/* h2 span:first-child {
   animation: spark 1.5s infinite;
-}
+} */
 
-h2 span:nth-child(2) {
+/* h2 span:nth-child(2) {
   animation: spark 2.5s infinite;
-}
+} */
 
 /*ANIMATION*/
 
-@keyframes spark {
+/* @keyframes spark {
   0% {
     text-shadow: none;
     color: #666;
@@ -1452,4 +1452,25 @@ h2 span:nth-child(2) {
     text-shadow: 0px 0px 40px #ff3300;
     color: #ffbd50;
   }
+} */
+
+/* -------------------- */
+
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: transparent;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 80px;
+  font-family: sans-serif;
+  font-size: 10px;
+  color: #fff000;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px #fff000;
 }

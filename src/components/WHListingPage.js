@@ -533,7 +533,7 @@ const WHListingPage = () => {
               ) : (
                 <Row gutter={[12, 12]}>
                   {filteredData.map((item) => (
-                    <Col xs={24} sm={12} md={8} key={item.expenceId}>
+                    <Col xs={12} sm={6} lg={8} md={6} key={item.expenceId}>
                       <div class="note-container">
                         <div
                           class="sticky-note sticky-note-one"

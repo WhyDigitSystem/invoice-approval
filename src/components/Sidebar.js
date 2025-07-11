@@ -18,15 +18,25 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 
 const drawerWidth = 220;
 
 const Sidebar = () => {
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // const [open, setOpen] = useState(!isMobile);
   const [open, setOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(true);
+  const username = localStorage.getItem("username");
+  const [data, setData] = [];
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -35,13 +45,13 @@ const Sidebar = () => {
   const hiddenPaths = ["/login", "/register", "/authenticate"];
   if (hiddenPaths.includes(location.pathname)) return null;
 
-  // Menu items
   const menuItems = [
     { text: "Dashboard1", icon: <DashboardIcon />, path: "/Dashboard1" },
     { text: "User Creation", icon: <PersonAddIcon />, path: "/userCreation" },
     { text: "Screen", icon: <TvIcon />, path: "/screen" },
     { text: "Transactions", icon: <GridViewIcon />, path: "/transactions" },
     { text: "Reports", icon: <BarChartIcon />, path: "/reports" },
+    { text: "PRMS", icon: <GridViewIcon />, path: "/ps" },
     { text: "Ticket", icon: <ReceiptIcon />, path: "/ticket" },
   ];
 
@@ -62,31 +72,33 @@ const Sidebar = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#000" }}>
-      {/* Toggle Button with Neon Effect */}
+      {/* Toggle Button */}
       <IconButton
         onClick={toggleDrawer}
         sx={{
           position: "fixed",
           top: 13,
-          left: open ? 10 : 10,
+          left: 10,
           zIndex: 1201,
           backgroundColor: "#000",
           color: "#00FFFF",
           borderRadius: "50%",
           transition: "all 0.3s ease-in-out",
-          boxShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF",
+          boxShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF",
           "&:hover": {
-            boxShadow: "0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF",
+            boxShadow: "0 0 10px #00FFFF, 0 0 20px #00FFFF",
           },
         }}
       >
         <MenuIcon />
       </IconButton>
 
-      {/* Sidebar Drawer with Neon Border */}
+      {/* Drawer */}
       <Drawer
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
         open={open}
+        onClose={toggleDrawer}
+        ModalProps={{ keepMounted: true }}
         sx={{
           width: open ? drawerWidth : 80,
           flexShrink: 0,
@@ -97,7 +109,6 @@ const Sidebar = () => {
             color: "#FFFFFF",
             transition: "width 0.3s ease-in-out",
             borderRight: "1px solid #00FFFF",
-            // boxShadow: "0 0 10px #FCE212, 0 0 20px rgba(252, 226, 18, 0.5)",
           },
         }}
       >
@@ -114,13 +125,13 @@ const Sidebar = () => {
               sx={{
                 fontWeight: "bold",
                 color: "#00FFFF",
-                // textShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF",
               }}
             >
               Dashboard
             </Typography>
           )}
         </Toolbar>
+
         <Box sx={{ padding: "20px 10px" }}>
           <List>
             {filteredMenuItems.map((item, index) => (
@@ -129,27 +140,24 @@ const Sidebar = () => {
                 component={Link}
                 to={item.path}
                 key={index}
+                onClick={() => isMobile && toggleDrawer()}
                 sx={{
                   marginBottom: 1,
                   borderRadius: "12px",
                   color: "#FFFFFF",
                   backgroundColor: "transparent",
-                  boxShadow: "none",
                   transition: "all 0.3s ease-in-out",
                   "&:hover": {
                     backgroundColor: "rgba(0, 92, 92, 0.1)",
                     "& .MuiListItemIcon-root": {
                       color: "#00FFFF",
-                      // filter: "drop-shadow(0 0 5px #00FFFF)",
                     },
                     "& .MuiTypography-root": {
                       color: "#00FFFF",
-                      // textShadow: "0 0 5px #00FFFF",
                     },
                   },
                   ...(location.pathname === item.path && {
                     backgroundColor: "rgba(252, 226, 18, 0.1)",
-                    // boxShadow:"0 0 5px #FCE212, 0 0 10px rgba(252, 226, 18, 0.5)",
                     "& .MuiListItemIcon-root": {
                       color: "#00FFFF",
                       filter: "drop-shadow(0 0 5px #0FF)",
@@ -175,6 +183,7 @@ const Sidebar = () => {
                 >
                   {item.icon}
                 </ListItemIcon>
+
                 {!open && (
                   <Typography
                     variant="caption"
@@ -190,14 +199,17 @@ const Sidebar = () => {
                     {item.text.split(" ")[0]}
                   </Typography>
                 )}
+
                 {open && (
                   <ListItemText
                     primary={item.text}
                     sx={{
                       "& .MuiTypography-root": {
-                        fontSize: "1rem",
+                        fontSize: "0.85rem",
                         fontWeight: "500",
                         color: "#FFFFFF",
+                        textAlign: "left",
+                        lineHeight: 1.2,
                         transition: "all 0.3s ease-in-out",
                       },
                     }}

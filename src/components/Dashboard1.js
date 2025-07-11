@@ -250,7 +250,12 @@ const Dashboard1 = ({ userName = "User" }) => {
         },
       },
       title: {
-        display: true,
+        display: function (context) {
+          // Only display title if there's at least one non-zero value
+          const chart = context.chart;
+          const data = chart.data.datasets[0]?.data || [];
+          return data.some((value) => value > 0);
+        },
         text: "Un Approved Credit Notes", // Title text
         font: {
           size: 20, // Font size of the title

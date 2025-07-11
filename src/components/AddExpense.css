@@ -214,3 +214,16 @@
   -webkit-animation: dothatopcheck-19 0.4s ease 0s forwards;
   animation: dothatopcheck-19 0.4s ease 0s forwards;
 }
+/* in your global or component-level CSS */
+.ant-input[disabled] {
+  color: #000 !important;
+  opacity: 1 !important;
+  background-color: #f5f5f5; /* optional: keep the disabled background */
+}
+
+/* in your App.css (or component CSS) */
+.custom-disabled-select .ant-select-selector,
+.custom-disabled-select .ant-select-selection-item {
+  color: rgba(0, 0, 0, 0.85) !important; /* darker text */
+  opacity: 1 !important;
+}

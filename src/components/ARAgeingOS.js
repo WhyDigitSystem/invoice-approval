@@ -218,39 +218,39 @@ export const ARAgeingOS = () => {
     },
 
     // Conditionally add slab columns only if the range is valid
-    ...(slab1 !== 0
-      ? [{ accessorKey: "mslab1", header: getSlabHeader(0, slab1), size: 140 }]
-      : []),
-    ...(slab2 !== 0
-      ? [
-          {
-            accessorKey: "mslab2",
-            header: getSlabHeader(slab1, slab2),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab3 !== 0
-      ? [
-          {
-            accessorKey: "mslab3",
-            header: getSlabHeader(slab2, slab3),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab4 !== 0
-      ? [
-          {
-            accessorKey: "mslab4",
-            header: getSlabHeader(slab3, slab4),
-            size: 140,
-          },
-        ]
-      : []),
-    ...(slab5 !== 0
-      ? [{ accessorKey: "mslab5", header: getSlabHeader(slab4, 0), size: 140 }]
-      : []),
+    // ...(slab1 !== 0
+    //   ? [{ accessorKey: "mslab1", header: getSlabHeader(0, slab1), size: 140 }]
+    //   : []),
+    // ...(slab2 !== 0
+    //   ? [
+    //       {
+    //         accessorKey: "mslab2",
+    //         header: getSlabHeader(slab1, slab2),
+    //         size: 140,
+    //       },
+    //     ]
+    //   : []),
+    // ...(slab3 !== 0
+    //   ? [
+    //       {
+    //         accessorKey: "mslab3",
+    //         header: getSlabHeader(slab2, slab3),
+    //         size: 140,
+    //       },
+    //     ]
+    //   : []),
+    // ...(slab4 !== 0
+    //   ? [
+    //       {
+    //         accessorKey: "mslab4",
+    //         header: getSlabHeader(slab3, slab4),
+    //         size: 140,
+    //       },
+    //     ]
+    //   : []),
+    // ...(slab5 !== 0
+    //   ? [{ accessorKey: "mslab5", header: getSlabHeader(slab4, 0), size: 140 }]
+    //   : []),
   ];
 
   const handleInputChange = (e) => {

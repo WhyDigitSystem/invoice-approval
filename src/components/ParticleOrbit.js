@@ -1,57 +1,63 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-const total = 300;
-const orbSize = "100px";
-const particleSize = "2px";
-const time = "14s";
-const baseHue = 0;
+const total = 30;
+const orbSize = "150px"; // Distance from center
+const particleSize = "4px";
+const time = "12s";
+const baseHue = 220;
 
+// Rotates entire sphere
 const rotate = keyframes`
   100% {
     transform: rotateY(360deg) rotateX(360deg);
   }
 `;
 
+// Each particle's own orbital path
 const Orbit = (i) => keyframes`
-  20% {
+  0% {
+    opacity: 0;
+  }
+  10% {
     opacity: 1;
   }
-  30% {
-    transform: rotateZ(-${Math.random() * 360}deg) rotateY(${
-  Math.random() * 360
-}deg) translateX(${orbSize}) rotateZ(${Math.random() * 360}deg);
-  }
-  80% {
-    transform: rotateZ(-${Math.random() * 360}deg) rotateY(${
-  Math.random() * 360
-}deg) translateX(${orbSize}) rotateZ(${Math.random() * 360}deg);
+  30%, 80% {
+    transform: 
+      rotateZ(${Math.random() * 360}deg)
+      rotateY(${Math.random() * 360}deg)
+      translateX(${orbSize})
+      rotateZ(${Math.random() * 360}deg);
     opacity: 1;
   }
   100% {
-    transform: rotateZ(-${Math.random() * 360}deg) rotateY(${
-  Math.random() * 360
-}deg) translateX(calc(${orbSize} * 3)) rotateZ(${Math.random() * 360}deg);
+    opacity: 0;
   }
 `;
 
-const WrapperBase = styled.div`
+const OrbitContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  height: 400px;
+`;
+
+const OrbitWrapper = styled.div`
   position: absolute;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
   perspective: 1000px;
-  animation: ${rotate} ${time} infinite linear;
+  pointer-events: none;
 `;
 
-const WrapperTopRight = styled(WrapperBase)`
-  top: 0;
-  right: 0;
-`;
-
-const WrapperBottomLeft = styled(WrapperBase)`
-  bottom: 0;
-  left: 0;
+const RotatingSphere = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: ${rotate} ${time} linear infinite;
 `;
 
 const Particle = styled.div`
@@ -59,23 +65,25 @@ const Particle = styled.div`
   width: ${particleSize};
   height: ${particleSize};
   border-radius: 50%;
-  opacity: 0;
-  animation: ${({ index }) => Orbit(index)} ${time} infinite;
-  animation-delay: ${({ index }) => index * 0.01}s;
   background-color: ${({ index }) =>
-    `hsla(${(40 / total) * index + baseHue}, 100%, 50%, 1)`};
+    `hsla(${(360 / total) * index + baseHue}, 100%, 60%, 0.8)`};
+  animation: ${({ index }) => Orbit(index)} ${time} linear infinite;
+  animation-delay: ${({ index }) => index * 0.05}s;
+  will-change: transform, opacity;
 `;
 
-const ParticleOrbit = () => {
+const ParticleOrbit = ({ children }) => {
   const particles = Array.from({ length: total }, (_, index) => (
     <Particle key={index} index={index} />
   ));
 
   return (
-    <>
-      <WrapperTopRight>{particles}</WrapperTopRight>
-      <WrapperBottomLeft>{particles}</WrapperBottomLeft>
-    </>
+    <OrbitContainer>
+      <OrbitWrapper>
+        <RotatingSphere>{particles}</RotatingSphere>
+      </OrbitWrapper>
+      <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+    </OrbitContainer>
   );
 };
 

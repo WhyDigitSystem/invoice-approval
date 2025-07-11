@@ -545,13 +545,137 @@ const Ticket = () => {
             value={form.message}
             onChange={handleChange}
           />
-          <input
+          <div
+            style={{
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Upload icon (clickable) */}
+            <div
+              onClick={() => fileInputRef.current.click()}
+              style={{
+                display: "inline-flex",
+                cursor: "pointer",
+                padding: "6px",
+                borderRadius: "50%",
+                boxShadow: "0 0 5px #f3703a, 0 0 10px #f3703a",
+                color: "white",
+              }}
+              title="Upload files"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#f3703a"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+
+            {/* Hidden file input */}
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
+
+            {/* Uploaded files caption and names */}
+            {files.length > 0 && (
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+              >
+                <strong style={{ fontSize: "14px" }}>Uploaded Files:</strong>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {files.map((file, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: "#333",
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      {file.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Download icon */}
+          {/* <div
+              onChange={handleFileChange}
+              style={{
+                display: "inline-block",
+                cursor: "pointer",
+                padding: "10px",
+                borderRadius: "50%",
+                boxShadow:
+                  "0 0 10px #00e0ff, 0 0 20px #00e0ff, 0 0 30px #00e0ff",
+              }}
+              // title="Download"
+            >
+              {/* <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00e0ff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg> 
+            </div> */}
+
+          {/* Hidden file input */}
+
+          {/* <svg
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#f3703a"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg> */}
+
+          {/* <input
             type="file"
             multiple
             onChange={handleFileChange}
             ref={fileInputRef}
             style={{ marginBottom: "20px", color: "white" }}
-          />
+          /> */}
+
           <div className="button-container">
             <div className="send-button" onClick={handleSubmit}>
               Send

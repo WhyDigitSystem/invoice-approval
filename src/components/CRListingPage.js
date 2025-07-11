@@ -19,6 +19,9 @@ import {
   Space,
   Spin,
   Typography,
+  Modal,
+  Popconfirm,
+  message,
 } from "antd";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
@@ -45,6 +48,9 @@ const CRListingPage = () => {
   const [emailFlag, setEmailFlag] = useState(false);
   const [emailFlag2, setEmailFlag2] = useState(false);
   const [emailData, setEmailData] = useState([]);
+  const [rejectRemarks, setRejectRemarks] = useState("");
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
+  const [itemToReject, setItemToReject] = useState(null);
   const [userType, setUserType] = useState(localStorage.getItem("userType"));
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [filter, setFilter] = useState({
@@ -108,67 +114,6 @@ const CRListingPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  // const fetchData = () => {
-  //   setLoading(true);
-  //   getCRListingData()
-  //     .then((response) => {
-  //       setData(response);
-  //       setLoading(false);
-  //     })
-  //     .catch(() => {
-  //       notification.error({
-  //         message: "Data Fetch Error",
-  //         description: "Failed to fetch updated data for the listing.",
-  //       });
-  //       setLoading(false);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   if (data.length > 0) {
-  //     // Fetch files for each item in filteredData
-  //     data.forEach((item) => {
-  //       findByGSTPreCreditrId(item.gst_precreditId)
-  //         .then((response) => {
-  //           // Update the item with the fetched files
-  //           setData((prevData) =>
-  //             prevData.map((dataItem) =>
-  //               dataItem.gst_precreditId === item.gst_precreditId
-  //                 ? { ...dataItem, files: response }
-  //                 : dataItem
-  //             )
-  //           );
-  //         })
-  //         .catch((error) => {
-  //           console.error(
-  //             `Failed to fetch files for gst_precreditId ${item.gst_precreditId}:`,
-  //             error
-  //           );
-  //         });
-  //     });
-  //   }
-  // }, [data]);
-
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await getCRListingData();
-  //     const attachmentResponse = await findByGSTPreCreditrId(
-  //       response.paramObjectsMap.pendingApprovalDetails[0].id
-  //     );
-
-  //     setData(response.paramObjectsMap.pendingApprovalDetails);
-  //     setAttachData(attachmentResponse.paramObjectsMap.crPreAppVO.attachment); // Store the attachment
-  //     console.log("AttachData", attachmentResponse);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     notification.error({
-  //       message: "Data Fetch Error",
-  //       description: "Failed to fetch data.",
-  //     });
-  //     setLoading(false);
-  //   }
-  // };
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -191,21 +136,10 @@ const CRListingPage = () => {
               attachmentResponse
             );
 
-            // Step 3: Extract the required attachment data
-            // item.files =
-            //   attachmentResponse?.data?.paramObjectsMap?.crPreAppVO
-            //     ?.attachment || null;
             const filesResponse = await findByGSTPreCreditrId(item.id);
             const profoma =
               filesResponse?.data?.paramObjectsMap?.crPreAppVO?.profoma ||
               "File";
-
-            // Generate filenames based on profoma and index
-            // const formattedAttachments = attachments.map((file, index) => ({
-            //   id: file.id,
-            //   attachment: file.attachment, // Base64 or Blob
-            //   fileName: `${profoma}_${String(index + 1).padStart(2, "0")}`, // Format: CBE24OSRN00001_01, CBE24OSRN00001_02, ...
-            // }));
 
             item.files =
               attachmentResponse?.data?.paramObjectsMap?.crPreAppVO?.crPreAppAttachmentVO?.map(
@@ -309,102 +243,6 @@ const CRListingPage = () => {
     fetchFilesForEachItem();
   }, [data]); // Dependency on `data` to re-run when data changes
 
-  // const renderAttachment = (attachment) => {
-  //   if (!attachment) return <Text strong>No attachment available</Text>;
-
-  //   // Determine the file type (e.g., PDF, image, etc.)
-  //   const fileType = attachment.split(";")[0].split(":")[1]; // Extract MIME type
-
-  //   // Decode the Base64 string
-  //   const byteCharacters = atob(attachment.split(",")[1]);
-  //   const byteNumbers = new Array(byteCharacters.length);
-  //   for (let i = 0; i < byteCharacters.length; i++) {
-  //     byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //   }
-  //   const byteArray = new Uint8Array(byteNumbers);
-  //   const blob = new Blob([byteArray], { type: fileType });
-
-  //   // Create a URL for the Blob
-  //   const fileUrl = URL.createObjectURL(blob);
-
-  //   // Render based on file type
-  //   if (fileType.startsWith("image/")) {
-  //     return (
-  //       <img
-  //         src={fileUrl}
-  //         alt="Attachment"
-  //         style={{ maxWidth: "100%", height: "auto" }}
-  //       />
-  //     );
-  //   } else if (fileType === "application/pdf") {
-  //     return (
-  //       <iframe src={fileUrl} width="100%" height="500px" title="Attachment" />
-  //     );
-  //   } else {
-  //     return (
-  //       <a href={fileUrl} download="attachment">
-  //         <Button icon={<Download />}>Download Attachment</Button>
-  //       </a>
-  //     );
-  //   }
-  // };
-  // const fetchData = () => {
-  //   setLoading(true);
-  //   getCRListingData()
-  //     .then((response) => {
-  //       setData(response.paramObjectsMap.pendingApprovalDetails); // Set data from the API response
-  //       setLoading(false);
-  //     })
-  //     .catch(() => {
-  //       notification.error({
-  //         message: "Data Fetch Error",
-  //         description: "Failed to fetch updated data for the listing.",
-  //       });
-  //       setLoading(false);
-  //     });
-  // };
-  // useEffect(() => {
-  //   // If files have already been fetched, skip the effect
-  //   if (hasFetchedRef.current) return;
-
-  //   const fetchFilesForEachItem = async () => {
-  //     if (data.length === 0) return; // If no data, do nothing
-
-  //     const updatedData = [...data]; // Create a copy to avoid mutation
-
-  //     for (let item of updatedData) {
-  //       // Check if files are already fetched, if yes, skip fetching
-  //       if (item.filesFetched) continue;
-
-  //       console.log("Fetching files for id:", item.id); // Assuming id is the correct field
-
-  //       if (!item.id) {
-  //         console.error(`Invalid id for item: ${JSON.stringify(item)}`);
-  //         continue; // Skip if id is invalid
-  //       }
-
-  //       try {
-  //         // Call the API to get the files using id instead of gst_precreditId
-  //         const filesResponse = await findByGSTPreCreditrId(item.id); // Use item.id instead of gst_precreditId
-  //         setAttachData(filesResponse.paramObjectsMap.crPreAppVO.attachment);
-  //         item.files = filesResponse || [];
-  //         item.filesFetched = true; // Mark as fetched
-  //       } catch (error) {
-  //         console.error(`Failed to fetch files for id ${item.id}:`, error);
-  //         item.files = [];
-  //         item.filesFetched = false; // Mark as not fetched in case of error
-  //       }
-  //     }
-
-  //     // Update the state with the modified data
-  //     setData(updatedData);
-  //     console.log("setAttachData", data);
-  //     hasFetchedRef.current = true; // Set the flag to true after files are fetched
-  //   };
-
-  //   fetchFilesForEachItem();
-  // }, [data]); // Dependency on `data`, will run when data changes/ Dependency on data to fetch files only when data is updated or on page load
-
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -422,12 +260,14 @@ const CRListingPage = () => {
     }
   }, [theme]);
 
-  const handleApprove = async (item) => {
+  const handleApprove = async (item, remarks) => {
     try {
       const response = await axios.put(
         `${API_URL}/api/crpreapp/approval1?approval=${"1"}&createdby=${localStorage.getItem(
           "userName"
-        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem("userType")}`
+        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem(
+          "userType"
+        )}&remarks=${remarks || ""}`
       );
 
       if (response.data.status === true) {
@@ -460,28 +300,30 @@ const CRListingPage = () => {
     }
   };
 
-  const handleReject = async (item) => {
+  const handleReject = async (item, remarks) => {
     try {
       const response = await axios.put(
         `${API_URL}/api/crpreapp/approval1?approval=${"0"}&createdby=${localStorage.getItem(
           "userName"
-        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem("userType")}`
+        )}&id=${parseInt(item.id)}&userType=${localStorage.getItem(
+          "userType"
+        )}&remarks=${remarks || ""}`
       );
 
       if (response.data.status === true) {
-        const audio = new Audio("/success.wav"); // Replace with your sound file path
+        const audio = new Audio("/success.wav");
         audio.play();
 
-        notification.error({
-          message: `Item ${item.id} Rejected`,
-          description: `You have rejected item ${item.id}.`,
+        message.error({
+          content: `Item ${item.id} Rejected`,
+          duration: 2,
         });
+        setIsRejectModalVisible(false);
         fetchData();
-        // setIsModalOpen(false);
+        // setIsRejectModalVisible(false);
+        setRejectRemarks("");
       } else {
-        notification.error({
-          message: `Item ${item.id} failed`,
-        });
+        message.error(`Item ${item.id} failed`);
       }
     } catch (error) {
       console.log("Error Response:", error.response?.data);
@@ -489,9 +331,9 @@ const CRListingPage = () => {
         error.response?.data?.paramObjectsMap?.errorMessage ||
         error.response?.data?.message ||
         "An unexpected error occurred. Please try again.";
+      message.error(errorMessage);
     }
   };
-
   const handleLogout = () => {
     navigate("/"); // Navigate to login or home page
   };
@@ -604,46 +446,6 @@ const CRListingPage = () => {
     year: "",
   });
 
-  // const handleDownload = (base64String, fileName) => {
-  //   try {
-  //     if (!base64String || typeof base64String !== "string") {
-  //       console.error("Invalid attachment data");
-  //       return;
-  //     }
-
-  //     // Check if it's a valid Base64 string
-  //     const validBase64 = /^[A-Za-z0-9+/=]+$/.test(base64String.trim());
-  //     if (!validBase64) {
-  //       console.error("Received malformed Base64 data");
-  //       return;
-  //     }
-
-  //     // Decode Base64 into binary data
-  //     const byteCharacters = atob(base64String);
-  //     const byteNumbers = new Array(byteCharacters.length);
-  //     for (let i = 0; i < byteCharacters.length; i++) {
-  //       byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //     }
-  //     const byteArray = new Uint8Array(byteNumbers);
-
-  //     // Create a Blob (Assuming it's a text file, modify MIME type if needed)
-  //     const blob = new Blob([byteArray], { type: "application/octet-stream" });
-
-  //     // Create a temporary download link
-  //     const url = URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = fileName || "download.txt"; // Adjust filename if needed
-  //     document.body.appendChild(a);
-  //     a.click();
-
-  //     // Cleanup
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Error downloading file:", error);
-  //   }
-  // };
   // // Function to show time
   const showTime = () => {
     let time = new Date();
@@ -695,137 +497,6 @@ const CRListingPage = () => {
     // Clean up interval when the component unmounts
     return () => clearInterval(timeInterval);
   }, []);
-
-  // const handleDownload = (fileData, fileName = "attachment.pdf") => {
-  //   try {
-  //     if (!fileData) {
-  //       console.error("No attachment found!");
-  //       return;
-  //     }
-
-  //     let blob;
-
-  //     // Case 1: If fileData is already a Blob
-  //     if (fileData instanceof Blob) {
-  //       blob = new Blob([fileData], { type: "application/pdf" }); // Ensure it's PDF
-  //     }
-  //     // Case 2: If fileData is a Base64 string (Ensure Base64 is valid)
-  //     else if (typeof fileData === "string" && fileData.startsWith("JVBER")) {
-  //       const byteCharacters = atob(fileData);
-  //       const byteNumbers = new Array(byteCharacters.length);
-  //       for (let i = 0; i < byteCharacters.length; i++) {
-  //         byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //       }
-  //       const byteArray = new Uint8Array(byteNumbers);
-  //       blob = new Blob([byteArray], { type: "application/pdf" });
-  //     }
-  //     // Case 3: If fileData is an ArrayBuffer
-  //     else if (fileData instanceof ArrayBuffer) {
-  //       blob = new Blob([fileData], { type: "application/pdf" });
-  //     } else {
-  //       console.error("Unsupported file format:", fileData);
-  //       return;
-  //     }
-
-  //     // Create a URL and download
-  //     const url = URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = fileName; // Ensure it downloads as a PDF
-  //     document.body.appendChild(a);
-  //     a.click();
-
-  //     // Cleanup
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Error downloading PDF file:", error);
-  //   }
-  // };
-
-  // const handleDownload = (fileData, fileName) => {
-  //   try {
-  //     if (!fileData) {
-  //       console.error("No attachment found!");
-  //       return;
-  //     }
-
-  //     let blob;
-  //     let fileType;
-
-  //     // Case 1: If fileData is already a Blob
-  //     if (fileData instanceof Blob) {
-  //       // Check the MIME type of the Blob to determine file type
-  //       fileType = fileData.type || "application/octet-stream"; // Default to binary stream
-  //       blob = fileData;
-  //     }
-  //     // Case 2: If fileData is a Base64 string (ensure Base64 is valid)
-  //     else if (typeof fileData === "string") {
-  //       // PDF (starts with JVBER for PDF)
-  //       if (fileData.startsWith("JVBER")) {
-  //         const byteCharacters = atob(fileData);
-  //         const byteNumbers = new Array(byteCharacters.length);
-  //         for (let i = 0; i < byteCharacters.length; i++) {
-  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //         }
-  //         const byteArray = new Uint8Array(byteNumbers);
-  //         blob = new Blob([byteArray], { type: "application/pdf" });
-  //         fileType = "application/pdf";
-  //         fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
-  //       }
-  //       // Word (starts with PK for DOCX)
-  //       else if (fileData.startsWith("UEsDB")) {
-  //         const byteCharacters = atob(fileData);
-  //         const byteNumbers = new Array(byteCharacters.length);
-  //         for (let i = 0; i < byteCharacters.length; i++) {
-  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //         }
-  //         const byteArray = new Uint8Array(byteNumbers);
-  //         blob = new Blob([byteArray], {
-  //           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  //         });
-  //         fileType =
-  //           "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  //         fileName = fileName.endsWith(".docx") ? fileName : `${fileName}.docx`;
-  //       }
-  //       // Plain text (Notepad)
-  //       else {
-  //         const byteCharacters = atob(fileData);
-  //         const byteNumbers = new Array(byteCharacters.length);
-  //         for (let i = 0; i < byteCharacters.length; i++) {
-  //           byteNumbers[i] = byteCharacters.charCodeAt(i);
-  //         }
-  //         const byteArray = new Uint8Array(byteNumbers);
-  //         blob = new Blob([byteArray], { type: "text/plain" });
-  //         fileType = "text/plain";
-  //         fileName = fileName.endsWith(".txt") ? fileName : `${fileName}.txt`;
-  //       }
-  //     }
-  //     // Case 3: If fileData is an ArrayBuffer
-  //     else if (fileData instanceof ArrayBuffer) {
-  //       blob = new Blob([fileData], { type: "application/pdf" }); // Default to PDF if ArrayBuffer is given
-  //       fileType = "application/pdf";
-  //       fileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
-  //     } else {
-  //       console.error("Unsupported file format:", fileData);
-  //       return;
-  //     }
-
-  //     // Create a URL for the Blob and trigger download
-  //     const url = URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = fileName; // Ensure it downloads with the appropriate file name
-  //     document.body.appendChild(a);
-  //     a.click();
-
-  //     // Cleanup
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Error downloading file:", error);
-  //   }
-  // };
 
   const handleDownload = (files) => {
     try {
@@ -1013,23 +684,23 @@ const CRListingPage = () => {
                 borderRadius: "8px",
                 boxShadow: boxShadowStyle, // Apply custom box shadow
                 border: `1px solid ${cardBorderColor}`, // Apply conditional border color
-                // background: "lig",
-
-                // background:
-                //   "linear-gradient(45deg, rgba(0,212,255,1) 0%, rgba(11,3,45,1) 100%)",
               }}
             >
               {loading ? (
                 <Spin tip="Loading..." />
               ) : (
                 <Row gutter={[12, 12]}>
-                  {data.map((item) => (
-                    <Col xs={24} sm={12} md={8} key={item.gst_precreditId}>
+                  {filteredData.map((item) => (
+                    <Col
+                      xs={12}
+                      sm={6}
+                      lg={8}
+                      md={6}
+                      key={item.gst_precreditId}
+                    >
                       <section>
                         <div class="glass">
-                          <div class="img">
-                            {/* <img src="https://i.imgur.com/GyxmAZO.jpg" alt="" /> */}
-                          </div>
+                          <div class="img"></div>
 
                           <div class="des">
                             <div class="maincontent">
@@ -1038,14 +709,7 @@ const CRListingPage = () => {
                                   lineheight: "3.3%",
                                 }}
                               >
-                                <div
-                                  style={
-                                    {
-                                      // display: "flex",
-                                      // justifyContent: "space-between",
-                                    }
-                                  }
-                                >
+                                <div style={{}}>
                                   <Text
                                     strong
                                     style={{
@@ -1131,30 +795,10 @@ const CRListingPage = () => {
                                     justifyContent: "space-between",
                                   }}
                                 >
-                                  {/* <Text strong style={{ flex: 1, color: "black" }}>
-                                                                                                            SalesPerson:
-                                                                                                          </Text> */}
                                   <Text strong style={{ color: "black" }}>
                                     {/* {item.salespersonName} */}
                                   </Text>
                                 </div>
-                                {/* 
-                                                            <div
-                                                              style={{
-                                                                display: "flex",
-                                                                justifyContent: "space-between",
-                                                              }}
-                                                            >
-                                                              <Text
-                                                                strong
-                                                                style={{ flex: 1, color: "black" }}
-                                                              >
-                                                                Limit | Days :
-                                                              </Text>
-                                                              <Text strong style={{ color: "black" }}>
-                                                                {item.creditLimit} | {item.creditDays}
-                                                              </Text>
-                                                            </div> */}
 
                                 <div
                                   style={{
@@ -1247,7 +891,7 @@ const CRListingPage = () => {
                                     color: theme === "dark" ? "white" : "black",
                                   }}
                                 >
-                                  Invoice Amt:
+                                  Inv Charge Amt:
                                 </Text>
                                 <Text
                                   strong
@@ -1256,7 +900,7 @@ const CRListingPage = () => {
                                   }}
                                 >
                                   {new Intl.NumberFormat("en-IN").format(
-                                    item.invAmt
+                                    item.totchargeamtlc
                                   )}
                                 </Text>
                               </div>
@@ -1274,7 +918,7 @@ const CRListingPage = () => {
                                     color: theme === "dark" ? "white" : "black",
                                   }}
                                 >
-                                  Cr Note Amt:
+                                  CN Charge Amt:
                                 </Text>
                                 <Text
                                   strong
@@ -1580,12 +1224,44 @@ const CRListingPage = () => {
                                     class="likeCount1"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleReject(item);
+                                      // handleReject(item);
+                                      setItemToReject(item);
+                                      setIsRejectModalVisible(true);
                                     }}
                                   >
                                     Reject
                                   </span>
                                 </button>
+                                <Modal
+                                  title="Rejection Remarks"
+                                  visible={isRejectModalVisible}
+                                  onOk={() => {
+                                    if (rejectRemarks.trim() === "") {
+                                      message.warning(
+                                        "Please enter rejection remarks"
+                                      );
+                                      return; // Prevent closing the modal
+                                    }
+                                    handleReject(itemToReject, rejectRemarks);
+                                    setIsRejectModalVisible(false); // Close modal on successful reject
+                                    setRejectRemarks(""); // Clear remarks after submit
+                                  }}
+                                  onCancel={() => {
+                                    setIsRejectModalVisible(false);
+                                    setRejectRemarks("");
+                                  }}
+                                  okText="Confirm Reject"
+                                  cancelText="Cancel"
+                                >
+                                  <Input.TextArea
+                                    rows={4}
+                                    placeholder="Enter rejection remarks..."
+                                    value={rejectRemarks}
+                                    onChange={(e) =>
+                                      setRejectRemarks(e.target.value)
+                                    }
+                                  />
+                                </Modal>
                               </Space>
                             </div>
                           </div>

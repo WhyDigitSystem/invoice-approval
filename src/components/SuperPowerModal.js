@@ -21,6 +21,7 @@ import {
   CircularProgress,
   InputAdornment,
   Paper,
+  Grid,
 } from "@mui/material";
 import { notification } from "antd";
 import { useWindowSize } from "react-use";
@@ -49,6 +50,7 @@ import {
   getHaiCustomerRankDetails,
   getHaiProductSummary,
   getHaiCustomerYearProfit,
+  getJobFullDetails,
 } from "../services/api";
 import GaugeSpeedometer from "./GaugeSpeedometer";
 import { Doughnut } from "react-chartjs-2";
@@ -94,6 +96,12 @@ const SuperPowerModal = ({ open, onClose }) => {
       color: "#96C93D",
       type: "AI",
     },
+    {
+      name: "Job",
+      description: "View and manage employee information",
+      color: "#96C93D",
+      type: "JOB",
+    },
   ];
 
   const [currentPower, setCurrentPower] = useState(0);
@@ -115,6 +123,7 @@ const SuperPowerModal = ({ open, onClose }) => {
   const [yeardata, setYearData] = useState([]);
   const [rankinvdata, setRankInvData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [jobFullData, setJobFullData] = useState([]);
   const { width, height } = useWindowSize(); // Automatically adjusts confetti to window size
   const buttonRef = useRef(null);
   const [status, setStatus] = useState("idle");
@@ -198,6 +207,10 @@ const SuperPowerModal = ({ open, onClose }) => {
     console.log("Current productData:", productData);
   }, [productData]);
 
+  useEffect(() => {
+    console.log("Current jobFullData:", jobFullData);
+  }, [jobFullData]);
+
   const [periodType, setPeriodType] = useState("month");
 
   const togglePeriod = () => {
@@ -255,6 +268,36 @@ const SuperPowerModal = ({ open, onClose }) => {
   //     type: "PRODUCT",
   //   },
   // ]);
+
+  const fetchPartyNames = useCallback(async (type = "JOB") => {
+    setLoading(true);
+    try {
+      const actualType = type === "AI" ? "CUSTOMER" : type;
+      const response = await getPartyLedgerPartyName(actualType);
+      setPartyNames(response || []);
+      console.log("partyName", response); // Use response directly as state may not update immediately
+    } catch (error) {
+      console.error("Error fetching party names:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to fetch party names",
+      });
+      setPartyNames([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // For daily fetching
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const lastFetchDate = localStorage.getItem("lastPartyNamesFetchDate");
+
+    if (lastFetchDate !== today) {
+      fetchPartyNames("Job"); // Default to "Job" on first load
+      localStorage.setItem("lastPartyNamesFetchDate", today);
+    }
+  }, [fetchPartyNames]);
 
   const uniqueCusData =
     selectedType === "PRODUCT"
@@ -637,24 +680,24 @@ const SuperPowerModal = ({ open, onClose }) => {
   }, [open, selectedType]);
 
   // Fetch party names with wildcard search
-  const fetchPartyNames = useCallback(async (type) => {
-    setLoading(true);
-    try {
-      const actualType = type === "AI" ? "CUSTOMER" : type;
-      const response = await getPartyLedgerPartyName(actualType);
-      setPartyNames(response || []);
-      console.log("partyName", partyNames);
-    } catch (error) {
-      console.error("Error fetching party names:", error);
-      notification.error({
-        message: "Error",
-        description: "Failed to fetch party names",
-      });
-      setPartyNames([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // const fetchPartyNames = useCallback(async (type) => {
+  //   setLoading(true);
+  //   try {
+  //     const actualType = type === "AI" ? "CUSTOMER" : type;
+  //     const response = await getPartyLedgerPartyName(actualType);
+  //     setPartyNames(response || []);
+  //     console.log("partyName", partyNames);
+  //   } catch (error) {
+  //     console.error("Error fetching party names:", error);
+  //     notification.error({
+  //       message: "Error",
+  //       description: "Failed to fetch party names",
+  //     });
+  //     setPartyNames([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -902,6 +945,25 @@ const SuperPowerModal = ({ open, onClose }) => {
     }
   };
 
+  const fetchData6 = async (selectedValue) => {
+    setLoading(true);
+    try {
+      const response = await getJobFullDetails(selectedValue);
+      setJobFullData(response);
+      console.log("Job Full Details Data:", jobFullData); // Debug log
+
+      // Check if response has data
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+      notification.error({
+        message: "Data Fetch Error",
+        description: "Failed to fetch branch customer data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch data only when modal is open and selectedType/selectedParty changes
 
   const monthMap = {
@@ -1016,14 +1078,14 @@ const SuperPowerModal = ({ open, onClose }) => {
     setCurrentPower(index);
   };
 
-  const chartData = [
-    { title: "Tokyo", value: 120, color: "#2C3E50" },
-    { title: "San Francisco", value: 80, color: "#FC4349" },
-    { title: "New York", value: 70, color: "#6DBCDB" },
-    { title: "London", value: 50, color: "#F7E248" },
-    { title: "Sydney", value: 40, color: "#D7DADB" },
-    { title: "Berlin", value: 20, color: "#FFF" },
-  ];
+  // const chartData = [
+  //   { title: "Tokyo", value: 120, color: "#2C3E50" },
+  //   { title: "San Francisco", value: 80, color: "#FC4349" },
+  //   { title: "New York", value: 70, color: "#6DBCDB" },
+  //   { title: "London", value: 50, color: "#F7E248" },
+  //   { title: "Sydney", value: 40, color: "#D7DADB" },
+  //   { title: "Berlin", value: 20, color: "#FFF" },
+  // ];
 
   const handleTypeChange = (value) => {
     setPtype(value); // Update the Type state
@@ -1139,7 +1201,7 @@ const SuperPowerModal = ({ open, onClose }) => {
             marginBottom: "2rem",
             gap: "0.7rem",
             flexWrap: "wrap",
-            marginLeft: "-330px",
+            marginLeft: "-300px",
           }}
         >
           {powers.map((power, index) => (
@@ -1329,6 +1391,9 @@ const SuperPowerModal = ({ open, onClose }) => {
                                 fetchData4(selectedValue);
                               }
                               fetchData5(selectedValue, selectedType);
+                              if (selectedType === "JOB") {
+                                fetchData6(selectedValue);
+                              }
                             }
                           }}
                         >
@@ -1685,6 +1750,41 @@ const SuperPowerModal = ({ open, onClose }) => {
                 rankinvdata={rankinvdata}
                 brcusdata={brcusdata}
               />
+            </Box>
+          )}
+
+          {selectedType === "JOB" && (
+            <Box
+              sx={{
+                padding: "1.5rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "15px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backdropFilter:
+                  showDropdown || searchTerm ? "none" : "blur(5px)",
+                minHeight: "250px",
+                maxHeight: "600px",
+                overflowY: "auto",
+              }}
+            >
+              {jobFullData?.length > 0 && jobFullData[0] ? (
+                <Grid container spacing={2}>
+                  {Object.entries(jobFullData[0]).map(([key, value]) => (
+                    <Grid item xs={12} sm={6} md={4} key={key}>
+                      <Typography variant="caption" sx={{ color: "#ccc" }}>
+                        {key.toUpperCase()}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "#fff" }}>
+                        {value?.toString() || "-"}
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography sx={{ color: "#ccc" }}>
+                  No job details available.
+                </Typography>
+              )}
             </Box>
           )}
         </Box>

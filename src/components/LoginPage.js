@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import "./LoginPage.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import ParticleOrbit from "./ParticleOrbit";
-import UWLNL1 from "../UWLNL1.png";
-import logoonly from "../logoonly.jpg";
+import {
+  ConsoleSqlOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
 import {
   Alert,
   Button,
@@ -13,10 +12,29 @@ import {
   Typography,
   notification,
 } from "antd";
-import { useNavigate } from "react-router-dom";
-import { encryptPassword } from "../utils/passEnc";
 import axios from "axios";
+import confetti from "canvas-confetti";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import logoonly from "../logoonly.png";
+import Loader from "../utils/Loader";
+import { encryptPassword } from "../utils/passEnc";
+import Gallery from "./Gallery";
+import CryptoJS from "crypto-js";
+import "./LoginPage.css";
+import UWLNL from "../UWLNL.jpg";
+import UWLNL1 from "../UWLNL1.png";
+import scmprocess from "../scmprocess.gif";
+import loginpage1 from "../loginpage1.png";
+import loginpage1New from "../loginpage1New.png";
+import loginpage1New1 from "../loginpage1New1.jpg";
+import expimp from "../expimp.jpg";
+import login4 from "../login4.jpg";
+import scm2 from "../scm2.jpg";
+import scmvideo from "../scmvideo.mp4";
 import logoonly1 from "../logoonly.png";
+import ParticleOrbit from "./ParticleOrbit";
+
 const { Text } = Typography;
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
@@ -26,8 +44,107 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light"); // Default theme from localStorage
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle mobile state persistence
+  // useEffect(() => {
+  //   // First check URL state (from logout)
+  //   if (location.state?.isMobile !== undefined) {
+  //     setIsMobile(location.state.isMobile);
+  //     return;
+  //   }
+
+  //   // Then check localStorage
+  //   const savedMobileView = localStorage.getItem("isMobileView");
+  //   if (savedMobileView) {
+  //     setIsMobile(savedMobileView === "true");
+  //   }
+
+  //   const handleResize = () => {
+  //     const mobile = window.innerWidth < 768;
+  //     setIsMobile(mobile);
+  //     localStorage.setItem("isMobileView", mobile.toString());
+  //   };
+
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [location.state]);
+
+  // Handle mobile state persistence
+  // useEffect(() => {
+  //   // Check URL state first (from logout)
+  //   if (location.state?.isMobile !== undefined) {
+  //     setIsMobile(location.state.isMobile);
+  //     return;
+  //   }
+
+  //   // Otherwise check localStorage
+  //   const savedMobileView = localStorage.getItem("isMobileView");
+  //   if (savedMobileView) {
+  //     setIsMobile(savedMobileView === "true");
+  //   }
+
+  //   const handleResize = () => {
+  //     setIsMobile(window.innerWidth < 768);
+  //   };
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [location.state]);
+
+  // Save mobile view preference
+  // useEffect(() => {
+  //   localStorage.setItem("isMobileView", isMobile);
+  // }, [isMobile]);
+
+  // Handle mobile state and window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      if (mobile !== isMobile) {
+        setIsMobile(mobile);
+        localStorage.setItem("isMobileView", mobile.toString());
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile]);
+
+  const handleCelebrate = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
+    const button = document.getElementById("celebrateBtn");
+    if (button) {
+      button.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        button.style.transform = "scale(1)";
+      }, 100);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleCelebrate();
+    }, 20000);
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError("");
+        setSuccess("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
 
   const handleChange = (value, index) => {
     const newPasscode = [...passcode];
@@ -54,6 +171,12 @@ const LoginPage = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (username && passcode.join("").length === 6) {
+      handleSubmit();
+    }
+  }, [username, passcode]);
 
   const handleSubmit = async () => {
     if (!username) {
@@ -84,10 +207,8 @@ const LoginPage = () => {
           response.data.paramObjectsMap?.userVO.roleVO[0].responsibilityVO[0]
             .screensVO;
 
-        // Store user data and screens in localStorage
         localStorage.setItem("userData", JSON.stringify(userData));
-        localStorage.setItem("screens", JSON.stringify(screens)); // Store screen list
-
+        localStorage.setItem("screens", JSON.stringify(screens));
         localStorage.setItem("authToken", userData?.token);
 
         const token = response.data.paramObjectsMap?.userVO?.token;
@@ -105,7 +226,6 @@ const LoginPage = () => {
         const nickName = response.data.paramObjectsMap?.userVO?.nickName;
         localStorage.setItem("nickName", nickName);
 
-        // Extracting screensVO
         const responseScreens = JSON.stringify(
           response.data.paramObjectsMap.userVO.roleVO[0].responsibilityVO[0]
             .screensVO
@@ -117,18 +237,16 @@ const LoginPage = () => {
         notification.success({
           message: "Success",
           description: "Successfully Logged In",
-          duration: 5, // Time in seconds for the toast to stay visible
+          duration: 5,
         });
       } else {
-        // Check for specific error message if user is already logged in on another device
-        // if (response.data.paramObjectsMap?.errorMessage === "User Already Logged In Another Device") {
-        //   setError("You are already logged in on another device. Please log out from the other device.");
+        const errorMsg = response?.data.paramObjectsMap.errorMessage;
+        const message = response?.data.paramObjectsMap.message;
 
         notification.error({
-          message: "Error",
-          description:
-            "You are already logged in on another device or Your Account is InActive",
-          duration: 10, // Time in seconds for the toast to stay visible
+          message: "Login attempt has failed",
+          description: errorMsg,
+          duration: 10,
         });
       }
     } catch (error) {
@@ -137,140 +255,335 @@ const LoginPage = () => {
         error.response?.data?.message ||
         "An unexpected error occurred.";
       setError(errorMessage);
-      // Set the error message for at least 30 seconds
     } finally {
       setLoading(false);
     }
   };
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   useEffect(() => {
-    if (username && passcode.join("").length === 6) {
-      handleSubmit();
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.location.pathname === "/login") {
+      document.body.style.backgroundColor = "#fff";
+      document.body.style.color = "#000";
+    } else {
+      if (theme === "dark") {
+        document.body.style.backgroundColor = "#262626";
+        document.body.style.color = "#fff";
+      } else {
+        document.body.style.backgroundColor = "#fff";
+        document.body.style.color = "#000";
+      }
     }
-  }, [username, passcode]);
+  }, [theme]);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = "#fff";
+    document.body.style.color = "#000";
+    return () => {
+      document.body.style.backgroundColor = "";
+      document.body.style.color = "";
+    };
+  }, []);
+
+  const cardStyle =
+    theme === "dark"
+      ? { backgroundColor: "#fff", borderColor: "#444", color: "#000" }
+      : { backgroundColor: "#fff", borderColor: "#d9d9d9", color: "#000" };
+
+  const inputStyle =
+    theme === "dark"
+      ? { backgroundColor: "#fff", color: "#000", borderColor: "#666" }
+      : { backgroundColor: "#fff", color: "#000", borderColor: "#d9d9d9" };
 
   return (
-    <div className="body-wrapper">
-      <div className="logo-container">
-        <img src={logoonly1} width="110px" height="60px" alt="Logo" />
-        <div
-          style={{
-            fontSize: "24px",
-            marginLeft: "120px",
-            marginTop: "-60px",
-            color: "white",
-            fontWeight: "bpld",
-          }}
-        >
-          {" "}
-          Uniworld <br />
-          Logistics
-        </div>
-      </div>
-      <div className="background">{/* <ParticleOrbit /> */}</div>
+    <>
+      {!isMobile ? (
+        // Desktop View
+        <>
+          <div className="wrapper">
+            {[...Array(10)].map((_, i) => (
+              <span key={i} className="bubble"></span>
+            ))}
+          </div>
+          <div
+            style={{
+              backgroundImage: `url(${loginpage1New})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "600px",
+              width: "1400px",
+              boxShadow: "none",
+            }}
+          ></div>
+          <div
+            style={{
+              background: "transparent",
+              marginTop: "-600px",
+            }}
+          >
+            <img src={UWLNL1} width="260px" height="90px" alt="Your Image" />
+          </div>
 
-      <div className="wrapper">
-        {[...Array(10)].map((_, i) => (
-          <span key={i} className="bubble"></span>
-        ))}
-      </div>
-
-      <form className="glass-form">
-        <br />
-        <p style={{ color: "white" }}>
-          <h4> Welcome To UGS Portal</h4>
-        </p>
-        <br />
-        <div class="content">
-          <p>
-            <Space
-              direction="vertical"
-              style={{ width: "100%", padding: "1px" }}
+          <div
+            className="container"
+            style={{
+              marginTop: "-30px",
+              height: "700px",
+              width: "900px",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              background: "transparent",
+              boxShadow: "none",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+                marginTop: "30px",
+                gap: "30px",
+                boxShadow: "none",
+                background: "transparent",
+              }}
             >
-              <Text
-                style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  marginBottom: "12px",
-                  color: "white",
-                }}
-              >
-                Username
-              </Text>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                style={{
-                  padding: "4px",
-                  fontSize: 16,
-                  borderRadius: 8,
-                  marginBottom: "15px",
-                }}
-              />
+              {(error || success) && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 30,
+                    width: "100%",
+                    maxWidth: "400px",
+                  }}
+                >
+                  {error && <Alert message={error} type="error" showIcon />}
+                  {success && (
+                    <Alert message={success} type="success" showIcon />
+                  )}
+                </div>
+              )}
 
-              <Text
+              <div className="wrapper">
+                {[...Array(10)].map((_, i) => (
+                  <span key={i} className="bubble"></span>
+                ))}
+              </div>
+
+              <div
+                style={{ marginLeft: "-90px", background: "transparent" }}
+              ></div>
+
+              <div id="root"></div>
+
+              <div
+                className="ticketList"
                 style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  marginBottom: "15px",
-                  color: "white",
+                  marginTop: "-250px",
+                  marginLeft: "300px",
+                  background: "transparent",
                 }}
               >
-                6-Digit Passcode
-              </Text>
-              <Space size="middle" style={{ justifyContent: "center" }}>
-                {passcode.map((digit, index) => (
-                  <Input
-                    key={index}
-                    id={`otp-${index}`}
-                    value={digit}
-                    maxLength={1}
-                    onChange={(e) => handleChange(e.target.value, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
+                <div class="card">
+                  <div class="face face1" style={{ background: "#2f3271" }}>
+                    <div class="content">
+                      <p style={{ color: "white" }}>Welcome To UGS Portal</p>
+                    </div>
+                  </div>
+                  <div class="face face2">
+                    <div class="content">
+                      <p>
+                        <Space
+                          direction="vertical"
+                          style={{ width: "100%", padding: "1px" }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              textAlign: "center",
+                              marginBottom: "12px",
+                              color: cardStyle.color,
+                            }}
+                          >
+                            Username
+                          </Text>
+                          <Input
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Username"
+                            style={{
+                              padding: "4px",
+                              fontSize: 16,
+                              borderRadius: 8,
+                              ...inputStyle,
+                              marginBottom: "15px",
+                            }}
+                          />
+
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              textAlign: "center",
+                              marginBottom: "15px",
+                              color: cardStyle.color,
+                            }}
+                          >
+                            6-Digit Passcode
+                          </Text>
+                          <Space
+                            size="middle"
+                            style={{ justifyContent: "center" }}
+                          >
+                            {passcode.map((digit, index) => (
+                              <Input
+                                key={index}
+                                id={`otp-${index}`}
+                                value={digit}
+                                maxLength={1}
+                                onChange={(e) =>
+                                  handleChange(e.target.value, index)
+                                }
+                                onKeyDown={(e) => handleKeyDown(e, index)}
+                                style={{
+                                  width: "30px",
+                                  height: "30px",
+                                  textAlign: "center",
+                                  fontSize: "14px",
+                                  borderRadius: "8px",
+                                  ...inputStyle,
+                                }}
+                              />
+                            ))}
+                          </Space>
+                        </Space>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="wrapper">
+            {[...Array(10)].map((_, i) => (
+              <span key={i} className="bubble"></span>
+            ))}
+          </div>
+        </>
+      ) : (
+        // Mobile View
+        <div className="body-wrapper">
+          <div className="logo-container">
+            <img
+              src={logoonly1}
+              style={{ width: "10px !important", height: "10px !important" }}
+              alt="Logo"
+            />
+            <div
+              style={{
+                fontSize: "24px",
+                marginLeft: "100px",
+                marginTop: "-50px",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              <br /> Uniworld <br />
+              Logistics
+            </div>
+          </div>
+
+          <div className="background"></div>
+
+          <div className="wrapper">
+            {[...Array(10)].map((_, i) => (
+              <span key={i} className="bubble"></span>
+            ))}
+          </div>
+
+          <form className="glass-form">
+            <br />
+            <p style={{ color: "white" }}>
+              <h5> Welcome To UGS Portal</h5>
+            </p>
+            <br />
+            <div class="content">
+              <p>
+                <Space
+                  direction="vertical"
+                  style={{ width: "100%", padding: "1px" }}
+                >
+                  <Text
                     style={{
-                      width: "30px",
-                      height: "30px",
+                      fontSize: 16,
                       textAlign: "center",
-                      fontSize: "14px",
-                      borderRadius: "8px",
-                      color: "black",
+                      marginBottom: "12px",
+                      color: "white",
+                    }}
+                  >
+                    Username
+                  </Text>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    style={{
+                      padding: "4px",
+                      fontSize: 16,
+                      borderRadius: 8,
+                      marginBottom: "15px",
                     }}
                   />
-                ))}
-              </Space>
 
-              {/* <Button
-                              type="primary"
-                              size="large"
-                              block
-                              loading={loading}
-                              onClick={handleSubmit}
-                              style={{
-                                backgroundColor: "#4c6ef5",
-                                borderColor: "#4c6ef5",
-                                marginTop: "20px",
-                                borderRadius: "8px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              Login
-                            </Button> */}
-
-              {/* Dark Mode Toggle */}
-              {/* <Button
-                                type="text"
-                                icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
-                                onClick={toggleTheme}
-                                size="small"
-                                style={{ marginLeft: "10px" }}
-                              >
-                                {theme === "light" ? "Dark Mode" : "Light Mode"}
-                              </Button> */}
-            </Space>
-          </p>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      textAlign: "center",
+                      marginBottom: "15px",
+                      color: "white",
+                    }}
+                  >
+                    6-Digit Passcode
+                  </Text>
+                  <Space size="middle" style={{ justifyContent: "center" }}>
+                    {passcode.map((digit, index) => (
+                      <Input
+                        key={index}
+                        id={`otp-${index}`}
+                        value={digit}
+                        maxLength={1}
+                        onChange={(e) => handleChange(e.target.value, index)}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          textAlign: "center",
+                          fontSize: "14px",
+                          borderRadius: "8px",
+                          color: "black",
+                        }}
+                      />
+                    ))}
+                  </Space>
+                </Space>
+              </p>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      )}
+    </>
   );
 };
 

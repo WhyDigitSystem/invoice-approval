@@ -162,51 +162,17 @@ export const PartyLedger = () => {
     fetchPartyByType(value); // Fetch Party Names based on selected Type
   };
 
-  // Handle date range change
-  // const handleDateRangeChange = (dates) => {
-  //   // Set the selected date range into asondt
-  //   setAsondt(dates ? dates[0] : null); // Use the first date as the only value
-  // };
-  // Table columns definition
-  // const reportColumns = [
-  //   { accessorKey: 'SNo', header: 'sno', size: 140 },
-  //   { accessorKey: 'docid', header: 'Invoice No', size: 140 },
-  //   { accessorKey: 'docDate', header: 'Invoice Date', size: 140 },
-  //   { accessorKey: 'refNo', header: 'Ref No', size: 140 },
-  //   { accessorKey: 'refDate', header: 'Ref Date', size: 140 },
-  //   { accessorKey: 'suppRefNo', header: 'Supp Ref No', size: 140 },
-  //   { accessorKey: 'suppRefDate', header: 'Supp Ref Date', size: 140 },
-  //   // { accessorKey: 'subledgerCode', header: 'Party Code', size: 140 },
-  //   // { accessorKey: 'subledgerName', header: 'Party', size: 400 },
-  //   // { accessorKey: 'currency', header: 'Currency', size: 140 },
-  //   { accessorKey: 'particulars', header: 'Particulars', size: 400 },
-  //   { accessorKey: 'opbal', header: 'Op Bal.', size: 140 },
-  //   // { accessorKey: 'cbranch', header: 'Ctrl Branch', size: 140 },
-
-  //   { accessorKey: 'dbAmount', header: 'Db Amt', size: 140, cell: (info) => info.getValue(),
-  //     className: 'align-right'},
-  //     { accessorKey: 'crAmount', header: 'Cr Amt', size: 140 },
-
-  //     { accessorKey: 'billDbAmount', header: 'Bill Db Amt', size: 140, cell: (info) => info.getValue(),
-  //       className: 'align-right'},
-
-  //     { accessorKey: 'billCrAmount', header: 'Bill Cr Amt', size: 140 ,cell: (info) => info.getValue(),
-  //       className: 'align-right'},
-
-  // ];
-
   const reportColumns = [
     {
       accessorKey: "sno",
       header: "SNo",
       size: 140,
     },
-    { accessorKey: "docid", header: "Invoice No", size: 180 },
-    { accessorKey: "docDate", header: "Invoice Date", size: 140 },
+    { accessorKey: "docid", header: "Docid", size: 180 },
+    { accessorKey: "docDate", header: "Date", size: 140 },
     { accessorKey: "refNo", header: "Ref No", size: 140 },
     { accessorKey: "refDate", header: "Ref Date", size: 140 },
     { accessorKey: "particulars", header: "Particulars", size: 400 },
-    { accessorKey: "opbal", header: "Op Bal.", size: 140 },
     {
       accessorKey: "dbAmount",
       header: "Db Amt",
@@ -241,22 +207,6 @@ export const PartyLedger = () => {
     // window.history.back(); // Takes the user to the previous page
     navigate("/Reports");
   };
-
-  // const FromhandleDateChange = (event) => {
-  //   const newDate = event.target.value;
-
-  //   const formattedFromdt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
-
-  //   setFromdt(formattedFromdt); // Update the state with the selected date
-  // };
-
-  // const TohandleDateChange = (event) => {
-  //   const newDate = event.target.value;
-
-  //   const formattedTodt = newDate ? dayjs(newDate).format('DD-MM-YYYY') : null;
-
-  //   setTodt(formattedTodt); // Update the state with the selected date
-  // };
 
   // Fetch data when branch name changes
   const fetchPartyData = (ptype) => {
@@ -593,6 +543,14 @@ export const PartyLedger = () => {
                 data={data}
                 columns={reportColumns}
                 loading={loading}
+                filters={{
+                  branchname: pbranchname,
+                  ptype: ptype,
+                  customer: selectedParty,
+                  fromdt: fromdt,
+                  todt: todt,
+                }}
+                div
               />
             ) : (
               <NoDataAvailable message="No records to display" />

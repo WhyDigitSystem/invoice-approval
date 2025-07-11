@@ -14,7 +14,6 @@ import {
   notification,
   Popover,
   Row,
-  Select,
   Space,
   Spin,
   Typography,
@@ -22,17 +21,14 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getListingData } from "../services/api"; // mock API call
+import { getListingData } from "../services/api";
 import EmailConfig from "../utils/emailConfig";
 import NoDataFallback from "../utils/fallBack";
 import "./date.css";
 import "./style.css";
-
-
 import confetti from "canvas-confetti";
 import ButtonTrans from "./ButtonTrans";
 
-const { Option } = Select;
 const { Text } = Typography;
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8091";
 
@@ -464,7 +460,6 @@ const ListingPage = () => {
       <div style={{ padding: "20px", marginTop: "40px" }}>
         {/* Toggle Dark/Light Mode */}
         <Row gutter={[16, 16]}>
-
           {/* Listing Section */}
           <Col xs={24} sm={16} md={22} lg={22}>
             <Card
@@ -535,7 +530,7 @@ const ListingPage = () => {
               ) : (
                 <Row gutter={[12, 12]}>
                   {filteredData.map((item) => (
-                    <Col xs={24} sm={12} md={8} key={item.expenceId}>
+                    <Col xs={12} sm={6} lg={8} md={6} key={item.expenceId}>
                       <div class="note-container">
                         <div
                           class="sticky-note sticky-note-one"
@@ -599,21 +594,6 @@ const ListingPage = () => {
                                 {item.currency} | {item.creditDays}
                               </Text>
                             </div>
-
-                            {/* <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                                Credit Days:
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.creditDays}
-                              </Text>
-                            </div> */}
-
                             <div
                               style={{
                                 display: "flex",
@@ -691,50 +671,6 @@ const ListingPage = () => {
                                 )}
                               </Text>
                             </div>
-
-                            {/* <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                              Category:
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.category}
-                              </Text>
-                            </div> */}
-
-                            {/*                             
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                              Controlling Office:
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.controllingoffice}
-                              </Text>
-                            </div> */}
-                            {/*           
-          
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text strong style={{ flex: 1, color: "black" }}>
-                                Due Days:
-                              </Text>
-                              <Text strong style={{ color: "black" }}>
-                                {item.exceedDays}
-                              </Text>
-                            </div> */}
 
                             <div
                               style={{
@@ -853,85 +789,6 @@ const ListingPage = () => {
           </Col>
         </Row>
 
-        {/* Modal for Item Details */}
-        {/* <Modal
-          visible={isModalOpen}
-          onCancel={() => setIsModalOpen(false)}
-          footer={null}
-        >
-          {selectedItem && (
-            <div>
-              <Descriptions
-                bordered
-                column={1}
-                size="small"
-                layout="horizontal"
-                labelStyle={{ fontWeight: "bold", padding: "4px 8px" }}
-                contentStyle={{ padding: "4px 8px" }}
-              >
-                <Descriptions.Item label="Name">
-                  {selectedItem.name}
-                </Descriptions.Item>
-                <Descriptions.Item label="Doc ID">
-                  {selectedItem.expenceId}
-                </Descriptions.Item>
-                <Descriptions.Item label="Doc Date">
-                  {selectedItem.docDate}
-                </Descriptions.Item>
-                <Descriptions.Item label="Amount">
-                  {new Intl.NumberFormat("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }).format(selectedItem.amount)}
-                </Descriptions.Item>
-                <Descriptions.Item label="Currency">
-                  {selectedItem.currency}
-                </Descriptions.Item>
-                <Descriptions.Item label="Credit Days">
-                  {selectedItem.creditDays}
-                </Descriptions.Item>
-                <Descriptions.Item label="Credit Limit">
-                  {selectedItem.creditLimit}
-                </Descriptions.Item>
-                <Descriptions.Item label="Outstanding">
-                  {selectedItem.outStanding}
-                </Descriptions.Item>
-              </Descriptions>
-
-              <Space
-                style={{
-                  marginTop: "10px",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              >
-                <Button
-                  type="default"
-                  size="small"
-                  style={{
-                    borderColor: "green",
-                    color: "green",
-                    backgroundColor: "white",
-                  }}
-                  onClick={() => handleApprove(selectedItem)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  type="default"
-                  danger
-                  size="small"
-                  style={{
-                    backgroundColor: "white",
-                  }}
-                  onClick={() => handleReject(selectedItem)}
-                >
-                  Reject
-                </Button>
-              </Space>
-            </div>
-          )}
-        </Modal> */}
         {emailFlag && (
           <EmailConfig
             updatedEmployee={"Admin"}

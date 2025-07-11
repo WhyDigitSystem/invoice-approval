@@ -206,6 +206,7 @@ export const ARAgeing = () => {
     // Set the selected date range into asondt
     setAsondt(dates ? dates[0] : null); // Use the first date as the only value
   };
+
   // Table columns definition
   const reportColumns = [
     { accessorKey: "branchName", header: "Branch", size: 140 },
@@ -213,7 +214,7 @@ export const ARAgeing = () => {
     { accessorKey: "subledgerName", header: "Party", size: 400 },
     // { accessorKey: 'cbranch', header: 'Ctrl Branch', size: 140 },
     // { accessorKey: 'salesPersonName', header: 'SalesPerson', size: 140 },
-    { accessorKey: "currency", header: "Currency", size: 140 },
+    // { accessorKey: "currency", header: "Currency", size: 140 },
     { accessorKey: "docid", header: "Invoice No", size: 140 },
     { accessorKey: "docdt", header: "Invoice Dt", size: 140 },
     { accessorKey: "refNo", header: "Ref No", size: 140 },
@@ -300,6 +301,49 @@ export const ARAgeing = () => {
     { accessorKey: "mno", header: "Master No", size: 140 },
     { accessorKey: "hno", header: "House No", size: 140 },
   ];
+  const totalCols = [
+    "amount",
+    "outStanding",
+    "totalDue",
+    "mslab1",
+    "mslab2",
+    "mslab3",
+    "mslab4",
+    "mslab5",
+    "mslab6",
+  ];
+
+  function addSubledgerTotals(rows) {
+    // 1) group rows by subledgerName
+    const groups = rows.reduce((acc, row) => {
+      const key = row.subledgerName;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(row);
+      return acc;
+    }, {});
+
+    // 2) for each group, compute sums and build a "subtotal" row
+    const result = [];
+    Object.entries(groups).forEach(([subledgerName, recs]) => {
+      result.push(...recs);
+
+      // compute sums
+      const subtotal = totalCols.reduce((sumObj, col) => {
+        sumObj[col] = recs.reduce((s, r) => s + Number(r[col] || 0), 0);
+        return sumObj;
+      }, {});
+
+      // create one summary record
+      result.push({
+        key: `subtotal-${subledgerName}`, // ensure unique key
+        subledgerName: `Total`, // label
+        ...subtotal,
+        isSubtotal: true, // flag so you can style it specially
+      });
+    });
+
+    return result;
+  }
 
   const handleInputChange = (e) => {
     setSlab1(e.target.value); // Update the state when user types
@@ -348,8 +392,10 @@ export const ARAgeing = () => {
       slab7
     )
       .then((response) => {
-        // Set data state with the updated data (result + grand total)
-        setData(response);
+        // Set data state with the updated dat
+        // a (result + grand total)
+        // setData(response);
+        setData(addSubledgerTotals(response));
         setLoading(false);
       })
       .catch(() => {
