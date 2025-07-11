@@ -28,6 +28,9 @@ const clientReportData = [
   { name: "CN Request" },
   { name: "CN - Branch Approval" },
   { name: "CN - Corp. Approval" },
+  { name: "CN - Branch Approved" },
+  { name: "CN - Corp. Approved" },
+  { name: "CN - Status" },
   // { name: "CN Approved List" },
   // { name: "CN Approved List2" },
   // { name: "Add Expense" },
@@ -37,6 +40,11 @@ const clientReportData = [
   { name: "TT Approved List" },
   { name: "WH Listing" },
   { name: "WH Approved List" },
+  { name: "Pre Goals" },
+  { name: "Self Review" },
+  // { name: "Employee Master" },
+  // { name: "Performance Goals" },
+  // { name: "Appraiser Review" },
 ];
 
 const routes = {
@@ -48,6 +56,7 @@ const routes = {
   "CN - Corp. Approval": "/CRPendingList",
   "CN - Branch Approved": "/CRApprovedList",
   "CN - Corp. Approved": "/CRApprovedList2",
+  "CN - Status": "/CRStatus",
   // "Add Expense": "/AddExpense",
   // "Expense List": "/ExpenseList",
   // "Policy Amendment": "/PartyMasterUpdate",
@@ -56,12 +65,16 @@ const routes = {
 
   "WH Listing": "/WHlisting",
   "WH Approved List": "/WHApprovedList",
+  // "Employee Master": "/EmployeeMaster",
+  // "Performance Goals": "/PerformanceGoalsGD",
+  // "Appraiser Review": "/AppraiserReviewGD",
 };
 
 const Transactions = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [filteredMenuItems, setFilteredMenuItems] = useState([]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -69,6 +82,30 @@ const Transactions = () => {
     localStorage.setItem("theme", newTheme);
   };
 
+  // Filter menu items based on allowedScreens
+  useEffect(() => {
+    const responseScreens = localStorage.getItem("responseScreens");
+    let parsedScreens = [];
+
+    try {
+      if (responseScreens) {
+        parsedScreens = JSON.parse(responseScreens);
+      }
+    } catch (error) {
+      console.error("Error parsing responseScreens:", error);
+    }
+
+    const filtered = clientReportData.filter((menu) =>
+      parsedScreens.includes(menu.name.toUpperCase())
+    );
+
+    setFilteredMenuItems(filtered);
+
+    // Redirect to PS page if no menu items are available
+    if (filtered.length === 0) {
+      navigate("/ps");
+    }
+  }, [navigate]);
   // Filter menu items based on allowedScreens
   const responseScreens = localStorage.getItem("responseScreens");
   let parsedScreens = [];
@@ -82,9 +119,9 @@ const Transactions = () => {
   }
 
   // Filtered client report data based on screens
-  const filteredMenuItems = clientReportData.filter((menu) =>
-    parsedScreens.includes(menu.name.toUpperCase())
-  );
+  // const filteredMenuItems = clientReportData.filter((menu) =>
+  //   parsedScreens.includes(menu.name.toUpperCase())
+  // );
 
   // Filter further based on the search term
   const filteredAndSearchedMenuItems = filteredMenuItems.filter((item) =>
@@ -162,7 +199,7 @@ const Transactions = () => {
       />
     </div> */}
 
-      <div className="InputContainer">
+      {/* <div className="InputContainer">
         <input
           type="text"
           placeholder="Search..."
@@ -176,6 +213,20 @@ const Transactions = () => {
             borderRadius: "5px",
             border: "1px solid #979695",
           }}
+        />
+      </div> */}
+
+      <div class="group">
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+          <g>
+            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+          </g>
+        </svg>
+        <input
+          placeholder="Search"
+          type="search"
+          class="input"
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 

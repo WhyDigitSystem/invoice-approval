@@ -196,6 +196,7 @@ export const getCRListingData = async () => {
           description: item.description,
           plImpact: item.plImpact,
           documentsRequired: item.documentsRequired,
+          totchargeamtlc: item.totchargeamtlc,
         })
       );
     } else {
@@ -246,6 +247,9 @@ export const getCRListing2Data = async () => {
           description: item.description,
           plImpact: item.plImpact,
           documentsRequired: item.documentsRequired,
+          totchargeamtlc: item.totchargeamtlc,
+          // ? new Intl.NumberFormat("en-IN").format(item.totchargeamtlc)
+          // : "0",
           totDue: item.totDue
             ? new Intl.NumberFormat("en-IN").format(item.totDue)
             : "0",
@@ -290,6 +294,17 @@ export const getCRDetailsApprove1 = async () => {
           dDays: item.dDays,
           osbcd: item.osbcd,
           creditDays: item.creditDays,
+          approve1: item.approve1,
+          approve2: item.approve2,
+          rejectremarks: item.rejectremarks,
+          approve1name: item.approve1name,
+          approve1on: item.approve1on
+            ? new Date(item.approve1on).toLocaleDateString("en-GB")
+            : "",
+          approve2name: item.approve2name,
+          approve2on: item.approve2on
+            ? new Date(item.approve2on).toLocaleDateString("en-GB")
+            : "",
           creditLimit: item.creditLimit
             ? new Intl.NumberFormat("en-IN").format(item.creditLimit)
             : "0",
@@ -349,6 +364,16 @@ export const getCRDetailsApprove2 = async () => {
           totDue: item.totDue
             ? new Intl.NumberFormat("en-IN").format(item.totDue)
             : "0",
+          approve1: item.approve1,
+          approve1name: item.approve1name,
+          approve1on: item.approve1on
+            ? new Date(item.approve1on).toLocaleDateString("en-GB")
+            : "",
+          approve2: item.approve2,
+          approve2name: item.approve2name,
+          approve2on: item.approve2on
+            ? new Date(item.approve2on).toLocaleDateString("en-GB")
+            : "",
         })
       );
     } else {
@@ -588,6 +613,148 @@ export const getApprove1Db = async () => {
         cnApprove: item.cnApprove,
         invUnApprove: item.invUnApprove,
       }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getGoalsByUserName = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/pregoals/getPreGoals?userName=${localStorage.getItem(
+        "userName"
+      )}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getPreGoals) {
+      return response.data.paramObjectsMap.getPreGoals.map((item) => ({
+        empname: item.empname,
+        gst_pregoalsid: item.gst_pregoalsid,
+        appraisalYear: item.appraisalYear,
+        empcode: item.empcode,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getGoalsById = async (id) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/pregoals/getPreGoalsDetails?id=${id})}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getPreGoalsDetails) {
+      return response.data.paramObjectsMap.getPreGoalsDetails.map((item) => ({
+        area: item.area,
+        gst_pregoalsid: item.gst_pregoalsid,
+        goal: item.goal,
+        selfinput: item.selfinput,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const fetchEmployees = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/employeemaster/getAllEmployees`
+    );
+
+    if (response.data && response.data.paramObjectsMap?.empMasVO) {
+      return response.data.paramObjectsMap.empMasVO.map((emp) => ({
+        id: emp.mg_employeemasterid || emp.id || "",
+        employee: emp.employee || "", // Fallback for null
+        code: emp.code || "",
+        dob: emp.dob || "",
+        doj: emp.doj || "",
+        department: emp.department || "Unknown",
+        designation: emp.designation || "Unknown",
+        lvl: emp.lvl || "",
+        reportingto: emp.reportingto || "",
+        reportingtocode: emp.reportingtocode || "",
+        active: emp.active === "true",
+        attachment: emp.attachment || null,
+        branch: emp.branch,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getPeformanceGoalsByUserName = async () => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/performancegoals/getPerformanceGoals?userName=${localStorage.getItem(
+        "userName"
+      )}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (response.data && response.data.paramObjectsMap?.getPerformanceGoals) {
+      return response.data.paramObjectsMap.getPerformanceGoals.map((item) => ({
+        empname: item.empname,
+        gst_performancegoalsid: item.gst_performancegoalsid,
+        appraisalYear: item.appraisalYear,
+        empcode: item.empcode,
+      }));
+    } else {
+      throw new Error("DB not found or API error");
+    }
+  } catch (error) {
+    console.error("Error fetching DB data:", error);
+    throw error; // Re-throw error to propagate it to the caller
+  }
+};
+
+export const getPerfomanceGoalsById = async (id) => {
+  try {
+    // Corrected the endpoint URL and closing braces issue
+    const response = await axios.get(
+      `${API_URL}/api/performancegoals/getPerformanceGoalsDetails?id=${id})}`
+    );
+
+    // Ensure that the response contains the expected structure
+    if (
+      response.data &&
+      response.data.paramObjectsMap?.getPerformanceGoalsDetails
+    ) {
+      return response.data.paramObjectsMap.getPerformanceGoalsDetails.map(
+        (item) => ({
+          perspective: item.perspective,
+          objectivedesc: item.objectivedesc,
+          perassigned: item.perassigned,
+          measurement: item.measurement,
+          qtrtarget: item.qtrtarget,
+          performance: item.performance,
+          comments: item.comments,
+          selfrating: item.selfrating,
+          appraiserrating: item.appraiserrating,
+          gst_performancegoalsid: item.gst_performancegoalsid,
+        })
+      );
     } else {
       throw new Error("DB not found or API error");
     }
