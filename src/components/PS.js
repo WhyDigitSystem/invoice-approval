@@ -51,6 +51,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import SaveIcon from "@mui/icons-material/Save";
 import "./PerformanceGoalsGD.css";
+import "./PS.css";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { debounce } from "lodash";
@@ -257,7 +258,7 @@ const PS = () => {
                   padding: "10px",
                 }}
               >
-                {filteredAndSearchedMenuItems.map((item, index) => (
+                {/* {filteredAndSearchedMenuItems.map((item, index) => (
                   <div
                     key={index}
                     onClick={() => handleNavigate(routes[item.name])}
@@ -281,8 +282,46 @@ const PS = () => {
                       </Button>{" "}
                     </a>
                   </div>
-                ))}
+                ))} */}
               </div>
+
+              <aside id="menu" class="open dark">
+                <span class="shine shine-top"></span>
+                <span class="shine shine-bottom"></span>
+                <span class="glow glow-top"></span>
+                <span class="glow glow-bottom"></span>
+                <span class="glow glow-bright glow-top "></span>
+                <span class="glow glow-bright glow-bottom "></span>
+
+                <div class="inner">
+                  {filteredAndSearchedMenuItems.map((item, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleNavigate(routes[item.name])}
+                    >
+                      <a href="#">
+                        <Button
+                          type="submit"
+                          // className="button11"
+                          endIcon={<SendIcon />}
+                          style={{
+                            backgroundColor: "transparent",
+                            color: "white",
+                            margin: "0",
+                            padding: "4px 8px",
+                            borderRadius: "0 8px",
+                            fontSize: "24px",
+                          }}
+                          loading={isSubmitting}
+                          disabled={isSubmitting}
+                        >
+                          <span>{item.name}</span>
+                        </Button>{" "}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </aside>
 
               <div
                 style={{
