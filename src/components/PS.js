@@ -86,6 +86,17 @@ const PS = () => {
   const [performanceGoalId, setPerformanceGoalId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ x: 20, y: 20 });
 
+  const [hue1, setHue1] = useState(() => {
+    const savedHue1 = localStorage.getItem("menuHue1");
+    return savedHue1 !== null ? parseInt(savedHue1) : 260; // Default to 255 if not found
+  });
+
+  const [hue2, setHue2] = useState(() => {
+    const savedHue2 = localStorage.getItem("menuHue2");
+    return savedHue2 !== null ? parseInt(savedHue2) : 160; // Default to 222 if not found
+  });
+  const menuRef = useRef(null);
+
   const [branchName, setBranchName] = useState("");
   const [fbranchName, setFBranchName] = useState("");
   const [tbranchName, setTBranchName] = useState("");
@@ -124,6 +135,16 @@ const PS = () => {
       colorPrimary: theme === "dark" ? "#6C63FF" : "#1890ff",
     },
   };
+
+  // Update CSS variables and localStorage when hues change
+  useEffect(() => {
+    if (menuRef.current) {
+      menuRef.current.style.setProperty("--hue1", hue1);
+      menuRef.current.style.setProperty("--hue2", hue2);
+    }
+    localStorage.setItem("menuHue1", hue1);
+    localStorage.setItem("menuHue2", hue2);
+  }, [hue1, hue2]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -285,14 +306,13 @@ const PS = () => {
                 ))} */}
               </div>
 
-              <aside id="menu" class="open dark">
+              <aside id="menu" class="open dark" ref={menuRef}>
                 <span class="shine shine-top"></span>
                 <span class="shine shine-bottom"></span>
                 <span class="glow glow-top"></span>
                 <span class="glow glow-bottom"></span>
                 <span class="glow glow-bright glow-top "></span>
                 <span class="glow glow-bright glow-bottom "></span>
-
                 <div class="inner">
                   {filteredAndSearchedMenuItems.map((item, index) => (
                     <div
@@ -302,7 +322,6 @@ const PS = () => {
                       <a href="#">
                         <Button
                           type="submit"
-                          // className="button11"
                           endIcon={<SendIcon />}
                           style={{
                             backgroundColor: "transparent",
@@ -310,19 +329,89 @@ const PS = () => {
                             margin: "0",
                             padding: "4px 8px",
                             borderRadius: "0 8px",
-                            fontSize: "24px",
+                            fontSize: "2rem", // Using rem instead of px to match the font style
+                            fontFamily: '"Open Sans",sansserif',
+                            fontWeight: 10, // Adding the font weight
+                            lineHeight: 1, // Adding the line height
                           }}
                           loading={isSubmitting}
                           disabled={isSubmitting}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color = "#6C63FF")
+                          } // Change to your preferred hover color
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "white")
+                          } // Revert to original color
                         >
-                          <span>{item.name}</span>
-                        </Button>{" "}
+                          <span
+                            style={{
+                              // fontFamily: '"Asap", cursive',
+                              fontFamily: '"Open Sans",sansserif',
+                              fontWeight: 10,
+                              fontSize: "2rem",
+                              lineHeight: 1,
+                            }}
+                          >
+                            {item.name}
+                          </span>
+                        </Button>
                       </a>
                     </div>
                   ))}
                 </div>
               </aside>
-
+              <footer className="dark">
+                <div style={{ fontSize: "18px", marginLeft: "750px" }}>
+                  {/* Pick your own colors! */}
+                </div>{" "}
+                <div className="color-controls">
+                  <div className="color-slider">
+                    <br />
+                    <label htmlFor="h1">Primary Color:</label>
+                    <input
+                      type="range"
+                      id="h1"
+                      min="0"
+                      max="360"
+                      value={hue1}
+                      onChange={(e) => setHue1(parseInt(e.target.value))}
+                      style={{
+                        background: `linear-gradient(to right,
+                hsl(0, 80%, 50%),
+                hsl(60, 80%, 50%),
+                hsl(120, 80%, 50%),
+                hsl(180, 80%, 50%),
+                hsl(240, 80%, 50%),
+                hsl(300, 80%, 50%),
+                hsl(360, 80%, 50%))`,
+                      }}
+                    />
+                    <span>{hue1}°</span>
+                  </div>
+                  <div className="color-slider">
+                    <label htmlFor="h2">Secondary Color:</label>
+                    <input
+                      type="range"
+                      id="h2"
+                      min="0"
+                      max="360"
+                      value={hue2}
+                      onChange={(e) => setHue2(parseInt(e.target.value))}
+                      style={{
+                        background: `linear-gradient(to right,
+                hsl(0, 80%, 50%),
+                hsl(60, 80%, 50%),
+                hsl(120, 80%, 50%),
+                hsl(180, 80%, 50%),
+                hsl(240, 80%, 50%),
+                hsl(300, 80%, 50%),
+                hsl(360, 80%, 50%))`,
+                      }}
+                    />
+                    <span>{hue2}°</span>
+                  </div>
+                </div>
+              </footer>
               <div
                 style={{
                   content: '""',
