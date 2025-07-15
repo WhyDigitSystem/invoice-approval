@@ -60,6 +60,7 @@ import PerformanceGoalsGD from "./components/PerformanceGoalsGD";
 import EmployeeMaster from "./components/EmployeeMaster";
 import AppraiserReviewGD from "./components/AppraiserReviewGD";
 import PS from "./components/PS";
+import PurchaseOrder from "./components/PurchaseOrder";
 
 function App() {
   const [isSelected, setIsSelected] = useState(false);
@@ -117,6 +118,8 @@ function App() {
               <Route path="JobCard" element={<JobCard />} />
               <Route path="CRStatus" element={<CRStatus />} />
               <Route path="PS" element={<PS />} />
+              <Route path="PurchaseOrder" element={<PurchaseOrder />} />
+
               <Route
                 path="JobCostSheetDetails"
                 element={<JobCostSheetDetails />}
