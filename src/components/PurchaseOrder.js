@@ -682,6 +682,18 @@ const PurchaseOrder = () => {
                             }}
                           />
                         </div>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          // flexWrap: "wrap",
+                          gap: "16px 24px",
+                          maxWidth: "600px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {/* ===== Row 1 - First 6 Fields ===== */}
 
                         <div style={{ flex: "0 0 180px" }}>
                           <label style={{ color: "#fff" }}>Address</label>
@@ -747,6 +759,18 @@ const PurchaseOrder = () => {
                             }}
                           />
                         </div>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          // flexWrap: "wrap",
+                          gap: "16px 24px",
+                          maxWidth: "600px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {/* ===== Row 1 - First 6 Fields ===== */}
 
                         <div style={{ flex: "0 0 180px" }}>
                           <label style={{ color: "#fff" }}>
